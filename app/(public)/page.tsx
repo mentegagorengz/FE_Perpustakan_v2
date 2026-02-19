@@ -135,11 +135,11 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Section Sambutan Ringkas di src/app/(public)/page.tsx */}
-        <section className="py-20 bg-surface">
+        {/* 1. Section Sambutan Kepala UPT (Tetap bg-surface) */}
+        <section className="py-24 bg-surface relative">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col lg:flex-row items-center gap-16">
-              {/* Foto Kepala UPT dengan Frame Inovatif */}
+              {/* ... konten foto dan teks sambutan tetap sama ... */}
               <div className="relative w-64 h-80 flex-shrink-0">
                 <div className="absolute inset-0 bg-secondary rounded-[3rem] rotate-6"></div>
                 <div className="relative w-full h-full rounded-[3rem] overflow-hidden border-4 border-white shadow-2xl">
@@ -147,24 +147,35 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Konten Sambutan */}
               <div className="flex-1 text-center lg:text-left">
                 <span className="text-secondary text-[10px] font-black uppercase tracking-[0.3em] mb-4 block">Kepala UPT Perpustakaan</span>
                 <h3 className="text-3xl font-black text-main-text uppercase tracking-tighter mb-6 leading-tight">Ir. Mecky R. E. Manoppo, MT</h3>
-                <p className="text-gray-500 leading-relaxed font-medium italic mb-8">"Menjadi pusat informasi ilmiah unggul dan berbudaya yang memberikan pelayanan prima berbasis teknologi informasi dan komunikasi untuk mendukung Universitas Sam Ratulangi sebagai World Class University."</p>
-                <Link href="/profile" className="inline-block px-10 py-4 bg-secondary text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-secondary/20 hover:scale-105 transition-all">
+                <p className="text-gray-500 leading-relaxed font-medium italic mb-8 italic">"Menjadi pusat informasi ilmiah unggul dan berbudaya yang memberikan pelayanan prima berbasis teknologi informasi dan komunikasi untuk mendukung Universitas Sam Ratulangi sebagai World Class University."</p>
+                <Link href="/profil/kepala-upt" className="inline-block px-10 py-4 bg-secondary text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-secondary/20 hover:scale-105 transition-all">
                   Lihat Profil Lengkap
                 </Link>
               </div>
             </div>
           </div>
+
+          {/* Garis Dekoratif Pemisah di bagian bawah [cite: 2026-02-19] */}
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[1px] bg-main-text/10"></div>
         </section>
 
-        {/* Section CTA tetap sama */}
-        <section className="py-16 bg-surface">
+        {/* 2. Section CTA (Ubah ke bg-cream agar ada pemisah visual) [cite: 2026-02-19] */}
+        <section className="py-20 bg-cream border-t border-white shadow-inner">
           <div className="container mx-auto px-4 text-center">
-            <h3 className="text-3xl font-bold text-main-text">Butuh Referensi Lain?</h3>
-            <button className="mt-8 px-10 py-4 bg-secondary text-white text-[10px] font-black uppercase tracking-widest rounded-full hover:scale-105 transition-all" onClick={handleSearchBook}>
+            {/* Ornamen Ikonik agar tidak kosong [cite: 2025-09-24] */}
+            <div className="flex justify-center gap-1 mb-6">
+              <div className="w-1.5 h-1.5 bg-secondary rounded-full"></div>
+              <div className="w-1.5 h-1.5 bg-secondary/40 rounded-full"></div>
+              <div className="w-1.5 h-1.5 bg-secondary/10 rounded-full"></div>
+            </div>
+
+            <h3 className="text-3xl font-black text-main-text uppercase tracking-tighter">Butuh Referensi Lain?</h3>
+            <p className="text-gray-400 text-xs font-medium mt-2 mb-8">Temukan koleksi buku fisik maupun digital terbaik kami.</p>
+
+            <button className="px-12 py-4 bg-secondary text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-xl shadow-secondary/30 hover:scale-105 active:scale-95 transition-all" onClick={handleSearchBook}>
               Cari Buku Sekarang
             </button>
           </div>
