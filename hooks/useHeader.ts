@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useCallback, use } from "react";
+import { useState, useCallback } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { log } from "console";
 
 export function useHeader() {
   const { user, isAuthenticated, logout } = useAuth();

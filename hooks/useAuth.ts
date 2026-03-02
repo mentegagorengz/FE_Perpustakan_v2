@@ -3,44 +3,68 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export function useAuth() {
+export function useAuthLogic(setUser: any, setToken: any) {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const login = async (email: string, password: string) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      // Simulasi proses login selama 1.5 detik [cite: 2026-02-12]
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const response = await fetch("http://localhost:3001/api/v1/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-      // Logika simulasi role-based redirect [cite: 2026-01-22]
-      if (email === "admin@unsrat.ac.id") {
-        alert("Login Sukses sebagai Admin!");
-        router.push("/admin/dashboard");
-      } else {
-        alert("Login Sukses sebagai Mahasiswa!");
-        router.push("/peminjaman");
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Email atau password salah.");
       }
-    } catch (err) {
-      setError("Terjadi kesalahan saat login. Silakan coba lagi.");
+
+      const apiResponse = result.data || result;
+      const userData = apiResponse.user;
+      const accessToken = apiResponse.access_token;
+
+      if (!userData || !accessToken) {
+        throw new Error("Data user atau token tidak ditemukan.");
+      }
+
+      setToken(accessToken);
+      setUser(userData);
+      localStorage.setItem("token", accessToken);
+      localStorage.setItem("user", JSON.stringify(userData));
+
+      const userRole = userData.role;
+      if (userRole === "SUPER_ADMIN" || userRole === "STAFF") {
+        router.push("/dashboard");
+      } else {
+        router.push("/");
+      }
+    } catch (err: any) {
+      setError(err.message || "Terjadi kesalahan koneksi.");
+      throw err;
     } finally {
       setIsLoading(false);
     }
   };
 
-  return {
-    email,
-    setEmail,
-    password,
-    setPassword,
-    isLoading,
-    error,
-    handleLogin,
+  const logout = () => {
+    // 1. Bersihkan State & LocalStorage
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    // 2. Hapus Session ID dari Cookies secara manual
+    document.cookie = "session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+    // 3. Redirect (Gunakan "/login" huruf kecil jika folder sudah di-rename)
+    router.push("/login");
   };
+
+  return { login, logout, isLoading, error };
 }

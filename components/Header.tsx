@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useHeader } from "@/hooks/useHeader";
 
 export default function Header() {
-  const { isAuthenticated, isMenuOpen, showToast, toggleMenu, onLogout } = useHeader();
+  const { user, isAuthenticated, isMenuOpen, showToast, toggleMenu, onLogout } = useHeader();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   return (
@@ -92,13 +92,23 @@ export default function Header() {
           </div>
 
           {/* Tombol Auth */}
-          <div className="pl-4 border-l border-white/20 ml-2">
+          <div className="pl-4 border-l border-white/20 ml-2 flex items-center gap-3">
             {isAuthenticated ? (
-              <button onClick={onLogout} className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-xl transition text-[11px] font-black uppercase tracking-widest shadow-lg shadow-red-500/20">
-                Logout
-              </button>
+              <>
+                <span className="text-[10px] text-white/70 font-medium hidden lg:inline">
+                  Halo, <span className="text-white font-bold">{user?.nama ?? "User"}</span>
+                </span>
+                {user?.role === "admin" && (
+                  <Link href="/dashboard" className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl transition text-[10px] font-black uppercase tracking-widest">
+                    Admin Panel
+                  </Link>
+                )}
+                <button onClick={onLogout} className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-xl transition text-[11px] font-black uppercase tracking-widest shadow-lg shadow-red-500/20">
+                  Logout
+                </button>
+              </>
             ) : (
-              <Link href="/Login" className="bg-white text-secondary hover:bg-cream-soft px-6 py-2 rounded-xl transition font-black text-[11px] uppercase tracking-widest shadow-lg shadow-black/5">
+              <Link href="/login" className="bg-white text-secondary hover:bg-cream-soft px-6 py-2 rounded-xl transition font-black text-[11px] uppercase tracking-widest shadow-lg shadow-black/5">
                 Login
               </Link>
             )}

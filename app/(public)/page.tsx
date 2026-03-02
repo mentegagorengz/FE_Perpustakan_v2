@@ -3,14 +3,18 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion"; // Import untuk animasi smooth
+import { motion, AnimatePresence } from "framer-motion";
 import { useHome } from "@/hooks/useHome";
 import { useNews } from "@/hooks/useNews";
+import { useApp } from "@/context/AppContext";
 import { images } from "@/constants/Home";
 
 export default function Home() {
   const { currentIndex, handleSearchBook } = useHome(images.length);
-  const { articles, loading, setCategory, category } = useNews();
+  const { articles: newsArticles, loading, setCategory, category } = useNews();
+  const { getPublishedArticles } = useApp();
+
+  const staffArticles = getPublishedArticles();
 
   const categories = [
     { id: "general", label: "Umum" },
@@ -22,7 +26,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-cream">
       <main className="flex-1">
-        {/* Section Hero tetap sama */}
+        {/* Section Hero */}
         <section className="relative w-full h-[500px] overflow-hidden">
           {images.map((src, index) => (
             <div key={index} className={`absolute inset-0 transition-opacity duration-1000 ${index === currentIndex ? "opacity-100" : "opacity-0"}`} style={{ backgroundImage: `url(${src})`, backgroundSize: "cover", backgroundPosition: "center" }}>
@@ -35,7 +39,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Section Berita dengan Animasi Smooth [cite: 2026-02-19] */}
+        {/* Section Berita */}
         <section id="berita" className="py-20 bg-cream overflow-hidden">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
@@ -43,7 +47,6 @@ export default function Home() {
               <p className="mt-2 text-main-text/60 italic">Navigasi berita nasional dengan sekali sentuh.</p>
             </div>
 
-            {/* Tab Kategori dengan efek Hover & Active Inovatif */}
             <div className="flex justify-center gap-3 mb-12 overflow-x-auto pb-4 no-scrollbar">
               {categories.map((cat) => (
                 <button key={cat.id} onClick={() => setCategory(cat.id)} className={`relative px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-500 ${category === cat.id ? "text-white scale-105" : "text-gray-400 bg-white hover:bg-gray-50 border border-gray-100"}`}>
@@ -60,20 +63,9 @@ export default function Home() {
             ) : (
               <div className="relative min-h-[450px]">
                 <AnimatePresence mode="wait">
-                  <motion.div
-                    key={category} // Mengunci animasi pada perubahan kategori [cite: 2026-02-19]
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.4, ease: "easeOut" }}
-                    className="grid grid-cols-1 md:grid-cols-3 gap-8"
-                  >
-                    {articles.slice(0, 3).map((item, index) => (
-                      <motion.div
-                        key={index}
-                        whileHover={{ y: -10 }} // Efek melayang saat di-hover [cite: 2025-09-24]
-                        className="bg-white rounded-[2.5rem] overflow-hidden shadow-sm border border-gray-50 flex flex-col group"
-                      >
+                  <motion.div key={category} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.4, ease: "easeOut" }} className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {newsArticles.slice(0, 3).map((item, index) => (
+                      <motion.div key={index} whileHover={{ y: -10 }} className="bg-white rounded-[2.5rem] overflow-hidden shadow-sm border border-gray-50 flex flex-col group">
                         <div className="relative h-56 w-full overflow-hidden">
                           <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                           <div className="absolute top-6 left-6 bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full text-[8px] font-black uppercase text-secondary shadow-sm">{category}</div>
@@ -94,7 +86,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Section Artikel Staf / Info Kampus [cite: 2026-02-12] */}
+        {/* Section Artikel Staf — Data dari AppContext */}
         <section className="py-20 bg-white">
           <div className="container mx-auto px-4">
             <div className="flex items-end justify-between mb-12 border-b border-gray-100 pb-6">
@@ -102,44 +94,51 @@ export default function Home() {
                 <h3 className="text-2xl font-black text-main-text uppercase tracking-tighter">Warta Perpustakaan</h3>
                 <p className="text-gray-400 text-xs font-medium mt-1">Artikel dan informasi resmi dari staf perpustakaan UNSRAT.</p>
               </div>
-              <button className="text-secondary text-[10px] font-black uppercase tracking-widest hover:underline">Lihat Semua Artikel →</button>
+              <Link href="/artikel" className="text-secondary text-[10px] font-black uppercase tracking-widest hover:underline">
+                Lihat Semua Artikel →
+              </Link>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-              {/* Artikel Utama (Highlight) [cite: 2025-09-24] */}
-              <div className="relative group cursor-pointer overflow-hidden rounded-[2.5rem] h-[400px]">
-                <Image src="/images/staf-article-1.png" alt="Highlight" fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-10">
-                  <span className="bg-secondary text-white text-[8px] font-black px-3 py-1 rounded-full uppercase w-fit mb-4">Pengumuman</span>
-                  <h4 className="text-xl font-bold text-white mb-2 uppercase">Panduan Mengakses E-Journal Internasional dari Rumah</h4>
-                  <p className="text-white/70 text-xs line-clamp-2">Staf perpustakaan membagikan tips langkah demi langkah agar mahasiswa tetap produktif melakukan riset dari mana saja.</p>
+            {staffArticles.length > 0 ? (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                {/* Artikel Utama (Highlight) */}
+                <Link href={`/artikel/${staffArticles[0].slug}`} className="relative group cursor-pointer overflow-hidden rounded-[2.5rem] h-[400px] block">
+                  <Image src={staffArticles[0].image} alt="Highlight" fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-10">
+                    <span className="bg-secondary text-white text-[8px] font-black px-3 py-1 rounded-full uppercase w-fit mb-4">{staffArticles[0].category}</span>
+                    <h4 className="text-xl font-bold text-white mb-2 uppercase">{staffArticles[0].title}</h4>
+                    <p className="text-white/70 text-xs line-clamp-2">{staffArticles[0].excerpt}</p>
+                  </div>
+                </Link>
+
+                {/* Daftar Artikel Kecil */}
+                <div className="flex flex-col gap-6">
+                  {staffArticles.slice(1, 4).map((article) => (
+                    <Link key={article.id} href={`/artikel/${article.slug}`} className="flex gap-4 group cursor-pointer">
+                      <div className="relative w-24 h-24 flex-shrink-0 rounded-2xl overflow-hidden bg-gray-100">
+                        <Image src={article.image} alt="Thumb" fill className="object-cover" />
+                      </div>
+                      <div className="flex flex-col justify-center">
+                        <span className="text-[8px] font-black text-secondary uppercase mb-1">{article.category}</span>
+                        <h5 className="text-sm font-bold text-main-text group-hover:text-secondary transition-colors uppercase line-clamp-2">{article.title}</h5>
+                        <p className="text-[10px] text-gray-400 mt-1 italic">Oleh: {article.author}</p>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
               </div>
-
-              {/* Daftar Artikel Kecil [cite: 2026-02-12] */}
-              <div className="flex flex-col gap-6">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="flex gap-4 group cursor-pointer">
-                    <div className="relative w-24 h-24 flex-shrink-0 rounded-2xl overflow-hidden bg-gray-100">
-                      <Image src={`/images/staf-thumb-${i}.png`} alt="Thumb" fill className="object-cover" />
-                    </div>
-                    <div className="flex flex-col justify-center">
-                      <span className="text-[8px] font-black text-secondary uppercase mb-1">Tips Literasi</span>
-                      <h5 className="text-sm font-bold text-main-text group-hover:text-secondary transition-colors uppercase line-clamp-2">Strategi Mencari Referensi Skripsi Secara Efektif</h5>
-                      <p className="text-[10px] text-gray-400 mt-1 italic">Oleh: Staf Pelayanan Literasi</p>
-                    </div>
-                  </div>
-                ))}
+            ) : (
+              <div className="text-center py-16">
+                <p className="text-main-text/30 font-bold uppercase text-sm">Belum ada artikel.</p>
               </div>
-            </div>
+            )}
           </div>
         </section>
 
-        {/* 1. Section Sambutan Kepala UPT (Tetap bg-surface) */}
+        {/* Section Sambutan Kepala UPT */}
         <section className="py-24 bg-surface relative">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col lg:flex-row items-center gap-16">
-              {/* ... konten foto dan teks sambutan tetap sama ... */}
               <div className="relative w-64 h-80 flex-shrink-0">
                 <div className="absolute inset-0 bg-secondary rounded-[3rem] rotate-6"></div>
                 <div className="relative w-full h-full rounded-[3rem] overflow-hidden border-4 border-white shadow-2xl">
@@ -150,22 +149,19 @@ export default function Home() {
               <div className="flex-1 text-center lg:text-left">
                 <span className="text-secondary text-[10px] font-black uppercase tracking-[0.3em] mb-4 block">Kepala UPT Perpustakaan</span>
                 <h3 className="text-3xl font-black text-main-text uppercase tracking-tighter mb-6 leading-tight">Ir. Mecky R. E. Manoppo, MT</h3>
-                <p className="text-gray-500 leading-relaxed font-medium italic mb-8 italic">"Menjadi pusat informasi ilmiah unggul dan berbudaya yang memberikan pelayanan prima berbasis teknologi informasi dan komunikasi untuk mendukung Universitas Sam Ratulangi sebagai World Class University."</p>
+                <p className="text-gray-500 leading-relaxed font-medium italic mb-8">&quot;Menjadi pusat informasi ilmiah unggul dan berbudaya yang memberikan pelayanan prima berbasis teknologi informasi dan komunikasi untuk mendukung Universitas Sam Ratulangi sebagai World Class University.&quot;</p>
                 <Link href="/profil/kepala-upt" className="inline-block px-10 py-4 bg-secondary text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-secondary/20 hover:scale-105 transition-all">
                   Lihat Profil Lengkap
                 </Link>
               </div>
             </div>
           </div>
-
-          {/* Garis Dekoratif Pemisah di bagian bawah [cite: 2026-02-19] */}
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[1px] bg-main-text/10"></div>
         </section>
 
-        {/* 2. Section CTA (Ubah ke bg-cream agar ada pemisah visual) [cite: 2026-02-19] */}
+        {/* Section CTA */}
         <section className="py-20 bg-cream border-t border-white shadow-inner">
           <div className="container mx-auto px-4 text-center">
-            {/* Ornamen Ikonik agar tidak kosong [cite: 2025-09-24] */}
             <div className="flex justify-center gap-1 mb-6">
               <div className="w-1.5 h-1.5 bg-secondary rounded-full"></div>
               <div className="w-1.5 h-1.5 bg-secondary/40 rounded-full"></div>

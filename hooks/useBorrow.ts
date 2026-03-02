@@ -1,29 +1,35 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { DUMMY_BOOKS } from "@/constants/books";
+import { useRouter } from "next/navigation";
+import { useApp } from "@/context/AppContext";
+import { useAuth } from "@/context/AuthContext";
 
 export function useBorrow() {
+  const { books: allBooks, borrowBook: borrowBookFromContext, policy } = useApp();
+  const { isAuthenticated, user } = useAuth();
+  const router = useRouter();
+
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("Semua"); // State Filter Baru [cite: 2026-02-12]
+  const [selectedCategory, setSelectedCategory] = useState("Semua");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedBook, setSelectedBook] = useState<any | null>(null);
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
+  const [borrowSuccess, setBorrowSuccess] = useState(false);
+  const [borrowError, setBorrowError] = useState<string | null>(null);
 
-  // Ambil daftar kategori unik dari data buku secara dinamis [cite: 2026-02-12]
   const categories = useMemo(() => {
-    const list = DUMMY_BOOKS.map((b) => b.category);
+    const list = allBooks.map((b) => b.category);
     return ["Semua", ...Array.from(new Set(list))];
-  }, []);
+  }, [allBooks]);
 
-  // Logika Filter Gabungan: Search + Category [cite: 2026-02-12]
   const filteredBooks = useMemo(() => {
-    return DUMMY_BOOKS.filter((book) => {
+    return allBooks.filter((book) => {
       const matchSearch = book.title.toLowerCase().includes(searchTerm.toLowerCase()) || book.mainAuthor.toLowerCase().includes(searchTerm.toLowerCase());
       const matchCategory = selectedCategory === "Semua" || book.category === selectedCategory;
       return matchSearch && matchCategory;
     });
-  }, [searchTerm, selectedCategory]);
+  }, [allBooks, searchTerm, selectedCategory]);
 
   const itemsPerPage = 6;
   const totalPages = Math.ceil(filteredBooks.length / itemsPerPage);
@@ -33,10 +39,32 @@ export function useBorrow() {
     return filteredBooks.slice(start, start + itemsPerPage);
   }, [filteredBooks, currentPage]);
 
-  // Reset halaman jika filter berubah [cite: 2026-02-12]
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, selectedCategory]);
+
+  const handleBorrow = () => {
+    setBorrowError(null);
+
+    if (!isAuthenticated) {
+      router.push("/Login");
+      return;
+    }
+
+    if (!selectedBook) return;
+
+    const success = borrowBookFromContext(selectedBook.id);
+    if (success) {
+      setBorrowSuccess(true);
+      setShowConfirmPopup(false);
+      setSelectedBook(null);
+      setTimeout(() => setBorrowSuccess(false), 3000);
+    } else {
+      setBorrowError(`Gagal meminjam. Maks ${policy.maxBooksPerUser} buku aktif per user.`);
+      setShowConfirmPopup(false);
+      setTimeout(() => setBorrowError(null), 4000);
+    }
+  };
 
   return {
     books: paginatedBooks,
@@ -52,8 +80,9 @@ export function useBorrow() {
     setSelectedBook,
     showConfirmPopup,
     setShowConfirmPopup,
-    handleBorrow: () => {
-      /* Logika alert */
-    },
+    handleBorrow,
+    borrowSuccess,
+    borrowError,
+    isAuthenticated,
   };
 }

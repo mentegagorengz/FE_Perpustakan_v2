@@ -1,32 +1,31 @@
 "use client";
 
-import { useState, useEffect, useCallback, use } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 export function useHome(itemCount: number) {
-    const router = useRouter();
-    const [currentIndex, seetCurrentIndex] = useState(0);
+  const router = useRouter();
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-    useEffect(() => {
-        if (itemCount <= 1) return;
-        const interval = setInterval(() => {
-            seetCurrentIndex((prev) => (prev === itemCount - 1 ? 0 : prev + 1));
-        }, 5000);
-        return () => clearInterval(interval);
-    }, [itemCount]);
+  useEffect(() => {
+    if (itemCount <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev === itemCount - 1 ? 0 : prev + 1));
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [itemCount]);
 
-    const handleSearchBook = useCallback(() => {
-        router.push("/koleksi");
-    }, [router]);
+  const handleSearchBook = useCallback(() => {
+    router.push("/koleksi");
+  }, [router]);
 
-    const handleOpenJournal = useCallback((Link: string) => {
-        window.open(Link, "_blank");
-    }, []);
+  const handleOpenJournal = useCallback((link: string) => {
+    window.open(link, "_blank");
+  }, []);
 
-    return {
-        currentIndex,
-        handleSearchBook,
-        handleOpenJournal,
-    };
+  return {
+    currentIndex,
+    handleSearchBook,
+    handleOpenJournal,
+  };
 }

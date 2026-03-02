@@ -7,15 +7,21 @@ import ConfirmModal from "@/components/peminjaman/ConfirmModal";
 import Pagination from "@/components/peminjaman/Pagination";
 
 export default function PeminjamanPage() {
-  const { books, searchTerm, setSearchTerm, categories, selectedCategory, setSelectedCategory, currentPage, setCurrentPage, totalPages, selectedBook, setSelectedBook, showConfirmPopup, setShowConfirmPopup, handleBorrow } = useBorrow();
+  const { books, searchTerm, setSearchTerm, categories, selectedCategory, setSelectedCategory, currentPage, setCurrentPage, totalPages, selectedBook, setSelectedBook, showConfirmPopup, setShowConfirmPopup, handleBorrow, borrowSuccess, borrowError, isAuthenticated } = useBorrow();
 
   return (
     <div className="bg-cream min-h-screen pb-20">
       <div className="container mx-auto py-12 px-4">
+        {/* Toast Sukses */}
+        {borrowSuccess && <div className="fixed top-5 right-5 z-[100] bg-green-500 text-white px-6 py-3 rounded-xl shadow-2xl animate-bounce text-[10px] font-black uppercase tracking-widest">📖 Buku berhasil dipinjam!</div>}
+        {/* Toast Error */}
+        {borrowError && <div className="fixed top-5 right-5 z-[100] bg-red-500 text-white px-6 py-3 rounded-xl shadow-2xl animate-bounce text-[10px] font-black uppercase tracking-widest">❌ {borrowError}</div>}
+
         {/* Header Section */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-black text-main-text tracking-tight mb-3">E-Library UNSRAT</h1>
           <p className="text-main-text/60 max-w-md mx-auto text-sm sm:text-base font-medium">Akses ribuan koleksi literatur digital secara instan dan mudah.</p>
+          {!isAuthenticated && <p className="text-[10px] text-secondary font-bold mt-2 uppercase tracking-widest">Login untuk meminjam buku</p>}
         </div>
 
         {/* Search Bar Enhanced */}
@@ -67,7 +73,6 @@ export default function PeminjamanPage() {
   );
 }
 
-// Komponen Ikon Sederhana
 const SearchIcon = () => (
   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
