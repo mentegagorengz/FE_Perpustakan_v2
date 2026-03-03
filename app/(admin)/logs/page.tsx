@@ -130,7 +130,7 @@ export default function AuditLogsPage() {
                   <td className="p-7">
                     <div className="flex flex-col gap-1">
                       <span className="text-[10px] text-main-text uppercase font-black">{log.action}</span>
-                      <span className="text-[8px] text-main-text/40 font-medium lowercase truncate max-w-[200px] italic">
+                      <span className="text-[8px] text-main-text/40 font-medium lowercase truncate max-w-50 italic">
                         {log.module}: {log.details} 
                       </span>
                     </div>
