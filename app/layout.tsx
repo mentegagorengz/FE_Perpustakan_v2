@@ -1,5 +1,6 @@
 import { AuthProvider } from "@/context/AuthContext";
 import { AppProvider } from "@/context/AppContext";
+import QueryProvider from "@/providers/QueryProvider";
 import "./globals.css";
 
 export const metadata = {
@@ -12,7 +13,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="id">
       <body className="antialiased bg-cream text-main-text min-h-screen">
         <AuthProvider>
-          <AppProvider>{children}</AppProvider>
+          <QueryProvider>
+            <AppProvider>{children}</AppProvider>
+          </QueryProvider>
         </AuthProvider>
       </body>
     </html>
