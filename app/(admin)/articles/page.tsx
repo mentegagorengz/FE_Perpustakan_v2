@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { Loader2, Plus, Search, Pencil, Trash2, X } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useArticlesAdmin } from "@/hooks/useArticlesAdmin";
 
@@ -8,55 +9,77 @@ export default function ArticlesAdminPage() {
   const { token } = useAuth();
   const ui = useArticlesAdmin(token);
 
-  if (ui.isLoading) return <div className="p-10 font-black text-secondary animate-pulse uppercase">Syncing Library Archive...</div>;
+  if (ui.isLoading)
+    return (
+      <div className="flex items-center gap-2 p-10 text-secondary">
+        <Loader2 className="h-5 w-5 animate-spin" />
+        <span>Memuat data artikel...</span>
+      </div>
+    );
 
   return (
-    <div className="p-10 bg-cream min-h-screen font-sans">
-      <div className="mb-8 flex justify-between items-end border-b border-main-border pb-6">
+    <div className="min-h-screen bg-cream p-10 font-sans">
+      <div className="mb-8 flex items-end justify-between border-b border-main-border pb-6">
         <div>
-          <h1 className="text-2xl font-black text-main-text uppercase tracking-tight">Warta & Artikel</h1>
-          <p className="text-xs text-main-text/50 font-medium italic text-left">Manajemen konten publik via NestJS API [cite: 2026-03-03].</p>
+          <h1 className="font-display text-3xl text-secondary">Warta &amp; Artikel</h1>
+          <p className="mt-2 text-sm text-main-text/60">Manajemen konten publik perpustakaan.</p>
         </div>
         <button
           onClick={() => {
             ui.resetForm();
             ui.setShowForm(true);
           }}
-          className="bg-secondary text-white text-[10px] font-black px-6 py-3 rounded-xl uppercase shadow-lg hover:scale-105 transition-all"
+          className="inline-flex items-center gap-2 rounded-md bg-secondary px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-secondary-hover"
         >
-          + Tulis Artikel Baru
+          <Plus className="h-4 w-4" />
+          Tulis artikel baru
         </button>
       </div>
 
       <div className="mb-6">
-        <input type="text" placeholder="Cari judul artikel..." value={ui.searchTerm} onChange={(e) => ui.setSearchTerm(e.target.value)} className="bg-white border border-main-border px-4 py-2 rounded-lg text-xs w-64 focus:border-secondary outline-none font-bold" />
+        <div className="relative w-72">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-main-text/40" />
+          <input
+            type="text"
+            placeholder="Cari judul artikel..."
+            value={ui.searchTerm}
+            onChange={(e) => ui.setSearchTerm(e.target.value)}
+            className="w-full rounded-md border border-main-border bg-white py-2 pl-9 pr-4 text-sm outline-none focus:border-secondary"
+          />
+        </div>
       </div>
 
-      <div className="bg-white border border-main-border rounded-xl overflow-hidden shadow-sm">
-        <table className="w-full text-left text-[11px]">
-          <thead className="bg-surface font-black text-main-text/40 uppercase tracking-widest border-b border-main-border">
+      <div className="overflow-hidden rounded-lg border border-main-border bg-white shadow-[var(--shadow-card)]">
+        <table className="w-full text-left text-sm">
+          <thead className="border-b border-main-border bg-surface text-main-text/60">
             <tr>
-              <th className="p-5">Judul Artikel</th>
-              <th className="p-5">Tanggal Dibuat</th>
-              <th className="p-5 text-center">Status</th>
-              <th className="p-5 text-right">Aksi</th>
+              <th className="p-4 font-medium">Judul artikel</th>
+              <th className="p-4 font-medium">Tanggal dibuat</th>
+              <th className="p-4 text-center font-medium">Status</th>
+              <th className="p-4 text-right font-medium">Aksi</th>
             </tr>
           </thead>
-          <tbody className="text-main-text/70">
-            {ui.articles.map((item) => (
-              <tr key={item.id} className="border-b border-main-border/50 hover:bg-surface/30 transition-all group">
-                <td className="p-5 font-bold text-main-text uppercase max-w-xs truncate text-left">{item.title}</td>
-                <td className="p-5 text-main-text/40 font-mono text-left">{new Date(item.created_at || "").toLocaleDateString("id-ID")}</td>
-                <td className="p-5 text-center">
-                  <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase ${item.is_published ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-400"}`}>{item.is_published ? "Published" : "Draft"}</span>
+          <tbody className="divide-y divide-main-border text-main-text/80">
+            {ui.articles.map((item: any) => (
+              <tr key={item.id} className="transition-colors hover:bg-surface/40">
+                <td className="max-w-xs truncate p-4 font-medium text-main-text">{item.title}</td>
+                <td className="p-4 text-main-text/50">{new Date(item.created_at || "").toLocaleDateString("id-ID")}</td>
+                <td className="p-4 text-center">
+                  <span className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${item.is_published ? "bg-green-100 text-green-700" : "bg-surface text-main-text/50"}`}>
+                    {item.is_published ? "Published" : "Draft"}
+                  </span>
                 </td>
-                <td className="p-5 text-right space-x-3">
-                  <button onClick={() => ui.handleOpenEdit(item)} className="text-secondary font-black uppercase text-[9px] hover:underline">
-                    Edit
-                  </button>
-                  <button onClick={() => ui.setShowDeleteConfirm(item.id || null)} className="text-red-400 font-black uppercase text-[9px] hover:underline">
-                    Hapus
-                  </button>
+                <td className="p-4">
+                  <div className="flex items-center justify-end gap-2">
+                    <button onClick={() => ui.handleOpenEdit(item)} className="inline-flex items-center gap-1.5 rounded-md border border-main-border px-3 py-1.5 text-xs font-medium text-main-text/80 transition-colors hover:bg-surface">
+                      <Pencil className="h-3.5 w-3.5" />
+                      Edit
+                    </button>
+                    <button onClick={() => ui.setShowDeleteConfirm(item.id || null)} className="inline-flex items-center gap-1.5 rounded-md border border-main-border px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50">
+                      <Trash2 className="h-3.5 w-3.5" />
+                      Hapus
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -65,38 +88,39 @@ export default function ArticlesAdminPage() {
       </div>
 
       {ui.showForm && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-cream rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
-            <div className="p-6 border-b border-main-border bg-white flex justify-between items-center">
-              <h2 className="text-lg font-black text-main-text uppercase">{ui.editingId ? "Edit Artikel" : "Tulis Artikel Baru"}</h2>
-              <button onClick={ui.resetForm} className="text-gray-400 hover:text-red-500 text-2xl">
-                ×
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-2xl overflow-hidden rounded-lg bg-cream shadow-[var(--shadow-overlay)]">
+            <div className="flex items-center justify-between border-b border-main-border bg-white p-6">
+              <h2 className="font-display text-xl text-secondary">{ui.editingId ? "Edit artikel" : "Tulis artikel baru"}</h2>
+              <button onClick={ui.resetForm} className="rounded-md p-1 text-main-text/50 transition-colors hover:bg-surface hover:text-main-text">
+                <X className="h-5 w-5" />
               </button>
             </div>
-            <form onSubmit={ui.handleActionSubmit} className="p-6 space-y-4">
+            <form onSubmit={ui.handleActionSubmit} className="space-y-4 p-6">
               <div>
-                <label className="text-[10px] font-black uppercase text-main-text/50 mb-1 block text-left">Judul Artikel</label>
-                <input required value={ui.form.title} onChange={(e) => ui.form.setTitle(e.target.value)} className="w-full border border-main-border px-4 py-3 rounded-xl text-sm outline-none focus:border-secondary" />
+                <label className="mb-1 block text-sm font-medium text-main-text/70">Judul artikel</label>
+                <input required value={ui.form.title} onChange={(e) => ui.form.setTitle(e.target.value)} className="w-full rounded-md border border-main-border px-4 py-2.5 text-sm outline-none focus:border-secondary" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-[10px] font-black uppercase text-main-text/50 mb-1 block text-left text-left">Upload Gambar Sampul</label>
-                  <input type="file" accept="image/*" onChange={(e) => ui.form.setSelectedFile(e.target.files?.[0] || null)} className="w-full border border-main-border px-4 py-2 rounded-xl text-xs bg-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-black file:bg-secondary file:text-white" />
+                  <label className="mb-1 block text-sm font-medium text-main-text/70">Gambar sampul</label>
+                  <input type="file" accept="image/*" onChange={(e) => ui.form.setSelectedFile(e.target.files?.[0] || null)} className="w-full rounded-md border border-main-border bg-white px-4 py-2 text-xs file:mr-4 file:rounded-md file:border-0 file:bg-secondary file:px-4 file:py-2 file:text-xs file:font-medium file:text-white" />
                 </div>
                 <div>
-                  <label className="text-[10px] font-black uppercase text-main-text/50 mb-1 block text-left text-left">Status Publikasi</label>
-                  <select value={ui.form.isPublished ? "true" : "false"} onChange={(e) => ui.form.setIsPublished(e.target.value === "true")} className="w-full border border-main-border px-4 py-3 rounded-xl text-sm outline-none">
-                    <option value="false">Simpan sebagai Draft</option>
-                    <option value="true">Publikasikan Langsung</option>
+                  <label className="mb-1 block text-sm font-medium text-main-text/70">Status publikasi</label>
+                  <select value={ui.form.isPublished ? "true" : "false"} onChange={(e) => ui.form.setIsPublished(e.target.value === "true")} className="w-full rounded-md border border-main-border px-4 py-2.5 text-sm outline-none focus:border-secondary">
+                    <option value="false">Simpan sebagai draft</option>
+                    <option value="true">Publikasikan langsung</option>
                   </select>
                 </div>
               </div>
               <div>
-                <label className="text-[10px] font-black uppercase text-main-text/50 mb-1 block text-left">Konten Lengkap</label>
-                <textarea required value={ui.form.content} onChange={(e) => ui.form.setContent(e.target.value)} rows={8} className="w-full border border-main-border px-4 py-3 rounded-xl text-sm outline-none focus:border-secondary resize-none" />
+                <label className="mb-1 block text-sm font-medium text-main-text/70">Konten lengkap</label>
+                <textarea required value={ui.form.content} onChange={(e) => ui.form.setContent(e.target.value)} rows={8} className="w-full resize-none rounded-md border border-main-border px-4 py-3 text-sm outline-none focus:border-secondary" />
               </div>
-              <button type="submit" disabled={ui.isProcessing} className="w-full py-3 bg-secondary text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg disabled:opacity-50">
-                {ui.isProcessing ? "MEMPROSES..." : ui.editingId ? "SIMPAN PERUBAHAN" : "TERBITKAN ARTIKEL"}
+              <button type="submit" disabled={ui.isProcessing} className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-secondary py-3 text-sm font-medium text-white transition-colors hover:bg-secondary-hover disabled:opacity-50">
+                {ui.isProcessing && <Loader2 className="h-4 w-4 animate-spin" />}
+                {ui.isProcessing ? "Memproses..." : ui.editingId ? "Simpan perubahan" : "Terbitkan artikel"}
               </button>
             </form>
           </div>
@@ -104,16 +128,16 @@ export default function ArticlesAdminPage() {
       )}
 
       {ui.showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
-          <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center border border-main-border">
-            <h3 className="text-lg font-black text-red-500 mb-2 uppercase tracking-tighter">Hapus Permanen?</h3>
-            <p className="text-[10px] text-main-text/50 mb-6 font-bold uppercase tracking-widest">Aksi ini akan menghapus artikel dari database NestJS.</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-sm rounded-lg border border-main-border bg-white p-8 text-center shadow-[var(--shadow-overlay)]">
+            <h3 className="font-display text-xl text-red-600">Hapus permanen?</h3>
+            <p className="mb-6 mt-2 text-sm text-main-text/60">Artikel ini akan dihapus dari basis data dan tidak bisa dikembalikan.</p>
             <div className="grid grid-cols-2 gap-4">
-              <button onClick={() => ui.setShowDeleteConfirm(null)} className="py-3 bg-cream text-main-text/60 rounded-xl text-[10px] font-black uppercase">
+              <button onClick={() => ui.setShowDeleteConfirm(null)} className="rounded-md border border-main-border py-2.5 text-sm font-medium text-main-text/70 transition-colors hover:bg-surface">
                 Batal
               </button>
-              <button onClick={() => ui.handleDelete(ui.showDeleteConfirm!)} className="py-3 bg-red-500 text-white rounded-xl text-[10px] font-black uppercase shadow-lg">
-                Ya, Hapus
+              <button onClick={() => ui.handleDelete(ui.showDeleteConfirm!)} className="rounded-md bg-red-600 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700">
+                Ya, hapus
               </button>
             </div>
           </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { API_BASE_URL, handleApiResponse } from "@/constants/api";
 
 export interface Article {
   id?: number;
@@ -22,39 +23,36 @@ export function useArticles(token: string | null) {
     queryKey: ["articles"],
     queryFn: async () => {
       const headers: HeadersInit = {};
-      if (token) headers["Authorization"] = `Bearer ${token}`; // Tambah token jika ada
+      if (token) headers["Authorization"] = `Bearer ${token}`;
 
-      const response = await fetch("http://localhost:3001/api/v1/articles", { headers });
-      if (!response.ok) throw new Error("Gagal memuat artikel");
-      const result = await response.json();
+      const response = await fetch(`${API_BASE_URL}/articles`, { headers });
+      const result = await handleApiResponse(response);
       return result.data;
     },
-    // Tetap jalan di publik (tanpa token), tapi butuh token di admin
-    // Kita hapus enabled: !!token agar halaman publik bisa fetch data
   });
 
   // 2. Mutation: Tambah Artikel Baru
   const createMutation = useMutation({
     mutationFn: async (formData: FormData) => {
-      const response = await fetch("http://localhost:3001/api/v1/articles", {
+      const response = await fetch(`${API_BASE_URL}/articles`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
-        body: formData, // Mengirim file + teks
+        body: formData,
       });
-      return response.json();
+      return handleApiResponse(response);
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["articles"] }),
   });
 
-  // 3. Mutation: Update Artikel (PENTING!)
+  // 3. Mutation: Update Artikel
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: FormData }) => {
-      const response = await fetch(`http://localhost:3001/api/v1/articles/${id}`, {
-        method: "PATCH", // Gunakan PATCH sesuai standar REST
+      const response = await fetch(`${API_BASE_URL}/articles/${id}`, {
+        method: "PATCH",
         headers: { Authorization: `Bearer ${token}` },
         body: data,
       });
-      return response.json();
+      return handleApiResponse(response);
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["articles"] }),
   });
@@ -62,11 +60,11 @@ export function useArticles(token: string | null) {
   // 4. Mutation: Hapus Artikel
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      await fetch(`http://localhost:3001/api/v1/activity-logs/${id}`, {
-        // Sesuaikan endpoint
+      const response = await fetch(`${API_BASE_URL}/articles/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
+      return handleApiResponse(response);
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["articles"] }),
   });
@@ -75,22 +73,22 @@ export function useArticles(token: string | null) {
     articles: articlesQuery.data || [],
     isLoading: articlesQuery.isLoading,
     createArticle: createMutation.mutate,
-    updateArticle: updateMutation.mutate, // Tambahkan ini agar bisa edit
+    updateArticle: updateMutation.mutate,
     deleteArticle: deleteMutation.mutate,
     isProcessing: createMutation.isPending || updateMutation.isPending || deleteMutation.isPending,
   };
 }
 
-// Hook tambahan untuk detail agar tidak campur aduk
+// Hook tambahan untuk detail artikel
 export function useArticleDetail(id: string | null) {
   return useQuery({
     queryKey: ["article", id],
     queryFn: async () => {
-      const response = await fetch(`http://localhost:3001/api/v1/articles/${id}`);
-      if (!response.ok) throw new Error("Gagal memuat detail artikel");
-      const result = await response.json();
+      const response = await fetch(`${API_BASE_URL}/articles/${id}`);
+      const result = await handleApiResponse(response);
       return result.data;
     },
     enabled: !!id,
   });
 }
+

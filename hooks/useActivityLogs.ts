@@ -1,4 +1,5 @@
-import { useQuery} from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { API_BASE_URL, handleApiResponse } from "@/constants/api";
 
 interface UseLogsParams {
     token: string | null;
@@ -16,16 +17,14 @@ export function useActivityLogs({ token, page, action }: UseLogsParams) {
                 ...(action !== "all" && action ? { action } : {}),
             });
 
-            const response = await fetch(`http://localhost:3001/api/v1/activity-logs?${query}`, {
+            const response = await fetch(`${API_BASE_URL}/activity-logs?${query}`, {
               headers: { Authorization: `Bearer ${token}` },
             });
 
-            if (!response.ok) throw new Error("Failed to fetch activity logs");
-            const result = await response.json();
-
+            const result = await handleApiResponse(response);
             return result.data;
         },
         enabled: !!token,
-        keepPreviousData: true,
+        placeholderData: keepPreviousData,
     });
 }

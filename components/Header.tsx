@@ -3,120 +3,93 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import { ChevronDown, Menu } from "lucide-react";
 import { useHeader } from "@/hooks/useHeader";
+
+const dropdowns = {
+  berita: [
+    { href: "/artikel", label: "Warta Artikel", desc: "Tulisan resmi staf perpustakaan" },
+    { href: "/#berita", label: "Headline Nasional", desc: "Kabar terkini Indonesia" },
+  ],
+  profil: [
+    { href: "/profil/kepala-upt", label: "Kepala UPT", desc: "Mengenal pimpinan perpustakaan" },
+    { href: "/profil/sejarah", label: "Sejarah & NPP", desc: "Jejak langkah sejak tahun 1961" },
+  ],
+  koleksi: [
+    { href: "/koleksi", label: "OPAC (Fisik)", desc: "Cari buku di rak perpustakaan" },
+    { href: "/koleksidaring", label: "Koleksi Daring", desc: "Akses E-Journal & E-Book" },
+  ],
+} as const;
 
 export default function Header() {
   const { user, isAuthenticated, isMenuOpen, showToast, toggleMenu, onLogout } = useHeader();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   return (
-    <header className="bg-secondary text-white sticky top-0 z-50 shadow-md font-sans">
+    <header className="bg-secondary text-white sticky top-0 z-50 border-b border-black/10">
       <div className="container mx-auto flex items-center justify-between px-6 py-3">
-        <div className="flex items-center space-x-4">
-          <Image src="/images/logo_unsrat.png" alt="Logo" width={40} height={40} />
-          <h1 className="text-lg font-bold tracking-tight">Perpustakaan UNSRAT</h1>
-        </div>
+        <Link href="/" className="flex items-center gap-3">
+          <Image src="/images/logo_unsrat.png" alt="Logo UNSRAT" width={38} height={38} />
+          <span className="font-display text-xl leading-none">Perpustakaan UNSRAT</span>
+        </Link>
 
-        <button className="lg:hidden text-3xl" onClick={toggleMenu}>
-          ☰
+        <button className="lg:hidden" onClick={toggleMenu} aria-label="Buka menu">
+          <Menu size={24} />
         </button>
 
-        <nav className={`${isMenuOpen ? "block" : "hidden"} lg:flex lg:items-center lg:space-x-4`}>
-          {/* 1. Beranda */}
-          <Link href="/" className="px-4 py-2 text-white/80 hover:text-white transition-colors font-medium">
+        <nav className={`${isMenuOpen ? "block" : "hidden"} lg:flex lg:items-center lg:gap-1`}>
+          <Link href="/" className="block px-4 py-2 text-sm text-white/80 hover:text-white transition-colors">
             Beranda
           </Link>
 
-          {/* 2. Dropdown Berita - Menyatukan Warta & Headline [cite: 2026-02-19] */}
-          <div className="relative" onMouseEnter={() => setOpenDropdown("berita")} onMouseLeave={() => setOpenDropdown(null)}>
-            <button className="px-4 py-2 flex items-center gap-1 text-white/80 hover:text-white transition-colors font-medium">
-              Berita
-              <span className={`text-[7px] transition-transform duration-300 ${openDropdown === "berita" ? "rotate-180" : ""}`}>▼</span>
-            </button>
-            {openDropdown === "berita" && (
-              <div className="absolute top-full left-0 w-56 bg-white rounded-2xl shadow-2xl py-2 border border-gray-100 animate-in fade-in slide-in-from-top-2">
-                <Link href="/artikel" className="block px-6 py-3 group hover:bg-gray-50 transition-colors">
-                  <span className="block text-[10px] font-black uppercase tracking-widest text-secondary">Warta Artikel</span>
-                  <span className="text-[9px] text-gray-400 font-medium">Tulisan resmi staf perpus</span>
-                </Link>
-                <div className="h-[1px] bg-gray-50 mx-4 my-1"></div>
-                <Link href="/#berita" className="block px-6 py-3 group hover:bg-gray-50 transition-colors">
-                  <span className="block text-[10px] font-black uppercase tracking-widest text-secondary">Headline Nasional</span>
-                  <span className="text-[9px] text-gray-400 font-medium">Kabar terkini Indonesia</span>
-                </Link>
-              </div>
-            )}
-          </div>
+          {(Object.keys(dropdowns) as Array<keyof typeof dropdowns>).map((key) => (
+            <div key={key} className="relative" onMouseEnter={() => setOpenDropdown(key)} onMouseLeave={() => setOpenDropdown(null)}>
+              <button className="flex items-center gap-1 px-4 py-2 text-sm text-white/80 hover:text-white transition-colors capitalize">
+                {key}
+                <ChevronDown size={14} className={`transition-transform duration-200 ${openDropdown === key ? "rotate-180" : ""}`} />
+              </button>
+              {openDropdown === key && (
+                <div className="absolute top-full left-0 w-60 bg-cream text-main-text rounded-lg border border-main-border py-1.5 shadow-[var(--shadow-overlay)]">
+                  {dropdowns[key].map((item) => (
+                    <Link key={item.href} href={item.href} className="block px-5 py-2.5 hover:bg-surface transition-colors">
+                      <span className="block text-sm font-medium text-secondary">{item.label}</span>
+                      <span className="text-xs text-main-text/55">{item.desc}</span>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
 
-          {/* 3. Profil - Mengarah ke halaman detail profil [cite: 2026-02-19] */}
-          {/* Dropdown Profil yang Baru di src/components/layout/Header.tsx */}
-          <div className="relative" onMouseEnter={() => setOpenDropdown("profil")} onMouseLeave={() => setOpenDropdown(null)}>
-            <button className="px-4 py-2 flex items-center gap-1 text-white/80 hover:text-white transition-colors font-medium">
-              Profil
-              <span className={`text-[7px] transition-transform duration-300 ${openDropdown === "profil" ? "rotate-180" : ""}`}>▼</span>
-            </button>
-            {openDropdown === "profil" && (
-              <div className="absolute top-full left-0 w-56 bg-white rounded-2xl shadow-2xl py-2 border border-gray-100 animate-in fade-in slide-in-from-top-2">
-                <Link href="/profil/kepala-upt" className="block px-6 py-3 group hover:bg-gray-50 transition-colors">
-                  <span className="block text-[10px] font-black uppercase tracking-widest text-secondary">Kepala UPT</span>
-                  <span className="text-[9px] text-gray-400 font-medium">Mengenal pimpinan perpustakaan</span>
-                </Link>
-                <div className="h-[1px] bg-gray-50 mx-4 my-1"></div>
-                <Link href="/profil/sejarah" className="block px-6 py-3 group hover:bg-gray-50 transition-colors">
-                  <span className="block text-[10px] font-black uppercase tracking-widest text-secondary">Sejarah & NPP</span>
-                  <span className="text-[9px] text-gray-400 font-medium">Jejak langkah sejak tahun 1961</span>
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {/* 4. Dropdown Koleksi */}
-          <div className="relative" onMouseEnter={() => setOpenDropdown("koleksi")} onMouseLeave={() => setOpenDropdown(null)}>
-            <button className="px-4 py-2 flex items-center gap-1 text-white/80 hover:text-white transition-colors font-medium">
-              Koleksi
-              <span className={`text-[7px] transition-transform duration-300 ${openDropdown === "koleksi" ? "rotate-180" : ""}`}>▼</span>
-            </button>
-            {openDropdown === "koleksi" && (
-              <div className="absolute top-full left-0 w-56 bg-white rounded-2xl shadow-2xl py-2 border border-gray-100 animate-in fade-in slide-in-from-top-2">
-                <Link href="/koleksi" className="block px-6 py-3 group hover:bg-gray-50 transition-colors">
-                  <span className="block text-[10px] font-black uppercase tracking-widest text-secondary">OPAC (Fisik)</span>
-                  <span className="text-[9px] text-gray-400 font-medium">Cari buku di rak perpustakaan</span>
-                </Link>
-                <div className="h-[1px] bg-gray-50 mx-4 my-1"></div>
-                <Link href="/koleksidaring" className="block px-6 py-3 group hover:bg-gray-50 transition-colors">
-                  <span className="block text-[10px] font-black uppercase tracking-widest text-secondary">Koleksi Daring</span>
-                  <span className="text-[9px] text-gray-400 font-medium">Akses E-Journal & E-Book</span>
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {/* Tombol Auth */}
-          <div className="pl-4 border-l border-white/20 ml-2 flex items-center gap-3">
+          <div className="flex items-center gap-3 pl-4 lg:ml-2 lg:border-l lg:border-white/20">
             {isAuthenticated ? (
               <>
-                <span className="text-[10px] text-white/70 font-medium hidden lg:inline">
-                  Halo, <span className="text-white font-bold">{user?.nama ?? "User"}</span>
+                <span className="hidden text-sm text-white/70 lg:inline">
+                  Halo, <span className="font-medium text-white">{user?.nama ?? "User"}</span>
                 </span>
                 {user?.role === "admin" && (
-                  <Link href="/dashboard" className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl transition text-[10px] font-black uppercase tracking-widest">
+                  <Link href="/dashboard" className="rounded-md bg-white/10 px-4 py-2 text-xs font-medium transition hover:bg-white/20">
                     Admin Panel
                   </Link>
                 )}
-                <button onClick={onLogout} className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-xl transition text-[11px] font-black uppercase tracking-widest shadow-lg shadow-red-500/20">
-                  Logout
+                <button onClick={onLogout} className="rounded-md border border-white/25 px-4 py-2 text-xs font-medium transition hover:bg-white/10">
+                  Keluar
                 </button>
               </>
             ) : (
-              <Link href="/login" className="bg-white text-secondary hover:bg-cream-soft px-6 py-2 rounded-xl transition font-black text-[11px] uppercase tracking-widest shadow-lg shadow-black/5">
-                Login
+              <Link href="/login" className="rounded-md bg-cream px-5 py-2 text-xs font-semibold text-secondary transition hover:bg-cream-soft">
+                Masuk
               </Link>
             )}
           </div>
         </nav>
       </div>
 
-      {showToast && <div className="fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-xl shadow-2xl animate-bounce text-[10px] font-black uppercase tracking-widest">Sampai jumpa kembali!</div>}
+      {showToast && (
+        <div className="fixed right-5 top-5 rounded-md bg-secondary px-5 py-3 text-sm text-white shadow-[var(--shadow-overlay)]">
+          Sampai jumpa kembali.
+        </div>
+      )}
     </header>
   );
 }
