@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { Loader2, ChevronLeft, ChevronRight, CheckCircle2, XCircle } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useActivityLogs } from "@/hooks/useActivityLogs";
 
@@ -9,7 +10,6 @@ export default function AuditLogsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [filterAction, setFilterAction] = useState("all");
 
-  // Panggil hook kita [cite: 2026-03-03]
   const { data, isLoading, isPlaceholderData } = useActivityLogs({
     token,
     page: currentPage,
@@ -25,12 +25,14 @@ export default function AuditLogsPage() {
   };
 
   return (
-    <div className="p-10 bg-cream min-h-screen font-sans">
-      <div className="mb-8 flex justify-between items-end border-b border-main-border pb-8">
-        <h1 className="text-3xl font-black text-secondary uppercase tracking-tighter">System Audit</h1>
+    <div className="min-h-screen bg-cream p-10 font-sans">
+      <div className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-main-border pb-6">
+        <div>
+          <h1 className="font-display text-3xl text-secondary">Audit sistem</h1>
+          <p className="mt-2 text-sm text-main-text/60">Riwayat aktivitas dan keamanan sistem.</p>
+        </div>
 
-        {/* Filter Aksi */}
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {["all", "CREATE", "UPDATE", "DELETE", "LOGIN", "ACCESS_PAGE"].map((act) => (
             <button
               key={act}
@@ -38,7 +40,7 @@ export default function AuditLogsPage() {
                 setFilterAction(act);
                 setCurrentPage(1);
               }}
-              className={`text-[8px] font-black uppercase px-4 py-2 rounded-lg transition-all border ${filterAction === act ? "bg-secondary text-white shadow-lg" : "bg-white text-main-text/30"}`}
+              className={`rounded-md border px-3 py-1.5 text-xs font-medium transition-colors ${filterAction === act ? "border-secondary bg-secondary text-white" : "border-main-border bg-white text-main-text/60 hover:bg-surface"}`}
             >
               {act === "all" ? "Semua" : act}
             </button>
@@ -46,41 +48,44 @@ export default function AuditLogsPage() {
         </div>
       </div>
 
-      <div className={`bg-white rounded-[40px] overflow-hidden shadow-2xl border border-main-border mb-6 transition-opacity ${isPlaceholderData ? "opacity-50" : "opacity-100"}`}>
-        <table className="w-full text-left text-[10px]">
-          <thead className="bg-secondary text-white/40 font-black uppercase tracking-[0.25em]">
+      <div className={`mb-6 overflow-hidden rounded-lg border border-main-border bg-white shadow-[var(--shadow-card)] transition-opacity ${isPlaceholderData ? "opacity-50" : "opacity-100"}`}>
+        <table className="w-full text-left text-sm">
+          <thead className="border-b border-main-border bg-surface text-main-text/60">
             <tr>
-              <th className="p-7">Timestamp</th>
-              <th className="p-7">Identity</th>
-              <th className="p-7">Action</th>
-              <th className="p-7">Status</th>
+              <th className="p-4 font-medium">Timestamp</th>
+              <th className="p-4 font-medium">Identitas</th>
+              <th className="p-4 font-medium">Aksi</th>
+              <th className="p-4 font-medium">Status</th>
             </tr>
           </thead>
-          <tbody className="text-main-text/80 font-bold">
+          <tbody className="divide-y divide-main-border text-main-text/80">
             {isLoading ? (
               <tr>
-                <td colSpan={4} className="p-20 text-center animate-pulse">
-                  Synchronizing Logs...
+                <td colSpan={4} className="p-16 text-center">
+                  <span className="inline-flex items-center gap-2 text-secondary">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Memuat log...
+                  </span>
                 </td>
               </tr>
             ) : (
               logs.map((log: any) => (
-                <tr key={log.id} className="border-b border-main-border/20 hover:bg-cream/20">
-                  <td className="p-7 text-gray-400 font-mono italic">{new Date(log.created_at).toLocaleString("id-ID", { hour12: false })}</td>
-                  <td className="p-7">
+                <tr key={log.id} className="transition-colors hover:bg-surface/40">
+                  <td className="p-4 font-mono text-xs text-main-text/50">{new Date(log.created_at).toLocaleString("id-ID", { hour12: false })}</td>
+                  <td className="p-4">
                     <div className="flex flex-col">
-                      <span className="text-[11px] font-black uppercase text-secondary">{log.user?.full_name || "Guest Visitor"}</span>
-                      <span className="text-[7px] text-main-text/30 font-black uppercase tracking-widest mt-1">
-                        IP: {log.ip_address} • {parseDevice(log.device_info)}
+                      <span className="font-medium text-main-text">{log.user?.full_name || "Guest Visitor"}</span>
+                      <span className="mt-0.5 text-xs text-main-text/40">
+                        IP: {log.ip_address} &middot; {parseDevice(log.device_info)}
                       </span>
                     </div>
                   </td>
-                  <td className="p-7">
-                    <span className="text-[10px] text-main-text uppercase font-black">{log.action}</span>
+                  <td className="p-4">
+                    <span className="rounded-md bg-surface px-2 py-1 text-xs font-medium text-main-text/70">{log.action}</span>
                   </td>
-                  <td className="p-7">
-                    <div className={`flex items-center gap-2 text-[9px] font-black ${log.status === "SUCCESS" ? "text-green-600" : "text-red-600"}`}>
-                      <div className={`w-2 h-2 rounded-full ${log.status === "SUCCESS" ? "bg-green-500 animate-pulse" : "bg-red-500"}`}></div>
+                  <td className="p-4">
+                    <div className={`flex items-center gap-1.5 text-xs font-medium ${log.status === "SUCCESS" ? "text-green-700" : "text-red-600"}`}>
+                      {log.status === "SUCCESS" ? <CheckCircle2 className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
                       {log.status}
                     </div>
                   </td>
@@ -91,19 +96,20 @@ export default function AuditLogsPage() {
         </table>
       </div>
 
-      {/* Pagination Controls */}
       {meta && (
-        <div className="flex justify-between items-center px-6">
-          <p className="text-[10px] font-black text-main-text/30 uppercase tracking-widest">Total {meta.total} Records Found</p>
-          <div className="flex gap-2">
-            <button disabled={currentPage === 1} onClick={() => setCurrentPage((p) => p - 1)} className="px-6 py-3 bg-white border border-main-border rounded-xl text-[10px] font-black uppercase disabled:opacity-30 hover:bg-secondary hover:text-white transition-all">
-              ← Prev
+        <div className="flex items-center justify-between px-1">
+          <p className="text-xs text-main-text/50">Total {meta.total} catatan ditemukan</p>
+          <div className="flex items-center gap-2">
+            <button disabled={currentPage === 1} onClick={() => setCurrentPage((p) => p - 1)} className="inline-flex items-center gap-1 rounded-md border border-main-border bg-white px-3 py-2 text-xs font-medium transition-colors hover:bg-surface disabled:opacity-40">
+              <ChevronLeft className="h-4 w-4" />
+              Sebelumnya
             </button>
-            <div className="px-6 py-3 bg-secondary text-white rounded-xl text-[10px] font-black">
-              Page {meta.page} of {meta.totalPages}
+            <div className="rounded-md bg-secondary px-4 py-2 text-xs font-medium text-white">
+              Halaman {meta.page} dari {meta.totalPages}
             </div>
-            <button disabled={currentPage === meta.totalPages} onClick={() => setCurrentPage((p) => p + 1)} className="px-6 py-3 bg-white border border-main-border rounded-xl text-[10px] font-black uppercase disabled:opacity-30 hover:bg-secondary hover:text-white transition-all">
-              Next →
+            <button disabled={currentPage === meta.totalPages} onClick={() => setCurrentPage((p) => p + 1)} className="inline-flex items-center gap-1 rounded-md border border-main-border bg-white px-3 py-2 text-xs font-medium transition-colors hover:bg-surface disabled:opacity-40">
+              Berikutnya
+              <ChevronRight className="h-4 w-4" />
             </button>
           </div>
         </div>

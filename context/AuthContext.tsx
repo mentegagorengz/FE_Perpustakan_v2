@@ -6,6 +6,7 @@ import { useAuthLogic } from "@/hooks/useAuth";
 interface AuthContextType {
   user: any;
   token: string | null;
+  isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
@@ -44,9 +45,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     () => ({
       user,
       token,
+      isAuthenticated: !!token,
       login,
       logout,
-      // Gabungkan loading API dan loading inisialisasi [cite: 2026-02-27]
+      // Gabungkan loading API dan loading inisialisasi
       isLoading: isLoading || isInitializing,
       error,
     }),

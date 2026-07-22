@@ -1,11 +1,18 @@
 "use client";
 
 import React, { useState } from "react";
-import { useApp } from "@/context/AppContext";
+import { CheckCircle2, RotateCcw } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { useTransactionsList, useReturnMutation } from "@/hooks/useTransactions";
+
+const rupiah = (n: number) => "Rp " + n.toLocaleString("id-ID");
+const fmtDate = (s: string | null) => (s ? new Date(s).toLocaleDateString("id-ID") : "-");
 
 export default function SecurityTrackingPage() {
-  const { borrowings, returnBook, policy } = useApp();
-  const [filterStatus, setFilterStatus] = useState<"all" | "active" | "returned" | "overdue">("all");
+  const { token } = useAuth();
+  const [page, setPage] = useState(1);
+  const { data, isLoading } = useTransactionsList({ token, page });
+  const returnMutation = useReturnMutation();
   const [toast, setToast] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -13,108 +20,101 @@ export default function SecurityTrackingPage() {
     setTimeout(() => setToast(null), 2000);
   };
 
-  // Check overdue
-  const enrichedBorrowings = borrowings.map((b) => {
-    if (b.status === "active" && new Date(b.dueDate) < new Date()) {
-      return { ...b, status: "overdue" as const };
+  const txs = data?.data ?? [];
+  const activeCount = txs.filter((t) => t.status === "BORROWED").length;
+  const overdueCount = txs.filter((t) => t.status === "OVERDUE").length;
+  const returnedCount = txs.filter((t) => t.status === "RETURNED").length;
+
+  const statusLabel = (s: string) =>
+    s === "BORROWED" ? "Aktif" : s === "RETURNED" ? "Dikembalikan" : "Terlambat";
+
+  const handleReturn = async (barcode: string, title: string) => {
+    try {
+      await returnMutation.mutateAsync(barcode);
+      showToast(`"${title}" berhasil dikembalikan!`);
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : "Gagal mengembalikan.");
     }
-    return b;
-  });
-
-  const filtered = filterStatus === "all" ? enrichedBorrowings : enrichedBorrowings.filter((b) => b.status === filterStatus);
-
-  const activeBorrowings = enrichedBorrowings.filter((b) => b.status === "active").length;
-  const overdueBorrowings = enrichedBorrowings.filter((b) => b.status === "overdue").length;
-  const returnedBorrowings = enrichedBorrowings.filter((b) => b.status === "returned").length;
-
-  const handleReturn = (id: number, bookTitle: string) => {
-    returnBook(id);
-    showToast(`"${bookTitle}" berhasil dikembalikan!`);
   };
 
   return (
-    <div className="p-10 bg-cream min-h-screen font-sans">
+    <div className="min-h-screen bg-cream p-10 font-sans">
       {/* Header */}
-      <div className="mb-8 flex justify-between items-end border-b border-main-border pb-6">
-        <div>
-          <h1 className="text-2xl font-black text-main-text tracking-tight uppercase">Tracking Peminjaman</h1>
-          <p className="text-xs text-main-text/50 font-medium">Monitoring real-time seluruh peminjaman buku perpustakaan.</p>
-        </div>
+      <div className="mb-8 border-b border-main-border pb-6">
+        <h1 className="font-display text-3xl text-secondary">Tracking peminjaman</h1>
+        <p className="mt-2 text-sm text-main-text/60">Monitoring seluruh peminjaman buku perpustakaan.</p>
       </div>
 
       {/* Toast */}
-      {toast && <div className="fixed top-5 right-5 z-50 bg-green-500 text-white px-6 py-3 rounded-xl shadow-2xl text-[10px] font-black uppercase tracking-widest animate-bounce">✅ {toast}</div>}
+      {toast && (
+        <div className="fixed right-5 top-5 z-50 inline-flex items-center gap-2 rounded-md bg-green-600 px-4 py-3 text-sm font-medium text-white shadow-[var(--shadow-overlay)]">
+          <CheckCircle2 className="h-4 w-4" />
+          {toast}
+        </div>
+      )}
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-4 mb-8">
-        <div className="bg-cream-soft border border-main-border p-5 rounded-xl text-center">
-          <p className="text-[10px] font-bold text-main-text/40 uppercase">Total</p>
-          <p className="text-2xl font-black text-main-text">{borrowings.length}</p>
+      <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+        <div className="rounded-lg border border-main-border bg-white p-5 shadow-[var(--shadow-card)]">
+          <p className="text-sm text-main-text/50">Total</p>
+          <p className="mt-1 font-display text-3xl text-main-text">{txs.length}</p>
         </div>
-        <div className="bg-blue-50 border border-blue-100 p-5 rounded-xl text-center">
-          <p className="text-[10px] font-bold text-blue-400 uppercase">Aktif</p>
-          <p className="text-2xl font-black text-blue-600">{activeBorrowings}</p>
+        <div className="rounded-lg border border-main-border bg-white p-5 shadow-[var(--shadow-card)]">
+          <p className="text-sm text-main-text/50">Aktif</p>
+          <p className="mt-1 font-display text-3xl text-secondary">{activeCount}</p>
         </div>
-        <div className="bg-red-50 border border-red-100 p-5 rounded-xl text-center">
-          <p className="text-[10px] font-bold text-red-400 uppercase">Terlambat</p>
-          <p className="text-2xl font-black text-red-600">{overdueBorrowings}</p>
+        <div className="rounded-lg border border-main-border bg-white p-5 shadow-[var(--shadow-card)]">
+          <p className="text-sm text-main-text/50">Terlambat</p>
+          <p className="mt-1 font-display text-3xl text-red-600">{overdueCount}</p>
         </div>
-        <div className="bg-green-50 border border-green-100 p-5 rounded-xl text-center">
-          <p className="text-[10px] font-bold text-green-400 uppercase">Dikembalikan</p>
-          <p className="text-2xl font-black text-green-600">{returnedBorrowings}</p>
+        <div className="rounded-lg border border-main-border bg-white p-5 shadow-[var(--shadow-card)]">
+          <p className="text-sm text-main-text/50">Dikembalikan</p>
+          <p className="mt-1 font-display text-3xl text-green-700">{returnedCount}</p>
         </div>
-      </div>
-
-      {/* Filter */}
-      <div className="flex gap-2 mb-6">
-        {(["all", "active", "overdue", "returned"] as const).map((s) => (
-          <button key={s} onClick={() => setFilterStatus(s)} className={`text-[9px] font-black uppercase px-4 py-2 rounded-lg transition-all ${filterStatus === s ? "bg-secondary text-white" : "bg-cream-soft border border-main-border text-main-text/50 hover:border-secondary"}`}>
-            {s === "all" ? "Semua" : s === "active" ? "Aktif" : s === "overdue" ? "Terlambat" : "Dikembalikan"}
-          </button>
-        ))}
       </div>
 
       {/* Tabel Peminjaman */}
-      <div className="bg-cream-soft border border-main-border shadow-sm rounded-xl overflow-hidden">
-        <table className="w-full text-left">
-          <thead className="bg-surface text-[10px] font-black text-main-text/40 uppercase border-b border-main-border tracking-widest">
+      <div className="overflow-hidden rounded-lg border border-main-border bg-white shadow-[var(--shadow-card)]">
+        <table className="w-full text-left text-sm">
+          <thead className="border-b border-main-border bg-surface text-main-text/60">
             <tr>
-              <th className="p-5">Peminjam</th>
-              <th className="p-5">Buku</th>
-              <th className="p-5">Tgl Pinjam</th>
-              <th className="p-5">Jatuh Tempo</th>
-              <th className="p-5">Denda</th>
-              <th className="p-5 text-center">Status</th>
-              <th className="p-5 text-right">Aksi</th>
+              <th className="p-4 font-medium">Peminjam</th>
+              <th className="p-4 font-medium">Buku</th>
+              <th className="p-4 font-medium">Tgl pinjam</th>
+              <th className="p-4 font-medium">Jatuh tempo</th>
+              <th className="p-4 font-medium">Denda</th>
+              <th className="p-4 text-center font-medium">Status</th>
+              <th className="p-4 text-right font-medium">Aksi</th>
             </tr>
           </thead>
-          <tbody className="text-[11px] text-main-text/70">
-            {filtered.map((b) => (
-              <tr key={b.id} className="border-b border-main-border/50 hover:bg-surface/30 transition-all">
-                <td className="p-5">
-                  <div className="font-black text-main-text uppercase">{b.userName}</div>
-                  <div className="text-[9px] text-main-text/40">{b.userEmail}</div>
+          <tbody className="divide-y divide-main-border text-main-text/80">
+            {txs.map((t) => (
+              <tr key={t.id} className="transition-colors hover:bg-surface/40">
+                <td className="p-4">
+                  <div className="font-medium text-main-text">{t.user?.full_name ?? "-"}</div>
+                  <div className="text-xs text-main-text/40">{t.user?.email ?? ""}</div>
                 </td>
-                <td className="p-5 font-bold italic">{b.bookTitle}</td>
-                <td className="p-5 text-main-text/40">{b.borrowDate}</td>
-                <td className="p-5 text-main-text/40">{b.dueDate}</td>
-                <td className="p-5">{b.fine > 0 ? <span className="text-red-500 font-black">Rp {b.fine.toLocaleString()}</span> : <span className="text-green-500 font-bold">-</span>}</td>
-                <td className="p-5 text-center">
-                  <span className={`px-2 py-1 rounded-full text-[8px] font-black uppercase ${b.status === "active" ? "bg-blue-100 text-blue-600" : b.status === "returned" ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"}`}>{b.status === "active" ? "Aktif" : b.status === "returned" ? "Dikembalikan" : "Terlambat"}</span>
+                <td className="p-4">{t.bookItem?.book?.title ?? "-"}</td>
+                <td className="p-4 text-main-text/50">{fmtDate(t.borrowed_at)}</td>
+                <td className="p-4 text-main-text/50">{fmtDate(t.due_date)}</td>
+                <td className="p-4">{t.fine_amount > 0 ? <span className="font-medium text-red-600">{rupiah(t.fine_amount)}</span> : <span className="text-main-text/40">-</span>}</td>
+                <td className="p-4 text-center">
+                  <span className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${t.status === "BORROWED" ? "bg-secondary/10 text-secondary" : t.status === "RETURNED" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600"}`}>{statusLabel(t.status)}</span>
                 </td>
-                <td className="p-5 text-right">
-                  {b.status !== "returned" && (
-                    <button onClick={() => handleReturn(b.id, b.bookTitle)} className="text-secondary font-black uppercase text-[9px] hover:underline">
+                <td className="p-4 text-right">
+                  {t.status !== "RETURNED" && t.bookItem && (
+                    <button onClick={() => handleReturn(t.bookItem!.barcode, t.bookItem?.book?.title ?? "")} className="inline-flex items-center gap-1.5 rounded-md border border-main-border px-3 py-1.5 text-xs font-medium text-secondary transition-colors hover:bg-surface">
+                      <RotateCcw className="h-3.5 w-3.5" />
                       Kembalikan
                     </button>
                   )}
-                  {b.status === "returned" && b.returnDate && <span className="text-[9px] text-main-text/30">{b.returnDate}</span>}
+                  {t.status === "RETURNED" && t.returned_at && <span className="text-xs text-main-text/40">{fmtDate(t.returned_at)}</span>}
                 </td>
               </tr>
             ))}
-            {filtered.length === 0 && (
+            {!isLoading && txs.length === 0 && (
               <tr>
-                <td colSpan={7} className="p-10 text-center text-main-text/30 italic">
+                <td colSpan={7} className="p-10 text-center text-main-text/40">
                   Tidak ada data peminjaman.
                 </td>
               </tr>
@@ -123,21 +123,20 @@ export default function SecurityTrackingPage() {
         </table>
       </div>
 
-      {/* Info Card */}
-      <div className="mt-8 bg-secondary text-white p-6 rounded-xl">
-        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] mb-4 text-white/50">Kebijakan Aktif</h3>
-        <div className="grid grid-cols-3 gap-4 text-[11px]">
-          <div>
-            <span className="opacity-50">Denda / Hari:</span> <span className="font-black ml-1">Rp {policy.dailyFine.toLocaleString()}</span>
-          </div>
-          <div>
-            <span className="opacity-50">Maks Pinjam:</span> <span className="font-black ml-1">{policy.maxBorrowDays} hari</span>
-          </div>
-          <div>
-            <span className="opacity-50">Maks Buku:</span> <span className="font-black ml-1">{policy.maxBooksPerUser} / user</span>
-          </div>
+      {/* Paginasi */}
+      {data && data.meta.totalPages > 1 && (
+        <div className="mt-6 flex items-center justify-center gap-3">
+          <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1} className="rounded-md border border-main-border bg-white px-3 py-1.5 text-sm text-main-text/70 disabled:opacity-40">
+            Sebelumnya
+          </button>
+          <span className="text-sm text-main-text/60">
+            {page} / {data.meta.totalPages}
+          </span>
+          <button onClick={() => setPage((p) => Math.min(data.meta.totalPages, p + 1))} disabled={page >= data.meta.totalPages} className="rounded-md border border-main-border bg-white px-3 py-1.5 text-sm text-main-text/70 disabled:opacity-40">
+            Berikutnya
+          </button>
         </div>
-      </div>
+      )}
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { API_BASE_URL, handleApiResponse } from "@/constants/api";
 
 export function useAuthLogic(setUser: any, setToken: any) {
   const router = useRouter();
@@ -13,17 +14,13 @@ export function useAuthLogic(setUser: any, setToken: any) {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:3001/api/v1/auth/login", {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || "Email atau password salah.");
-      }
+      const result = await handleApiResponse(response);
 
       const apiResponse = result.data || result;
       const userData = apiResponse.user;
@@ -62,9 +59,10 @@ export function useAuthLogic(setUser: any, setToken: any) {
     // 2. Hapus Session ID dari Cookies secara manual
     document.cookie = "session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 
-    // 3. Redirect (Gunakan "/login" huruf kecil jika folder sudah di-rename)
+    // 3. Redirect
     router.push("/login");
   };
 
   return { login, logout, isLoading, error };
 }
+

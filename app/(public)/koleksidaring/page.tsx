@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { collectionSections } from "@/constants/CollectionSections";
 import { useCollections } from "@/hooks/useCollections";
+import { ExternalLink } from "lucide-react";
 
 interface CollectionCardProps {
   imgSrc: string;
@@ -19,13 +20,16 @@ const KoleksiDaringPage: React.FC = () => {
     <div className="bg-cream min-h-screen py-10">
       <main>
         <section id="koleksi-daring" className="py-12">
-          <div className="container mx-auto text-center px-4 sm:px-6 lg:px-8">
-            <h3 className="text-4xl font-extrabold text-main-text mb-10">Koleksi Daring</h3>
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-14">
+              <h1 className="text-4xl md:text-5xl text-main-text mb-3">Koleksi Daring</h1>
+              <p className="text-main-text/60 max-w-md mx-auto text-sm sm:text-base">Jelajahi database dan sumber literatur digital dari berbagai penyedia.</p>
+            </div>
 
             {collectionSections.map((section, index) => (
               <div key={index} className="mb-16">
-                <h4 className="text-2xl font-semibold text-main-text border-b-4 border-secondary inline-block pb-2 mb-6">{section.title}</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                <h2 className="text-2xl text-main-text pb-2 mb-6 border-b border-main-border">{section.title}</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                   {section.collections.map((collection, idx) => (
                     <CollectionCard key={idx} {...collection} onAction={() => handleExternalLink(collection.link)} />
                   ))}
@@ -40,19 +44,25 @@ const KoleksiDaringPage: React.FC = () => {
 };
 
 const CollectionCard: React.FC<CollectionCardProps> = ({ imgSrc, imgAlt, title, onAction }) => (
-  <button onClick={onAction} className="bg-cream-soft shadow-lg rounded-lg p-6 hover:shadow-xl transform hover:-translate-y-2 transition-all duration-300 block w-full text-center border border-main-border">
-    <div className="relative w-full h-24 flex justify-center items-center">
+  <button
+    onClick={onAction}
+    className="group flex w-full flex-col items-center text-center rounded-lg border border-main-border bg-cream-soft p-6 shadow-[var(--shadow-card)] transition-shadow duration-300 hover:shadow-[var(--shadow-raised)]"
+  >
+    <div className="relative flex h-24 w-full items-center justify-center overflow-hidden">
       <Image
         src={imgSrc}
         alt={imgAlt}
         width={120}
         height={80}
-        className="object-contain p-2"
-        // Menggunakan placeholder jika gambar belum ada
+        className="object-contain p-2 transition-transform duration-500 group-hover:scale-[1.03]"
         onError={(e) => (e.currentTarget.src = "/images/placeholder.png")}
       />
     </div>
-    <h4 className="text-lg font-bold text-main-text mt-4">{title}</h4>
+    <h3 className="font-display text-lg text-main-text mt-4 transition-colors group-hover:text-secondary">{title}</h3>
+    <span className="mt-2 flex items-center gap-1.5 text-sm text-secondary">
+      Kunjungi
+      <ExternalLink size={14} className="transition-transform group-hover:translate-x-0.5" />
+    </span>
   </button>
 );
 

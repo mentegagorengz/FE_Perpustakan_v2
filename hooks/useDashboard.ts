@@ -1,17 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
+import { API_BASE_URL, handleApiResponse } from "@/constants/api";
 
-// Pastikan ejaan: useDashboardSummary (pakai 'h')
 export function useDashboardSummary(token: string | null) {
   return useQuery({
     queryKey: ["dashboard-summary"],
     queryFn: async () => {
-      const response = await fetch("http://localhost:3001/api/v1/dashboard/summary", {
+      const response = await fetch(`${API_BASE_URL}/dashboard/summary`, {
         headers: { 
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!response.ok) throw new Error("Gagal mengambil data");
-      const result = await response.json();
+      const result = await handleApiResponse(response);
       return result.data;
     },
     enabled: !!token,
