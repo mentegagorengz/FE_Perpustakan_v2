@@ -50,7 +50,7 @@ export default function RoleManagementPage() {
         <p className="mt-2 text-sm text-main-text/60">Kelola role staf dan akses pengguna perpustakaan.</p>
       </div>
 
-      {/* Toast */}
+      
       {toast && (
         <div className="fixed right-5 top-5 z-50 inline-flex items-center gap-2 rounded-md bg-green-600 px-4 py-3 text-sm font-medium text-white shadow-[var(--shadow-overlay)]">
           <CheckCircle2 className="h-4 w-4" />
@@ -58,7 +58,7 @@ export default function RoleManagementPage() {
         </div>
       )}
 
-      {/* Stats */}
+      
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="rounded-lg border border-main-border bg-white p-5 shadow-[var(--shadow-card)]">
           <p className="text-sm text-main-text/50">Total pengguna</p>
@@ -70,7 +70,7 @@ export default function RoleManagementPage() {
         </div>
       </div>
 
-      {/* Search & Filter */}
+      
       <div className="mb-6 flex flex-wrap gap-4">
         <div className="relative w-full max-w-sm">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-main-text/40" />
@@ -84,7 +84,7 @@ export default function RoleManagementPage() {
         </select>
       </div>
 
-      {/* User Table */}
+      
       <div className="overflow-hidden rounded-lg border border-main-border bg-white shadow-[var(--shadow-card)]">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-main-border bg-surface text-main-text/60">
@@ -137,7 +137,7 @@ export default function RoleManagementPage() {
         </table>
       </div>
 
-      {/* Paginasi */}
+      
       {data && data.meta.totalPages > 1 && (
         <div className="mt-6 flex items-center justify-center gap-3">
           <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1} className="rounded-md border border-main-border bg-white px-3 py-1.5 text-sm text-main-text/70 disabled:opacity-40">

@@ -18,7 +18,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any>(null);
   const [token, setToken] = useState<string | null>(null);
-  // Penanda bahwa aplikasi sedang mengambil data dari localStorage [cite: 2026-02-27]
   const [isInitializing, setIsInitializing] = useState(true);
 
   useEffect(() => {
@@ -35,7 +34,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem("user");
       }
     }
-    // Selesai mengecek sesi, baru izinkan aplikasi merender [cite: 2026-02-27]
     setIsInitializing(false);
   }, []);
 
@@ -48,7 +46,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isAuthenticated: !!token,
       login,
       logout,
-      // Gabungkan loading API dan loading inisialisasi
       isLoading: isLoading || isInitializing,
       error,
     }),

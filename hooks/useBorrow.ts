@@ -74,7 +74,6 @@ export function useBorrow() {
     return filteredBooks.slice(start, start + itemsPerPage);
   }, [filteredBooks, currentPage]);
 
-  // Reset ke halaman 1 saat filter berubah (hindari setState-in-effect).
   const handleSearch = (v: string) => {
     setSearchTerm(v);
     setCurrentPage(1);

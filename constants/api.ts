@@ -1,10 +1,6 @@
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api/v1";
 
-/**
- * Helper function to safely parse JSON response from fetch.
- * Prevents "Unexpected token '<'" SyntaxError when receiving HTML response.
- */
 export async function handleApiResponse<T = any>(response: Response): Promise<T> {
   const contentType = response.headers.get("content-type");
   const isJson = contentType && contentType.includes("application/json");

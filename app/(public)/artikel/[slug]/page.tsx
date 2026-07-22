@@ -50,7 +50,7 @@ export default function ArtikelDetail() {
           </span>
         </div>
 
-        {/* whitespace-pre-line menjaga format paragraf dari textarea */}
+        
         <div className="max-w-2xl whitespace-pre-line text-lg leading-relaxed text-main-text/90">{article.content}</div>
       </article>
     </div>

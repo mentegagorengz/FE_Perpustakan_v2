@@ -39,13 +39,13 @@ export default function SecurityTrackingPage() {
 
   return (
     <div className="min-h-screen bg-cream p-10 font-sans">
-      {/* Header */}
+      
       <div className="mb-8 border-b border-main-border pb-6">
         <h1 className="font-display text-3xl text-secondary">Tracking peminjaman</h1>
         <p className="mt-2 text-sm text-main-text/60">Monitoring seluruh peminjaman buku perpustakaan.</p>
       </div>
 
-      {/* Toast */}
+      
       {toast && (
         <div className="fixed right-5 top-5 z-50 inline-flex items-center gap-2 rounded-md bg-green-600 px-4 py-3 text-sm font-medium text-white shadow-[var(--shadow-overlay)]">
           <CheckCircle2 className="h-4 w-4" />
@@ -53,7 +53,7 @@ export default function SecurityTrackingPage() {
         </div>
       )}
 
-      {/* Stats */}
+      
       <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
         <div className="rounded-lg border border-main-border bg-white p-5 shadow-[var(--shadow-card)]">
           <p className="text-sm text-main-text/50">Total</p>
@@ -73,7 +73,7 @@ export default function SecurityTrackingPage() {
         </div>
       </div>
 
-      {/* Tabel Peminjaman */}
+      
       <div className="overflow-hidden rounded-lg border border-main-border bg-white shadow-[var(--shadow-card)]">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-main-border bg-surface text-main-text/60">
@@ -123,7 +123,7 @@ export default function SecurityTrackingPage() {
         </table>
       </div>
 
-      {/* Paginasi */}
+      
       {data && data.meta.totalPages > 1 && (
         <div className="mt-6 flex items-center justify-center gap-3">
           <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1} className="rounded-md border border-main-border bg-white px-3 py-1.5 text-sm text-main-text/70 disabled:opacity-40">

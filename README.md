@@ -1,52 +1,57 @@
 # Perpustakaan v2
 
-Aplikasi manajemen perpustakaan berbasis web yang dibangun menggunakan **Next.js**, **Tailwind CSS**, dan **Motion (Framer Motion)**.
-
-> ⚠️ **Status: Work In Progress** — Proyek ini masih dalam tahap pengembangan aktif.
+Aplikasi manajemen perpustakaan berbasis web — frontend untuk sistem informasi perpustakaan Universitas Sam Ratulangi.
 
 ## Tech Stack
 
 - [Next.js](https://nextjs.org/) (App Router)
 - [TypeScript](https://www.typescriptlang.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Motion (Framer Motion)](https://motion.dev/)
+- [Tailwind CSS v4](https://tailwindcss.com/)
+- [Motion](https://motion.dev/) (Framer Motion)
+- [TanStack React Query](https://tanstack.com/query/latest)
 
-## Fitur (Rencana)
+## Fitur
 
-- 🏠 Halaman publik (beranda, artikel, profil perpustakaan)
-- 🔐 Login & autentikasi
-- 📚 Manajemen koleksi buku
-- 📰 Manajemen berita / artikel
-- 📋 Sistem peminjaman buku
-- 🛠️ Dashboard admin
+- Halaman publik: beranda, warta artikel, profil perpustakaan
+- Login & autentikasi JWT
+- Koleksi buku & peminjaman
+- Dashboard admin dengan statistik real-time
+- Manajemen artikel (CRUD + publish/draft)
+- Tracking peminjaman & pengembalian
+- Manajemen role pengguna (SUPER_ADMIN, STAFF, USER)
+- Pengaturan kebijakan & denda
+- Audit log aktivitas sistem
+- Berita nasional (integrasi GNews API)
 
 ## Struktur Folder
 
 ```
 app/
-├── (admin)/          # Halaman admin (protected)
-├── (public)/         # Halaman publik (beranda, artikel, profil, dsb.)
-├── Login/            # Halaman login
-components/           # Komponen reusable (Header, Footer, Peminjaman, dsb.)
-config/               # Konfigurasi aplikasi
-constants/            # Data statis (articles, books, collections, home)
-context/              # React context (AuthContext)
-hooks/                # Custom hooks (useAuth, useBorrow, useCollections, dll.)
-public/images/        # Asset gambar
+├── (admin)/           # Halaman admin (protected)
+├── (public)/          # Halaman publik (beranda, artikel, koleksi, profil)
+├── login/             # Halaman login
+components/            # Komponen reusable
+constants/             # Data statis & helper API
+context/               # React context (AuthContext)
+hooks/                 # Custom hooks (useAuth, useBorrow, useTransactions, dll.)
+providers/             # QueryProvider
+types/                 # TypeScript interfaces
+public/images/         # Asset gambar
 ```
 
 ## Getting Started
 
 ```bash
-# Install dependencies
 npm install
-
-# Jalankan development server
 npm run dev
 ```
 
-Buka [http://localhost:3000](http://localhost:3000) di browser.
+Buka [http://localhost:3000](http://localhost:3000).
 
-## License
+## Environment
 
-Belum ditentukan.
+Buat `.env.local`:
+
+```
+NEXT_PUBLIC_API_URL=http://localhost:3000/api/v1
+```

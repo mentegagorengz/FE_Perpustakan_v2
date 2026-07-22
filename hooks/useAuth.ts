@@ -50,16 +50,13 @@ export function useAuthLogic(setUser: any, setToken: any) {
   };
 
   const logout = () => {
-    // 1. Bersihkan State & LocalStorage
     setUser(null);
     setToken(null);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
 
-    // 2. Hapus Session ID dari Cookies secara manual
     document.cookie = "session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 
-    // 3. Redirect
     router.push("/login");
   };
 

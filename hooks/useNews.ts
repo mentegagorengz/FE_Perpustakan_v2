@@ -5,13 +5,13 @@ import { useState, useEffect } from "react";
 export function useNews() {
   const [articles, setArticles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [category, setCategory] = useState("general"); // Default kategori umum
+  const [category, setCategory] = useState("general");
 
   useEffect(() => {
     const fetchNews = async () => {
       setLoading(true);
       try {
-        const API_KEY = "ca8d26ecd8274f4671495bea04c39297";
+        const API_KEY = process.env.NEXT_PUBLIC_GNEWS_API_KEY || "";
         const response = await fetch(`https://gnews.io/api/v4/top-headlines?category=${category}&lang=id&country=id&apikey=${API_KEY}`);
         const data = await response.json();
         setArticles(data.articles || []);
@@ -23,7 +23,7 @@ export function useNews() {
     };
 
     fetchNews();
-  }, [category]); // Fetch ulang setiap kategori berubah
+  }, [category]);
 
   return { articles, loading, setCategory, category };
 }

@@ -14,7 +14,6 @@ export default function Home() {
   const { currentIndex, handleSearchBook } = useHome(images.length);
   const { articles: newsArticles, loading: newsLoading, setCategory, category } = useNews();
 
-  // Ambil data artikel riil (Internal News) dari database.
   const { articles: staffArticles, isLoading: staffLoading } = useArticles(null);
 
   const categories = [
@@ -27,7 +26,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-cream">
       <main className="flex-1">
-        {/* --- HERO --- */}
+        
         <section className="relative w-full overflow-hidden">
           {images.map((src, index) => (
             <div
@@ -65,7 +64,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* --- NEWS (INTERNAL) --- */}
+        
         <section className="bg-white py-20">
           <div className="container mx-auto px-6">
             <div className="mb-10 flex items-end justify-between border-b border-main-border pb-5">
@@ -84,7 +83,7 @@ export default function Home() {
               </div>
             ) : staffArticles.length > 0 ? (
               <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                {/* Highlight utama */}
+                
                 <Link href={`/artikel/${staffArticles[0].id}`} className="group relative block h-[420px] overflow-hidden rounded-lg">
                   <Image
                     src={staffArticles[0].image_url || "/images/placeholder.png"}
@@ -99,7 +98,7 @@ export default function Home() {
                   </div>
                 </Link>
 
-                {/* Daftar berita kecil */}
+                
                 <div className="flex flex-col divide-y divide-main-border">
                   {staffArticles.slice(1, 4).map((article: any) => (
                     <Link key={article.id} href={`/artikel/${article.id}`} className="group flex gap-5 py-5 first:pt-0 last:pb-0">
@@ -132,7 +131,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* --- HEADLINE INDONESIA (EKSTERNAL) --- */}
+        
         <section id="berita" className="border-t border-main-border bg-cream py-20">
           <div className="container mx-auto px-6">
             <div className="mb-8">
@@ -196,7 +195,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* --- SAMBUTAN KEPALA UPT --- */}
+        
         <section className="bg-surface py-20">
           <div className="container mx-auto px-6">
             <div className="flex flex-col items-center gap-12 lg:flex-row">
@@ -221,7 +220,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* --- CTA --- */}
+        
         <section className="bg-cream py-20">
           <div className="container mx-auto px-6 text-center">
             <h2 className="font-display text-3xl text-main-text">Butuh referensi lain?</h2>

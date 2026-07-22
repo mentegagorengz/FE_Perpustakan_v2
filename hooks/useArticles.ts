@@ -18,7 +18,6 @@ export interface Article {
 export function useArticles(token: string | null) {
   const queryClient = useQueryClient();
 
-  // 1. Fetching Semua Artikel (Publik/Admin)
   const articlesQuery = useQuery({
     queryKey: ["articles"],
     queryFn: async () => {
@@ -31,7 +30,6 @@ export function useArticles(token: string | null) {
     },
   });
 
-  // 2. Mutation: Tambah Artikel Baru
   const createMutation = useMutation({
     mutationFn: async (formData: FormData) => {
       const response = await fetch(`${API_BASE_URL}/articles`, {
@@ -44,7 +42,6 @@ export function useArticles(token: string | null) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["articles"] }),
   });
 
-  // 3. Mutation: Update Artikel
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: FormData }) => {
       const response = await fetch(`${API_BASE_URL}/articles/${id}`, {
@@ -57,7 +54,6 @@ export function useArticles(token: string | null) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["articles"] }),
   });
 
-  // 4. Mutation: Hapus Artikel
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
       const response = await fetch(`${API_BASE_URL}/articles/${id}`, {
@@ -79,7 +75,6 @@ export function useArticles(token: string | null) {
   };
 }
 
-// Hook tambahan untuk detail artikel
 export function useArticleDetail(id: string | null) {
   return useQuery({
     queryKey: ["article", id],

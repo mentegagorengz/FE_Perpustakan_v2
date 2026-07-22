@@ -18,14 +18,12 @@ export default function SejarahPage() {
   return (
     <div className="min-h-screen bg-cream py-20 font-sans">
       <div className="container mx-auto max-w-4xl px-4">
-        {/* Header Section */}
         <div className="mb-20 text-center">
           <span className="mb-3 block text-xs tracking-wide text-secondary">Jejak langkah</span>
           <h1 className="font-display text-4xl text-main-text md:text-5xl">Sejarah UPT</h1>
           <div className="mx-auto mt-4 h-1 w-20 rounded-full bg-secondary"></div>
         </div>
 
-        {/* Timeline Section */}
         <div className="relative ml-4 border-l-2 border-main-border md:left-1/2 md:ml-0">
           {historyEvents.map((event, index) => (
             <motion.div
@@ -36,7 +34,6 @@ export default function SejarahPage() {
               transition={{ duration: 0.6, delay: index * 0.1 }}
               className={`relative mb-16 md:w-1/2 ${index % 2 === 0 ? "md:left-[-50%] md:pr-12 md:text-right" : "md:left-[50%] md:pl-12"}`}
             >
-              {/* Dot Indicator */}
               <div
                 className="absolute left-[-9px] top-0 z-10 h-4 w-4 rounded-full border-4 border-cream bg-secondary shadow-[var(--shadow-card)] md:left-auto md:right-[-11px]"
                 style={index % 2 !== 0 ? { left: "-11px" } : {}}
@@ -50,7 +47,6 @@ export default function SejarahPage() {
           ))}
         </div>
 
-        {/* List Kepala Perpustakaan (Detail Tambahan) */}
         <section className="mt-32">
           <p className="mb-10 text-center text-xs tracking-wide text-secondary">Mantan kepala perpustakaan</p>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

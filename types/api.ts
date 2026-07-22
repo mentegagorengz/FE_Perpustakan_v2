@@ -1,4 +1,3 @@
-// Bentuk response NYATA dari BE (snake_case). Berbeda dari types/app.ts (mock, camelCase).
 export interface Paginated<T> {
   data: T[];
   meta: { total: number; page: number; limit: number; totalPages: number };
@@ -28,7 +27,7 @@ export interface ApiBook {
   publisher: ApiRef | null;
   language: ApiRef | null;
   authors: ApiRef[];
-  items?: ApiBookItem[]; // hanya ada di GET /books/:id, TIDAK di list
+  items?: ApiBookItem[];
   created_at: string;
   updated_at: string;
 }

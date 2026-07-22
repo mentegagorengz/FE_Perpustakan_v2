@@ -37,7 +37,7 @@ export default function AdminDashboard() {
         </p>
       </div>
 
-      {/* Grid Statistik */}
+      
       <div className="mb-10 grid grid-cols-1 gap-6 md:grid-cols-4">
         {stats.map((item) => {
           const Icon = item.icon;
@@ -56,7 +56,7 @@ export default function AdminDashboard() {
         })}
       </div>
 
-      {/* Box Insight */}
+      
       <div className="rounded-lg border border-main-border bg-white p-8 shadow-[var(--shadow-card)]">
         <div className="flex items-start gap-4">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-cream-soft text-secondary">

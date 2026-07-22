@@ -3,7 +3,6 @@ import { AuthProvider } from "@/context/AuthContext";
 import QueryProvider from "@/providers/QueryProvider";
 import "./globals.css";
 
-// Serif editorial untuk heading (jurnalistik/book-like, khas perpustakaan).
 const newsreader = Newsreader({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -12,7 +11,6 @@ const newsreader = Newsreader({
   display: "swap",
 });
 
-// Sans humanis untuk body — bukan Inter.
 const instrument = Instrument_Sans({
   subsets: ["latin"],
   variable: "--font-instrument",

@@ -19,7 +19,6 @@ export function useBorrowMutation() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        // user_id di-override server-side dari JWT; DTO tetap wajib angka valid.
         body: JSON.stringify({ barcode, user_id: user?.id ?? 0 }),
       });
       const result = await handleApiResponse(response);

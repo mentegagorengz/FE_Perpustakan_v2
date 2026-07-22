@@ -3,18 +3,15 @@
 import { useState } from "react";
 import { useArticles, Article } from "@/hooks/useArticles";
 
-// WAJIB pakai 'export' agar bisa dipanggil di page.tsx
 export function useArticlesAdmin(token: string | null) {
   const { articles, isLoading, createArticle, updateArticle, deleteArticle, isProcessing } = useArticles(token);
 
-  // States untuk UI
   const [searchTerm, setSearchTerm] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<number | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  // States untuk Form
   const [formTitle, setFormTitle] = useState("");
   const [formContent, setFormContent] = useState("");
   const [formIsPublished, setFormIsPublished] = useState(false);

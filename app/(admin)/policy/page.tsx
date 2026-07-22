@@ -15,7 +15,6 @@ export default function PolicyPage() {
   const [maxBooks, setMaxBooks] = useState("");
   const [saved, setSaved] = useState(false);
 
-  // Sinkronkan form dgn data server saat pertama tiba.
   useEffect(() => {
     if (policy) {
       setDailyFine(String(policy.fine_per_day));
@@ -41,7 +40,7 @@ export default function PolicyPage() {
         <p className="mt-2 text-sm text-main-text/60">Atur parameter denda harian dan kebijakan peminjaman.</p>
       </div>
 
-      {/* Toast */}
+      
       {saved && (
         <div className="fixed right-5 top-5 z-50 inline-flex items-center gap-2 rounded-md bg-green-600 px-4 py-3 text-sm font-medium text-white shadow-[var(--shadow-overlay)]">
           <CheckCircle2 className="h-4 w-4" />
@@ -50,7 +49,7 @@ export default function PolicyPage() {
       )}
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        {/* Panel Kebijakan */}
+        
         <div className="rounded-lg border border-main-border bg-secondary p-8 text-white shadow-[var(--shadow-card)]">
           <h3 className="mb-8 font-display text-lg text-white">Pengaturan finansial</h3>
           <div className="space-y-6">
@@ -72,7 +71,7 @@ export default function PolicyPage() {
           </div>
         </div>
 
-        {/* Info Panel */}
+        
         <div className="space-y-6">
           <div className="rounded-lg border border-main-border bg-white p-8 shadow-[var(--shadow-card)]">
             <h3 className="mb-6 font-display text-lg text-main-text">Kebijakan aktif</h3>
