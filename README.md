@@ -1,6 +1,6 @@
 # Perpustakaan v2
 
-Aplikasi manajemen perpustakaan berbasis web — frontend untuk sistem informasi perpustakaan Universitas Sam Ratulangi.
+Aplikasi manajemen perpustakaan berbasis web — frontend dummy untuk sistem informasi Perpustakaan Universitas Cakrawala Nusantara.
 
 ## Tech Stack
 

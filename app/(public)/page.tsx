@@ -1,239 +1,183 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, ArrowUpRight, Loader2 } from "lucide-react";
-import { useHome } from "@/hooks/useHome";
-import { useNews } from "@/hooks/useNews";
-import { useArticles } from "@/hooks/useArticles";
+import { BookOpen, Users, FileText, FlaskConical, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import { images } from "@/constants/Home";
 
 export default function Home() {
-  const { currentIndex, handleSearchBook } = useHome(images.length);
-  const { articles: newsArticles, loading: newsLoading, setCategory, category } = useNews();
+  const [currentSlide, setCurrentSlide] = React.useState(0);
 
-  const { articles: staffArticles, isLoading: staffLoading } = useArticles(null);
-
-  const categories = [
-    { id: "general", label: "Umum" },
-    { id: "technology", label: "Teknologi" },
-    { id: "business", label: "Bisnis" },
-    { id: "health", label: "Kesehatan" },
+  const slides = [
+    {
+      image: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2000&auto=format&fit=crop",
+      title: "Portal Garuda",
+    },
+    {
+      image: "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=2000&auto=format&fit=crop",
+      title: "Koleksi Terbaru",
+    },
+    {
+      image: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=2000&auto=format&fit=crop",
+      title: "Akses E-Journal",
+    }
   ];
 
+  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
+  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [slides.length]);
+
   return (
-    <div className="min-h-screen bg-cream">
-      <main className="flex-1">
-        
-        <section className="relative w-full overflow-hidden">
-          {images.map((src, index) => (
-            <div
-              key={index}
-              className={`absolute inset-0 transition-opacity duration-1000 ${index === currentIndex ? "opacity-100" : "opacity-0"}`}
-              style={{ backgroundImage: `url(${src})`, backgroundSize: "cover", backgroundPosition: "center" }}
+    <div className="min-h-screen bg-white font-sans text-gray-800">
+      {/* Hero Section */}
+      <section className="relative h-[500px] w-full overflow-hidden">
+        {slides.map((slide, index) => (
+          <div 
+            key={index}
+            className="absolute inset-0 h-full w-full transition-transform duration-500 ease-in-out"
+            style={{ transform: `translateX(${(index - currentSlide) * 100}%)` }}
+          >
+            {/* Background */}
+            <div 
+              className="absolute inset-0 bg-cover bg-center bg-no-repeat" 
+              style={{ backgroundImage: `url('${slide.image}')` }}
+            />
+            {/* Overlay */}
+            <div className="absolute inset-0 bg-black/60" />
+            
+            {/* Content */}
+            <div className="relative z-10 flex h-full flex-col items-center justify-center text-center text-white px-4">
+              <h1 className="mb-4 font-display text-4xl font-bold md:text-5xl">{slide.title}</h1>
+              <button className="rounded bg-[#8c5932] px-6 py-2.5 text-sm font-medium transition hover:bg-[#724828]">
+                Kunjungi Portal
+              </button>
+            </div>
+          </div>
+        ))}
+
+        {/* Navigation Arrows */}
+        <button onClick={prevSlide} className="absolute left-4 top-1/2 z-20 flex h-8 w-8 -translate-y-1/2 items-center justify-center bg-black/50 text-white hover:bg-black/70">
+          <ChevronLeft size={20} />
+        </button>
+        <button onClick={nextSlide} className="absolute right-4 top-1/2 z-20 flex h-8 w-8 -translate-y-1/2 items-center justify-center bg-black/50 text-white hover:bg-black/70">
+          <ChevronRight size={20} />
+        </button>
+
+        {/* Dots */}
+        <div className="absolute bottom-6 left-1/2 z-20 flex -translate-x-1/2 gap-2">
+          {slides.map((_, index) => (
+            <button 
+              key={index} 
+              onClick={() => setCurrentSlide(index)} 
+              className={`h-2 w-2 rounded-full transition-colors ${currentSlide === index ? "bg-white" : "bg-white/40"}`} 
             />
           ))}
-          <div className="absolute inset-0 bg-gradient-to-r from-secondary/95 via-secondary/70 to-secondary/20" />
+        </div>
+      </section>
 
-          <div className="container relative z-10 mx-auto px-6 py-28 lg:py-36">
-            <div className="max-w-2xl">
-              <p className="mb-4 text-sm font-medium text-white/70">UPT Perpustakaan Universitas Sam Ratulangi</p>
-              <h1 className="font-display text-5xl leading-[1.1] text-white lg:text-6xl">
-                Ruang baca, riset, dan literasi untuk sivitas UNSRAT.
-              </h1>
-              <p className="mt-6 max-w-lg text-lg text-white/80">
-                Telusuri koleksi cetak dan digital, ikuti kabar terbaru, dan manfaatkan layanan perpustakaan.
-              </p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <button
-                  onClick={handleSearchBook}
-                  className="inline-flex items-center gap-2 rounded-md bg-cream px-6 py-3 text-sm font-semibold text-secondary transition hover:bg-cream-soft"
-                >
-                  Cari Koleksi <ArrowRight size={16} />
-                </button>
-                <Link
-                  href="/koleksidaring"
-                  className="inline-flex items-center gap-2 rounded-md border border-white/40 px-6 py-3 text-sm font-medium text-white transition hover:bg-white/10"
-                >
-                  Koleksi Daring
-                </Link>
-              </div>
-            </div>
+      {/* Stats Section */}
+      <section className="container mx-auto py-12 px-6 max-w-5xl">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          <div className="flex flex-col items-center justify-center rounded-lg border border-gray-100 bg-white p-6 shadow-sm text-center">
+            <BookOpen className="mb-3 text-[#8c5932]" size={28} strokeWidth={1.5} />
+            <h3 className="text-2xl font-bold">12.450+</h3>
+            <p className="text-sm text-gray-500">Koleksi Buku</p>
           </div>
-        </section>
-
-        
-        <section className="bg-white py-20">
-          <div className="container mx-auto px-6">
-            <div className="mb-10 flex items-end justify-between border-b border-main-border pb-5">
-              <div>
-                <h2 className="font-display text-3xl text-main-text">Warta Perpustakaan</h2>
-                <p className="mt-1.5 text-sm text-main-text/55">Artikel dan informasi resmi dari staf perpustakaan UNSRAT.</p>
-              </div>
-              <Link href="/artikel" className="hidden items-center gap-1 text-sm font-medium text-secondary hover:underline sm:flex">
-                Lihat semua <ArrowRight size={15} />
-              </Link>
-            </div>
-
-            {staffLoading ? (
-              <div className="flex justify-center py-20 text-main-text/40">
-                <Loader2 size={28} className="animate-spin" />
-              </div>
-            ) : staffArticles.length > 0 ? (
-              <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                
-                <Link href={`/artikel/${staffArticles[0].id}`} className="group relative block h-[420px] overflow-hidden rounded-lg">
-                  <Image
-                    src={staffArticles[0].image_url || "/images/placeholder.png"}
-                    alt="Highlight"
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                  />
-                  <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/85 via-black/25 to-transparent p-8">
-                    <span className="mb-3 w-fit rounded-full bg-secondary px-3 py-1 text-xs font-medium text-white">Terbaru</span>
-                    <h3 className="font-display text-3xl leading-tight text-white line-clamp-2">{staffArticles[0].title}</h3>
-                    <p className="mt-2 text-sm text-white/70 line-clamp-2">{staffArticles[0].content}</p>
-                  </div>
-                </Link>
-
-                
-                <div className="flex flex-col divide-y divide-main-border">
-                  {staffArticles.slice(1, 4).map((article: any) => (
-                    <Link key={article.id} href={`/artikel/${article.id}`} className="group flex gap-5 py-5 first:pt-0 last:pb-0">
-                      <div className="relative h-28 w-28 flex-shrink-0 overflow-hidden rounded-md bg-surface">
-                        <Image
-                          src={article.image_url || "/images/placeholder.png"}
-                          alt="Thumbnail"
-                          fill
-                          className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                      </div>
-                      <div className="flex flex-col justify-center">
-                        <h4 className="font-display text-lg leading-snug text-main-text transition-colors group-hover:text-secondary line-clamp-2">
-                          {article.title}
-                        </h4>
-                        <p className="mt-2 text-xs text-main-text/50">
-                          {article.author?.full_name || "Admin"} &middot;{" "}
-                          {new Date(article.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="rounded-lg border border-dashed border-main-border py-16 text-center">
-                <p className="text-sm text-main-text/40">Belum ada berita yang dipublikasikan.</p>
-              </div>
-            )}
+          <div className="flex flex-col items-center justify-center rounded-lg border border-gray-100 bg-white p-6 shadow-sm text-center">
+            <Users className="mb-3 text-[#8c5932]" size={28} strokeWidth={1.5} />
+            <h3 className="text-2xl font-bold">3.200+</h3>
+            <p className="text-sm text-gray-500">Anggota</p>
           </div>
-        </section>
-
-        
-        <section id="berita" className="border-t border-main-border bg-cream py-20">
-          <div className="container mx-auto px-6">
-            <div className="mb-8">
-              <h2 className="font-display text-3xl text-main-text">Headline Indonesia</h2>
-              <p className="mt-1.5 text-sm text-main-text/55">Kabar nasional terkini dari berbagai kategori.</p>
-            </div>
-
-            <div className="mb-10 flex gap-2 overflow-x-auto pb-2">
-              {categories.map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => setCategory(cat.id)}
-                  className={`relative rounded-md px-5 py-2 text-sm transition-colors ${
-                    category === cat.id ? "text-white" : "border border-main-border bg-white text-main-text/60 hover:text-main-text"
-                  }`}
-                >
-                  {category === cat.id && <motion.div layoutId="activeTab" className="absolute inset-0 -z-10 rounded-md bg-secondary" transition={{ type: "spring", bounce: 0.15, duration: 0.5 }} />}
-                  {cat.label}
-                </button>
-              ))}
-            </div>
-
-            {newsLoading ? (
-              <div className="flex justify-center py-20 text-main-text/40">
-                <Loader2 size={28} className="animate-spin" />
-              </div>
-            ) : (
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={category}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.3 }}
-                  className="grid grid-cols-1 gap-6 md:grid-cols-3"
-                >
-                  {newsArticles.slice(0, 3).map((item, index) => (
-                    <a
-                      key={index}
-                      href={item.url}
-                      target="_blank"
-                      className="group flex flex-col overflow-hidden rounded-lg border border-main-border bg-white shadow-[var(--shadow-card)] transition-shadow hover:shadow-[var(--shadow-raised)]"
-                    >
-                      <div className="relative h-52 w-full overflow-hidden">
-                        <img src={item.image} alt={item.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                      </div>
-                      <div className="flex flex-1 flex-col p-6">
-                        <h3 className="font-display text-lg leading-snug text-main-text transition-colors group-hover:text-secondary line-clamp-2">
-                          {item.title}
-                        </h3>
-                        <p className="mt-2 text-sm text-main-text/55 line-clamp-3">{item.description}</p>
-                        <span className="mt-4 flex items-center gap-1 text-sm font-medium text-secondary">
-                          Baca selengkapnya <ArrowUpRight size={15} />
-                        </span>
-                      </div>
-                    </a>
-                  ))}
-                </motion.div>
-              </AnimatePresence>
-            )}
+          <div className="flex flex-col items-center justify-center rounded-lg border border-gray-100 bg-white p-6 shadow-sm text-center">
+            <FileText className="mb-3 text-[#8c5932]" size={28} strokeWidth={1.5} />
+            <h3 className="text-2xl font-bold">850+</h3>
+            <p className="text-sm text-gray-500">E-Journal</p>
           </div>
-        </section>
-
-        
-        <section className="bg-surface py-20">
-          <div className="container mx-auto px-6">
-            <div className="flex flex-col items-center gap-12 lg:flex-row">
-              <div className="relative h-80 w-64 flex-shrink-0 overflow-hidden rounded-lg border border-main-border">
-                <Image src="/images/kepala_perpus.jpg" alt="Kepala UPT" fill className="object-cover" />
-              </div>
-
-              <div className="flex-1 text-center lg:text-left">
-                <p className="mb-3 text-sm font-medium text-secondary">Kepala UPT Perpustakaan</p>
-                <h2 className="font-display text-3xl leading-tight text-main-text">Ir. Mecky R. E. Manoppo, MT</h2>
-                <p className="mt-5 max-w-xl text-lg italic leading-relaxed text-main-text/70">
-                  &ldquo;Menjadi pusat informasi ilmiah unggul dan berbudaya yang mendukung Sam Ratulangi sebagai World Class University.&rdquo;
-                </p>
-                <Link
-                  href="/profil/kepala-upt"
-                  className="mt-7 inline-flex items-center gap-2 rounded-md bg-secondary px-6 py-3 text-sm font-medium text-white transition hover:bg-secondary-hover"
-                >
-                  Lihat profil lengkap <ArrowRight size={16} />
-                </Link>
-              </div>
-            </div>
+          <div className="flex flex-col items-center justify-center rounded-lg border border-gray-100 bg-white p-6 shadow-sm text-center">
+            <FlaskConical className="mb-3 text-[#8c5932]" size={28} strokeWidth={1.5} />
+            <h3 className="text-2xl font-bold">2.100+</h3>
+            <p className="text-sm text-gray-500">Penelitian</p>
           </div>
-        </section>
+        </div>
+      </section>
 
-        
-        <section className="bg-cream py-20">
-          <div className="container mx-auto px-6 text-center">
-            <h2 className="font-display text-3xl text-main-text">Butuh referensi lain?</h2>
-            <p className="mx-auto mt-2 max-w-md text-main-text/55">Telusuri koleksi buku digital dan cetak terbaik kami.</p>
-            <button
-              onClick={handleSearchBook}
-              className="mt-6 inline-flex items-center gap-2 rounded-md bg-secondary px-8 py-3 text-sm font-medium text-white transition hover:bg-secondary-hover"
-            >
-              Cari buku sekarang <ArrowRight size={16} />
+      {/* About Section */}
+      <section className="container mx-auto max-w-6xl px-6 py-24">
+        <div className="flex flex-col items-center gap-12 lg:flex-row">
+          <div className="flex-1">
+            <h2 className="mb-4 font-display text-2xl font-bold text-[#1a202c]">Tentang Perpustakaan</h2>
+            <p className="mb-6 text-gray-600 leading-relaxed text-[15px]">
+              UPT Perpustakaan Cakrawala menyediakan akses ke koleksi buku, jurnal ilmiah, dan karya penelitian untuk mendukung kegiatan akademik civitas akademika.
+            </p>
+            <button className="rounded bg-[#8c5932] px-6 py-2.5 text-sm font-medium text-white transition hover:bg-[#724828]">
+              Lihat Koleksi
             </button>
           </div>
-        </section>
-      </main>
+          <div className="flex-1 w-full">
+            <div className="overflow-hidden rounded-lg">
+              <img 
+                src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=1000&auto=format&fit=crop" 
+                alt="Library Interior" 
+                className="w-full h-[300px] object-cover"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Koleksi Terbaru */}
+      <section className="bg-white py-16">
+        <div className="container mx-auto max-w-6xl px-6">
+          <h2 className="mb-8 font-display text-2xl font-bold text-[#1a202c]">Koleksi Terbaru</h2>
+          
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              { title: "Pengantar Ilmu Komputer", author: "Rinaldi Munir", status: "Tersedia", color: "bg-green-50 text-green-700" },
+              { title: "Algoritma dan Pemrograman", author: "Budi Santoso", status: "Dipinjam", color: "bg-yellow-50 text-yellow-700" },
+              { title: "Basis Data Relasional", author: "Fathansyah", status: "Tersedia", color: "bg-green-50 text-green-700" },
+              { title: "Jaringan Komputer", author: "Forouzan", status: "Tersedia", color: "bg-green-50 text-green-700" },
+            ].map((book, i) => (
+              <div key={i} className="flex flex-col rounded-lg border border-gray-100 bg-white p-4 shadow-[0_2px_10px_rgba(0,0,0,0.03)] transition-transform hover:-translate-y-1">
+                <div className="mb-4 flex h-36 items-center justify-center rounded bg-gray-50 text-gray-300">
+                  <BookOpen size={40} strokeWidth={1} />
+                </div>
+                <h3 className="mb-1 text-sm font-bold leading-tight text-[#1a202c]">{book.title}</h3>
+                <p className="mb-4 text-xs text-gray-500">{book.author}</p>
+                <div className="mt-auto">
+                  <span className={`inline-block rounded px-2.5 py-1 text-[11px] font-semibold ${book.color}`}>
+                    {book.status}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-10">
+            <Link href="/koleksi" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#8c5932] hover:underline">
+              Lihat semua koleksi <ArrowRight size={16} />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="bg-[#78502f] py-20 text-center text-white">
+        <div className="container mx-auto px-6">
+          <h2 className="mb-4 font-display text-2xl font-bold">Daftar sebagai anggota</h2>
+          <p className="mb-8 text-[15px] text-white/80 max-w-lg mx-auto">
+            Akses ribuan koleksi digital secara gratis sebagai civitas akademika Perpustakaan Cakrawala.
+          </p>
+          <button className="rounded bg-white px-8 py-3 text-sm font-semibold text-[#78502f] transition hover:bg-gray-100">
+            Daftar Sekarang
+          </button>
+        </div>
+      </section>
     </div>
   );
 }

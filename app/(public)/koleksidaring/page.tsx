@@ -1,14 +1,11 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import { collectionSections } from "@/constants/CollectionSections";
 import { useCollections } from "@/hooks/useCollections";
 import { ExternalLink } from "lucide-react";
 
 interface CollectionCardProps {
-  imgSrc: string;
-  imgAlt: string;
   title: string;
   onAction: () => void;
 }
@@ -43,21 +40,12 @@ const KoleksiDaringPage: React.FC = () => {
   );
 };
 
-const CollectionCard: React.FC<CollectionCardProps> = ({ imgSrc, imgAlt, title, onAction }) => (
+const CollectionCard: React.FC<CollectionCardProps> = ({ title, onAction }) => (
   <button
     onClick={onAction}
     className="group flex w-full flex-col items-center text-center rounded-lg border border-main-border bg-cream-soft p-6 shadow-[var(--shadow-card)] transition-shadow duration-300 hover:shadow-[var(--shadow-raised)]"
   >
-    <div className="relative flex h-24 w-full items-center justify-center overflow-hidden">
-      <Image
-        src={imgSrc}
-        alt={imgAlt}
-        width={120}
-        height={80}
-        className="object-contain p-2 transition-transform duration-500 group-hover:scale-[1.03]"
-        onError={(e) => (e.currentTarget.src = "/images/placeholder.png")}
-      />
-    </div>
+    <div className="h-24 w-full rounded-md bg-surface" aria-hidden="true" />
     <h3 className="font-display text-lg text-main-text mt-4 transition-colors group-hover:text-secondary">{title}</h3>
     <span className="mt-2 flex items-center gap-1.5 text-sm text-secondary">
       Kunjungi

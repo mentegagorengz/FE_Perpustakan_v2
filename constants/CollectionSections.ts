@@ -2,7 +2,7 @@ export const collectionSections = [
   {
     title: "E-Journal Nasional",
     collections: [
-      { imgSrc: "/images/e-journal.png", imgAlt: "E-Journal UNSRAT", title: "E-Journal UNSRAT", link: "https://ejournal.unsrat.ac.id/" },
+      { imgSrc: "/images/e-journal.png", imgAlt: "E-Journal Cakrawala", title: "E-Journal Cakrawala", link: "https://ejournal.example/" },
       { imgSrc: "/images/garuda.png", imgAlt: "Garuda Ristekdikti", title: "Garuda", link: "http://garuda.ristekdikti.go.id/" },
       { imgSrc: "/images/neliti.png", imgAlt: "Neliti", title: "Neliti", link: "https://www.neliti.com/id/" },
     ],

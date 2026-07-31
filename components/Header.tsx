@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useState } from "react";
-import { ChevronDown, Menu } from "lucide-react";
+import { BookOpen, ChevronDown, Menu } from "lucide-react";
 import { useHeader } from "@/hooks/useHeader";
 
 const dropdowns = {
@@ -13,7 +12,7 @@ const dropdowns = {
   ],
   profil: [
     { href: "/profil/kepala-upt", label: "Kepala UPT", desc: "Mengenal pimpinan perpustakaan" },
-    { href: "/profil/sejarah", label: "Sejarah & NPP", desc: "Jejak langkah sejak tahun 1961" },
+    { href: "/profil/sejarah", label: "Sejarah & NPP", desc: "Jejak langkah perpustakaan" },
   ],
   koleksi: [
     { href: "/koleksi", label: "OPAC (Fisik)", desc: "Cari buku di rak perpustakaan" },
@@ -29,8 +28,8 @@ export default function Header() {
     <header className="bg-secondary text-white sticky top-0 z-50 border-b border-black/10">
       <div className="container mx-auto flex items-center justify-between px-6 py-3">
         <Link href="/" className="flex items-center gap-3">
-          <Image src="/images/logo_unsrat.png" alt="Logo UNSRAT" width={38} height={38} />
-          <span className="font-display text-xl leading-none">Perpustakaan UNSRAT</span>
+          <BookOpen size={38} strokeWidth={1.5} aria-label="Logo Perpustakaan Cakrawala" />
+          <span className="font-display text-xl leading-none">Perpustakaan Cakrawala</span>
         </Link>
 
         <button className="lg:hidden" onClick={toggleMenu} aria-label="Buka menu">

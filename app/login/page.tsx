@@ -39,7 +39,7 @@ export default function LoginPage() {
             <div className="mb-8">
               <h1 className="text-3xl font-display text-secondary">Portal Masuk</h1>
               <p className="mt-2 text-sm text-main-text/60">
-                Akses Mandiri Perpustakaan UNSRAT
+                Akses Mandiri Perpustakaan Cakrawala
               </p>
             </div>
 
@@ -61,7 +61,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isLoading}
-                  placeholder="name@student.unsrat.ac.id"
+                  placeholder="nama@mahasiswa.example"
                 />
               </div>
 

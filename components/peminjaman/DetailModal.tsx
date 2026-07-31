@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import React from "react";
 import { X } from "lucide-react";
 
@@ -28,9 +27,7 @@ const DetailModal: React.FC<DetailModalProps> = ({ book, availableCount, onClose
         <div className="flex-1 overflow-y-auto p-6">
           <div className="flex flex-col gap-8 md:flex-row">
             <div className="w-full flex-shrink-0 md:w-1/3">
-              <div className="relative aspect-[3/4] w-full overflow-hidden rounded-md border border-main-border">
-                <Image src={book.imageUrl || "/images/default-image.png"} alt={book.title} fill className="object-cover" />
-              </div>
+              <div className="aspect-[3/4] w-full rounded-md border border-main-border bg-surface" aria-hidden="true" />
             </div>
             <div className="flex-1 space-y-4">
               <h3 className="font-display text-2xl leading-tight text-secondary">{book.title}</h3>

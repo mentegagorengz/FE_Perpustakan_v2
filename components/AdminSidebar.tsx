@@ -3,8 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
-import { LayoutDashboard, Newspaper, ScrollText, Crosshair, ShieldCheck, Wallet, LogOut, type LucideIcon } from "lucide-react";
+import { BookOpen, LayoutDashboard, Newspaper, ScrollText, Crosshair, ShieldCheck, Wallet, LogOut, type LucideIcon } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 type MenuItem = { label: string; href: string; icon: LucideIcon; roles: string[] };
@@ -28,9 +27,9 @@ export default function AdminSidebar() {
     <aside className="sticky top-0 flex h-screen w-64 flex-col overflow-hidden border-r border-black/10 bg-secondary text-white">
       <div className="flex-shrink-0 border-b border-white/10 p-6">
         <div className="flex items-center gap-3">
-          <Image src="/images/logo_unsrat.png" alt="Logo" width={30} height={30} className="brightness-200" />
+          <BookOpen size={30} strokeWidth={1.5} aria-label="Logo perpustakaan" />
           <div>
-            <h2 className="font-display text-base leading-none">UPT Perpustakaan</h2>
+            <h2 className="font-display text-base leading-none">Perpustakaan Cakrawala</h2>
             <p className="mt-0.5 text-xs text-white/45">Panel Manajemen</p>
           </div>
         </div>

@@ -17,7 +17,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({ onConfirm, onCancel }) => {
         </div>
         <h3 className="font-display text-xl text-main-text">Konfirmasi Pinjam</h3>
         <p className="mb-7 mt-2 text-sm text-main-text/60">
-          Pastikan kamu mengembalikan buku tepat waktu sesuai aturan perpustakaan UNSRAT.
+          Pastikan kamu mengembalikan buku tepat waktu sesuai aturan perpustakaan.
         </p>
         <div className="grid grid-cols-2 gap-3">
           <button onClick={onCancel} className="rounded-md bg-surface px-4 py-2.5 text-sm font-medium text-main-text/70 transition hover:bg-surface-hover">

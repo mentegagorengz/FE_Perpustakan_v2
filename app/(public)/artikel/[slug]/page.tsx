@@ -3,7 +3,6 @@
 import React from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useArticleDetail } from "@/hooks/useArticles";
-import Image from "next/image";
 import { ArrowLeft, Loader2, CalendarDays } from "lucide-react";
 
 export default function ArtikelDetail() {
@@ -37,7 +36,7 @@ export default function ArtikelDetail() {
         </button>
 
         <div className="relative mb-10 h-[420px] w-full overflow-hidden rounded-lg border border-main-border shadow-[var(--shadow-card)]">
-          <Image src={article.image_url || "/images/placeholder.png"} alt={article.title} fill className="object-cover" />
+          <div className="absolute inset-0 bg-surface" aria-hidden="true" />
         </div>
 
         <h1 className="font-display text-4xl leading-tight text-main-text md:text-5xl">{article.title}</h1>

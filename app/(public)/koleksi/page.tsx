@@ -27,7 +27,7 @@ export default function PeminjamanPage() {
         )}
 
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl text-main-text mb-3">E-Library UNSRAT</h1>
+          <h1 className="text-4xl md:text-5xl text-main-text mb-3">E-Library Cakrawala</h1>
           <p className="text-main-text/60 max-w-md mx-auto text-sm sm:text-base">Akses ribuan koleksi literatur digital secara instan dan mudah.</p>
           {!isAuthenticated && <p className="mt-3 text-sm text-secondary">Login untuk meminjam buku.</p>}
         </div>

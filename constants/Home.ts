@@ -1,10 +1,10 @@
 export const berita = [
   {
     id: 1,
-    judul: "e-Journal Universitas Sam Ratulangi",
+    judul: "e-Journal Universitas Cakrawala Nusantara",
     kategori: "E-Journal Nasional",
     gambar: "/images/e-journal.png",
-    link: "https://ejournal.unsrat.ac.id/",
+    link: "https://ejournal.example/",
   },
   {
     id: 2,
@@ -22,4 +22,4 @@ export const berita = [
   },
 ];
 
-export const images = ["/images/gedung1.png"];
+export const images = ["plain"];

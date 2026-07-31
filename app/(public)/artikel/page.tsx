@@ -2,7 +2,6 @@
 
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Loader2, CalendarDays } from "lucide-react";
 import { useArticles } from "@/hooks/useArticles";
 
@@ -23,7 +22,7 @@ export default function ArtikelPage() {
         <header className="mb-16 max-w-2xl">
           <p className="mb-3 text-xs tracking-wide text-secondary">Warta &amp; literasi</p>
           <h1 className="font-display text-4xl leading-tight text-main-text md:text-5xl">Warta Perpustakaan</h1>
-          <p className="mt-4 text-main-text/60">Pusat informasi dan literasi digital UNSRAT.</p>
+          <p className="mt-4 text-main-text/60">Pusat informasi dan literasi digital Perpustakaan Cakrawala.</p>
         </header>
 
         {articles.length > 0 ? (
@@ -31,12 +30,7 @@ export default function ArtikelPage() {
             {articles.map((article: any) => (
               <Link key={article.id} href={`/artikel/${article.id}`} className="group block">
                 <div className="relative mb-5 h-64 w-full overflow-hidden rounded-lg border border-main-border shadow-[var(--shadow-card)]">
-                  <Image
-                    src={article.image_url || "/images/placeholder.png"}
-                    alt={article.title}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                  />
+                  <div className="absolute inset-0 bg-surface" aria-hidden="true" />
                 </div>
                 <h2 className="font-display text-2xl leading-snug text-main-text transition-colors group-hover:text-secondary">
                   {article.title}

@@ -5,14 +5,14 @@ import { motion } from "framer-motion";
 
 export default function SejarahPage() {
   const historyEvents = [
-    { year: "1961", desc: "Lahirnya UPT Perpustakaan UNSRAT bersamaan dengan instansi induk Universitas Sam Ratulangi." },
-    { year: "1962", desc: "Pembentukan perpustakaan di tiap fakultas akibat penggabungan perguruan tinggi di Sulawesi Utara-Tengah." },
-    { year: "1967", desc: "Pendirian resmi Perpustakaan UNSRAT berdasarkan SK Menteri P dan K No. 12 tahun 1967." },
-    { year: "1970", desc: "Pengangkatan Direktur Perpustakaan Pusat UNSRAT pertama pada 28 Agustus 1970." },
-    { year: "1971", desc: "Beroperasi di ruangan seluas 30 m² milik Fakultas Ilmu Sosial dan Ilmu Politik." },
-    { year: "1977", desc: "Perpustakaan resmi menempati gedung sendiri setelah beberapa kali berpindah lokasi." },
-    { year: "1993", desc: "Perubahan status menjadi UPT Perpustakaan berdasarkan SK Mendikbud No. 02126/1993." },
-    { year: "Sekarang", desc: "Dipimpin oleh Ir. Mecky R. E. Manoppo, MT (sejak 2023) menuju World Class University." },
+    { year: "2001", desc: "Perpustakaan Cakrawala mulai melayani sivitas Universitas Cakrawala Nusantara." },
+    { year: "2005", desc: "Layanan koleksi diperluas melalui pembukaan ruang baca di setiap fakultas." },
+    { year: "2010", desc: "Katalog perpustakaan mulai dikelola melalui sistem informasi terintegrasi." },
+    { year: "2014", desc: "Perpustakaan menempati gedung layanan terpadu di kawasan kampus utama." },
+    { year: "2018", desc: "Repositori institusi diluncurkan untuk mendukung publikasi karya ilmiah." },
+    { year: "2021", desc: "Koleksi digital dan layanan peminjaman mandiri mulai tersedia." },
+    { year: "2024", desc: "Program literasi informasi diperluas untuk seluruh sivitas akademika." },
+    { year: "Sekarang", desc: "Perpustakaan terus mengembangkan layanan belajar, riset, dan literasi digital." },
   ];
 
   return (
@@ -52,12 +52,10 @@ export default function SejarahPage() {
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="rounded-lg border border-main-border bg-cream-soft p-6 shadow-[var(--shadow-card)]">
               <ul className="space-y-3 text-sm text-main-text/70">
-                <li>1. Dra. Ny. Kalangi – Pandey</li>
-                <li>2. Dra. NY. Jasin – L</li>
-                <li>3. Ny. Piri – Kaunang</li>
-                <li>...</li>
-                <li>12. Freddy Lolong, SH., MH. (2018-2022)</li>
-                <li className="text-secondary">13. Ir. Mecky R. E. Manoppo, MT. (2023 - Sekarang)</li>
+                <li>1. Dr. Bima Santosa, M.Hum. (2001-2008)</li>
+                <li>2. Lestari Wicaksono, M.Si. (2008-2016)</li>
+                <li>3. Raka Mahendra, M.I.Kom. (2016-2023)</li>
+                <li className="text-secondary">4. Dr. Aruna Pratama, M.Si. (2023-Sekarang)</li>
               </ul>
             </div>
           </div>
