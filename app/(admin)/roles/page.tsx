@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { CheckCircle2, Search, ShieldCheck, ShieldOff, Trash2 } from "lucide-react";
+import React, { useDeferredValue, useState } from "react";
+import { AlertCircle, CheckCircle2, Search, ShieldCheck, ShieldOff, Trash2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useUsers, useUpdateRoleMutation, useDeleteUserMutation } from "@/hooks/useUsers";
 import type { SystemRole } from "@/types/api";
@@ -11,26 +11,26 @@ export default function RoleManagementPage() {
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRole, setFilterRole] = useState<"all" | SystemRole>("all");
-  const [toast, setToast] = useState<string | null>(null);
-  const { data } = useUsers({ token, page, search: searchTerm || undefined });
+  const deferredSearchTerm = useDeferredValue(searchTerm);
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+  const { data } = useUsers({ token, page, search: deferredSearchTerm || undefined, role: filterRole === "all" ? undefined : filterRole });
   const updateRole = useUpdateRoleMutation();
   const deleteUser = useDeleteUserMutation();
 
-  const showToast = (msg: string) => {
-    setToast(msg);
+  const showToast = (message: string, type: "success" | "error" = "success") => {
+    setToast({ message, type });
     setTimeout(() => setToast(null), 2000);
   };
 
   const users = data?.data ?? [];
-  const filtered = filterRole === "all" ? users : users.filter((u) => u.role === filterRole);
-  const staffCount = users.filter((u) => u.role === "STAFF" || u.role === "SUPER_ADMIN").length;
+  const filtered = users;
 
   const handleRole = async (id: number, role: SystemRole, name: string) => {
     try {
       await updateRole.mutateAsync({ id, role });
       showToast(`${name} → ${role}`);
     } catch (e) {
-      showToast(e instanceof Error ? e.message : "Gagal ubah role.");
+      showToast(e instanceof Error ? e.message : "Gagal ubah role.", "error");
     }
   };
   const handleDelete = async (id: number, name: string) => {
@@ -39,12 +39,12 @@ export default function RoleManagementPage() {
       await deleteUser.mutateAsync(id);
       showToast(`${name} dihapus`);
     } catch (e) {
-      showToast(e instanceof Error ? e.message : "Gagal hapus.");
+      showToast(e instanceof Error ? e.message : "Gagal hapus.", "error");
     }
   };
 
   return (
-    <div className="min-h-screen bg-cream p-10 font-sans">
+    <div className="min-h-screen bg-cream p-4 font-sans sm:p-6 lg:p-10">
       <div className="mb-8 border-b border-main-border pb-6">
         <h1 className="font-display text-3xl text-secondary">Otoritas pengguna</h1>
         <p className="mt-2 text-sm text-main-text/60">Kelola role staf dan akses pengguna perpustakaan.</p>
@@ -52,9 +52,9 @@ export default function RoleManagementPage() {
 
       
       {toast && (
-        <div className="fixed right-5 top-5 z-50 inline-flex items-center gap-2 rounded-md bg-green-600 px-4 py-3 text-sm font-medium text-white shadow-[var(--shadow-overlay)]">
-          <CheckCircle2 className="h-4 w-4" />
-          {toast}
+        <div role={toast.type === "error" ? "alert" : "status"} className={`fixed right-5 top-5 z-50 inline-flex items-center gap-2 rounded-md px-4 py-3 text-sm font-medium text-white shadow-[var(--shadow-overlay)] ${toast.type === "error" ? "bg-red-700" : "bg-green-700"}`}>
+          {toast.type === "error" ? <AlertCircle aria-hidden="true" className="h-4 w-4" /> : <CheckCircle2 aria-hidden="true" className="h-4 w-4" />}
+          {toast.message}
         </div>
       )}
 
@@ -62,21 +62,23 @@ export default function RoleManagementPage() {
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="rounded-lg border border-main-border bg-white p-5 shadow-[var(--shadow-card)]">
           <p className="text-sm text-main-text/50">Total pengguna</p>
-          <p className="mt-1 font-display text-3xl text-main-text">{users.length}</p>
+          <p className="mt-1 font-display text-3xl text-main-text">{data?.meta.total ?? 0}</p>
         </div>
         <div className="rounded-lg border border-main-border bg-white p-5 shadow-[var(--shadow-card)]">
-          <p className="text-sm text-main-text/50">Staf / Admin</p>
-          <p className="mt-1 font-display text-3xl text-secondary">{staffCount}</p>
+          <p className="text-sm text-main-text/50">Hasil filter role</p>
+          <p className="mt-1 font-display text-3xl text-secondary">{data?.meta.total ?? 0}</p>
         </div>
       </div>
 
       
       <div className="mb-6 flex flex-wrap gap-4">
         <div className="relative w-full max-w-sm">
+          <label htmlFor="user-search" className="sr-only">Cari nama atau email pengguna</label>
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-main-text/40" />
-          <input type="text" placeholder="Cari nama / email..." value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }} className="w-full rounded-md border border-main-border bg-white py-2.5 pl-9 pr-4 text-sm outline-none focus:border-secondary" />
+          <input id="user-search" name="user-search" type="search" placeholder="Cari nama / email..." value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }} className="w-full rounded-md border border-main-border bg-white py-2.5 pl-9 pr-4 text-sm outline-none focus:border-secondary" />
         </div>
-        <select value={filterRole} onChange={(e) => setFilterRole(e.target.value as "all" | SystemRole)} className="rounded-md border border-main-border bg-white px-4 py-2.5 text-sm text-main-text/70 outline-none focus:border-secondary">
+        <label htmlFor="role-filter" className="sr-only">Filter berdasarkan role</label>
+        <select id="role-filter" name="role-filter" value={filterRole} onChange={(e) => setFilterRole(e.target.value as "all" | SystemRole)} className="w-full rounded-md border border-main-border bg-white px-4 py-2.5 text-sm text-main-text/70 outline-none focus:border-secondary sm:w-auto">
           <option value="all">Semua role</option>
           <option value="SUPER_ADMIN">SUPER_ADMIN</option>
           <option value="STAFF">STAFF</option>
@@ -85,8 +87,8 @@ export default function RoleManagementPage() {
       </div>
 
       
-      <div className="overflow-hidden rounded-lg border border-main-border bg-white shadow-[var(--shadow-card)]">
-        <table className="w-full text-left text-sm">
+      <div className="overflow-x-auto rounded-lg border border-main-border bg-white shadow-[var(--shadow-card)]">
+        <table className="min-w-[58rem] w-full text-left text-sm">
           <thead className="border-b border-main-border bg-surface text-main-text/60">
             <tr>
               <th className="p-4 font-medium">Nama</th>
@@ -108,17 +110,17 @@ export default function RoleManagementPage() {
                 <td className="p-4">
                   <div className="flex items-center justify-end gap-2">
                     {u.role === "USER" ? (
-                      <button onClick={() => handleRole(u.id, "STAFF", u.full_name)} className="inline-flex items-center gap-1.5 rounded-md border border-main-border px-3 py-1.5 text-xs font-medium text-secondary transition-colors hover:bg-surface">
+                      <button disabled={updateRole.isPending || deleteUser.isPending} onClick={() => handleRole(u.id, "STAFF", u.full_name)} className="inline-flex items-center gap-1.5 rounded-md border border-main-border px-3 py-1.5 text-xs font-medium text-secondary transition-colors hover:bg-surface disabled:opacity-50">
                         <ShieldCheck className="h-3.5 w-3.5" />
                         Jadikan STAFF
                       </button>
                     ) : (
-                      <button onClick={() => handleRole(u.id, "USER", u.full_name)} className="inline-flex items-center gap-1.5 rounded-md border border-main-border px-3 py-1.5 text-xs font-medium text-amber-600 transition-colors hover:bg-surface">
+                      <button disabled={updateRole.isPending || deleteUser.isPending} onClick={() => handleRole(u.id, "USER", u.full_name)} className="inline-flex items-center gap-1.5 rounded-md border border-main-border px-3 py-1.5 text-xs font-medium text-amber-600 transition-colors hover:bg-surface disabled:opacity-50">
                         <ShieldOff className="h-3.5 w-3.5" />
                         Turunkan ke USER
                       </button>
                     )}
-                    <button onClick={() => handleDelete(u.id, u.full_name)} className="inline-flex items-center gap-1.5 rounded-md border border-main-border px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50">
+                    <button disabled={updateRole.isPending || deleteUser.isPending} onClick={() => handleDelete(u.id, u.full_name)} className="inline-flex items-center gap-1.5 rounded-md border border-main-border px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 disabled:opacity-50">
                       <Trash2 className="h-3.5 w-3.5" />
                       Hapus
                     </button>

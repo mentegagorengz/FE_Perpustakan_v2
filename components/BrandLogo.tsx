@@ -21,7 +21,7 @@ export function BrandLogo({ className = "", theme = "dark" }: BrandLogoProps) {
           Perpustakaan
         </h1>
         <p className={`text-[15px] font-medium leading-none ${isDark ? 'text-white/80' : 'text-[#5c677d]'}`}>
-          Cakrawala
+           UNSRAT
         </p>
       </div>
     </div>

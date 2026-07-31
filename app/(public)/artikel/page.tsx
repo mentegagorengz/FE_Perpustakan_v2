@@ -10,8 +10,8 @@ export default function ArtikelPage() {
 
   if (isLoading)
     return (
-      <div className="flex min-h-screen items-center justify-center gap-3 text-secondary">
-        <Loader2 className="h-5 w-5 animate-spin" />
+      <div role="status" className="flex min-h-screen items-center justify-center gap-3 text-secondary">
+        <Loader2 aria-hidden="true" className="h-5 w-5 animate-spin" />
         <span className="text-sm">Memuat warta...</span>
       </div>
     );
@@ -22,7 +22,7 @@ export default function ArtikelPage() {
         <header className="mb-16 max-w-2xl">
           <p className="mb-3 text-xs tracking-wide text-secondary">Warta &amp; literasi</p>
           <h1 className="font-display text-4xl leading-tight text-main-text md:text-5xl">Warta Perpustakaan</h1>
-          <p className="mt-4 text-main-text/60">Pusat informasi dan literasi digital Perpustakaan Cakrawala.</p>
+          <p className="mt-4 text-main-text-muted">Pusat informasi dan literasi digital UPT Perpustakaan UNSRAT.</p>
         </header>
 
         {articles.length > 0 ? (
@@ -37,11 +37,11 @@ export default function ArtikelPage() {
                 </h2>
                 <div className="mt-4 flex items-center gap-3">
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary/10 text-xs font-semibold text-secondary">
-                    {article.author?.full_name[0]}
+                    {article.author?.full_name?.[0] ?? "?"}
                   </div>
-                  <span className="flex items-center gap-2 text-xs text-main-text/50">
-                    {article.author?.full_name}
-                    <CalendarDays className="h-3.5 w-3.5" />
+                  <span className="flex items-center gap-2 text-xs text-main-text-muted">
+                    {article.author?.full_name || "Penulis tidak diketahui"}
+                    <CalendarDays aria-hidden="true" className="h-3.5 w-3.5" />
                     {new Date(article.created_at).toLocaleDateString("id-ID")}
                   </span>
                 </div>
@@ -50,7 +50,7 @@ export default function ArtikelPage() {
           </div>
         ) : (
           <div className="rounded-lg border border-dashed border-main-border py-20 text-center">
-            <p className="text-sm text-main-text/40">Belum ada warta untuk saat ini.</p>
+            <p className="text-sm text-main-text-muted">Belum ada warta untuk saat ini.</p>
           </div>
         )}
       </div>

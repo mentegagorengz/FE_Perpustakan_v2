@@ -19,13 +19,8 @@ export default function AuditLogsPage() {
   const logs = data?.data || [];
   const meta = data?.meta;
 
-  const parseDevice = (info: string) => {
-    if (!info) return "Unknown Device";
-    return info.length > 25 ? info.substring(0, 25) + "..." : info;
-  };
-
   return (
-    <div className="min-h-screen bg-cream p-10 font-sans">
+    <div className="min-h-screen bg-cream p-4 font-sans sm:p-6 lg:p-10">
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-main-border pb-6">
         <div>
           <h1 className="font-display text-3xl text-secondary">Audit sistem</h1>
@@ -48,8 +43,8 @@ export default function AuditLogsPage() {
         </div>
       </div>
 
-      <div className={`mb-6 overflow-hidden rounded-lg border border-main-border bg-white shadow-[var(--shadow-card)] transition-opacity ${isPlaceholderData ? "opacity-50" : "opacity-100"}`}>
-        <table className="w-full text-left text-sm">
+      <div className={`mb-6 overflow-x-auto rounded-lg border border-main-border bg-white shadow-[var(--shadow-card)] transition-opacity ${isPlaceholderData ? "opacity-50" : "opacity-100"}`}>
+        <table className="min-w-[48rem] w-full text-left text-sm">
           <thead className="border-b border-main-border bg-surface text-main-text/60">
             <tr>
               <th className="p-4 font-medium">Timestamp</th>
@@ -62,8 +57,8 @@ export default function AuditLogsPage() {
             {isLoading ? (
               <tr>
                 <td colSpan={4} className="p-16 text-center">
-                  <span className="inline-flex items-center gap-2 text-secondary">
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                  <span role="status" className="inline-flex items-center gap-2 text-secondary">
+                    <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
                     Memuat log...
                   </span>
                 </td>
@@ -76,7 +71,7 @@ export default function AuditLogsPage() {
                     <div className="flex flex-col">
                       <span className="font-medium text-main-text">{log.user?.full_name || "Guest Visitor"}</span>
                       <span className="mt-0.5 text-xs text-main-text/40">
-                        IP: {log.ip_address} &middot; {parseDevice(log.device_info)}
+                        IP: {log.ip_address} &middot; {log.device_info || "Perangkat tidak diketahui"}
                       </span>
                     </div>
                   </td>
@@ -97,9 +92,9 @@ export default function AuditLogsPage() {
       </div>
 
       {meta && (
-        <div className="flex items-center justify-between px-1">
+        <div className="flex flex-col gap-3 px-1 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-main-text/50">Total {meta.total} catatan ditemukan</p>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button disabled={currentPage === 1} onClick={() => setCurrentPage((p) => p - 1)} className="inline-flex items-center gap-1 rounded-md border border-main-border bg-white px-3 py-2 text-xs font-medium transition-colors hover:bg-surface disabled:opacity-40">
               <ChevronLeft className="h-4 w-4" />
               Sebelumnya

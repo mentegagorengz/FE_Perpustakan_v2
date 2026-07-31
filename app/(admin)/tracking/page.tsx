@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { CheckCircle2, RotateCcw } from "lucide-react";
+import { AlertCircle, CheckCircle2, RotateCcw } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useTransactionsList, useReturnMutation } from "@/hooks/useTransactions";
 
@@ -13,10 +13,10 @@ export default function SecurityTrackingPage() {
   const [page, setPage] = useState(1);
   const { data, isLoading } = useTransactionsList({ token, page });
   const returnMutation = useReturnMutation();
-  const [toast, setToast] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
-  const showToast = (msg: string) => {
-    setToast(msg);
+  const showToast = (message: string, type: "success" | "error" = "success") => {
+    setToast({ message, type });
     setTimeout(() => setToast(null), 2000);
   };
 
@@ -33,12 +33,12 @@ export default function SecurityTrackingPage() {
       await returnMutation.mutateAsync(barcode);
       showToast(`"${title}" berhasil dikembalikan!`);
     } catch (e) {
-      showToast(e instanceof Error ? e.message : "Gagal mengembalikan.");
+      showToast(e instanceof Error ? e.message : "Gagal mengembalikan.", "error");
     }
   };
 
   return (
-    <div className="min-h-screen bg-cream p-10 font-sans">
+    <div className="min-h-screen bg-cream p-4 font-sans sm:p-6 lg:p-10">
       
       <div className="mb-8 border-b border-main-border pb-6">
         <h1 className="font-display text-3xl text-secondary">Tracking peminjaman</h1>
@@ -47,17 +47,17 @@ export default function SecurityTrackingPage() {
 
       
       {toast && (
-        <div className="fixed right-5 top-5 z-50 inline-flex items-center gap-2 rounded-md bg-green-600 px-4 py-3 text-sm font-medium text-white shadow-[var(--shadow-overlay)]">
-          <CheckCircle2 className="h-4 w-4" />
-          {toast}
+        <div role={toast.type === "error" ? "alert" : "status"} className={`fixed right-5 top-5 z-50 inline-flex items-center gap-2 rounded-md px-4 py-3 text-sm font-medium text-white shadow-[var(--shadow-overlay)] ${toast.type === "error" ? "bg-red-700" : "bg-green-700"}`}>
+          {toast.type === "error" ? <AlertCircle aria-hidden="true" className="h-4 w-4" /> : <CheckCircle2 aria-hidden="true" className="h-4 w-4" />}
+          {toast.message}
         </div>
       )}
 
       
-      <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <div className="rounded-lg border border-main-border bg-white p-5 shadow-[var(--shadow-card)]">
-          <p className="text-sm text-main-text/50">Total</p>
-          <p className="mt-1 font-display text-3xl text-main-text">{txs.length}</p>
+          <p className="text-sm text-main-text/50">Total ditemukan</p>
+          <p className="mt-1 font-display text-3xl text-main-text">{data?.meta.total ?? 0}</p>
         </div>
         <div className="rounded-lg border border-main-border bg-white p-5 shadow-[var(--shadow-card)]">
           <p className="text-sm text-main-text/50">Aktif</p>
@@ -74,8 +74,8 @@ export default function SecurityTrackingPage() {
       </div>
 
       
-      <div className="overflow-hidden rounded-lg border border-main-border bg-white shadow-[var(--shadow-card)]">
-        <table className="w-full text-left text-sm">
+      <div className="overflow-x-auto rounded-lg border border-main-border bg-white shadow-[var(--shadow-card)]">
+        <table className="min-w-[72rem] w-full text-left text-sm">
           <thead className="border-b border-main-border bg-surface text-main-text/60">
             <tr>
               <th className="p-4 font-medium">Peminjam</th>
@@ -103,7 +103,7 @@ export default function SecurityTrackingPage() {
                 </td>
                 <td className="p-4 text-right">
                   {t.status !== "RETURNED" && t.bookItem && (
-                    <button onClick={() => handleReturn(t.bookItem!.barcode, t.bookItem?.book?.title ?? "")} className="inline-flex items-center gap-1.5 rounded-md border border-main-border px-3 py-1.5 text-xs font-medium text-secondary transition-colors hover:bg-surface">
+                    <button disabled={returnMutation.isPending} onClick={() => handleReturn(t.bookItem!.barcode, t.bookItem?.book?.title ?? "")} className="inline-flex items-center gap-1.5 rounded-md border border-main-border px-3 py-1.5 text-xs font-medium text-secondary transition-colors hover:bg-surface disabled:opacity-50">
                       <RotateCcw className="h-3.5 w-3.5" />
                       Kembalikan
                     </button>

@@ -4,29 +4,21 @@ import {
   useQueryClient,
   keepPreviousData,
 } from "@tanstack/react-query";
-import { API_BASE_URL, handleApiResponse } from "@/constants/api";
-import { useAuth } from "@/context/AuthContext";
+import { changeUserRole, getMockState, paginate, updateMockState, wait } from "@/lib/mockData";
 import type { ApiUser, Paginated, SystemRole } from "@/types/api";
 
 export function useUsers(params: {
   token: string | null;
   page: number;
   search?: string;
+  role?: SystemRole;
 }) {
-  const { token, page, search } = params;
+  const { token, page, search, role } = params;
   return useQuery({
-    queryKey: ["users", { page, search }],
+    queryKey: ["users", { page, search, role }],
     queryFn: async () => {
-      const query = new URLSearchParams({
-        page: String(page),
-        limit: "10",
-        ...(search ? { search } : {}),
-      });
-      const response = await fetch(`${API_BASE_URL}/users?${query}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const result = await handleApiResponse(response);
-      return result.data as Paginated<ApiUser>;
+      const users = getMockState().users.filter((user) => (!search || `${user.full_name} ${user.email}`.toLowerCase().includes(search.toLowerCase())) && (!role || user.role === role));
+      return wait(paginate(users, page, 10) as Paginated<ApiUser>);
     },
     enabled: !!token,
     placeholderData: keepPreviousData,
@@ -34,36 +26,20 @@ export function useUsers(params: {
 }
 
 export function useUpdateRoleMutation() {
-  const { token } = useAuth();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (vars: { id: number; role: SystemRole }) => {
-      const response = await fetch(`${API_BASE_URL}/users/${vars.id}/role`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ role: vars.role }),
-      });
-      const result = await handleApiResponse(response);
-      return result.data;
+      return wait(updateMockState((state) => ({ ...state, users: changeUserRole(state.users, vars.id, vars.role) })).users.find((user) => user.id === vars.id));
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["users"] }),
   });
 }
 
 export function useDeleteUserMutation() {
-  const { token } = useAuth();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: number) => {
-      const response = await fetch(`${API_BASE_URL}/users/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const result = await handleApiResponse(response);
-      return result.data;
+      return wait(updateMockState((state) => ({ ...state, users: state.users.filter((user) => user.id !== id) })));
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["users"] }),
   });

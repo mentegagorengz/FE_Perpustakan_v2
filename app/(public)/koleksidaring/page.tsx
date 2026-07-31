@@ -15,8 +15,7 @@ const KoleksiDaringPage: React.FC = () => {
 
   return (
     <div className="bg-cream min-h-screen py-10">
-      <main>
-        <section id="koleksi-daring" className="py-12">
+      <section id="koleksi-daring" className="py-12">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-14">
               <h1 className="text-4xl md:text-5xl text-main-text mb-3">Koleksi Daring</h1>
@@ -34,14 +33,14 @@ const KoleksiDaringPage: React.FC = () => {
               </div>
             ))}
           </div>
-        </section>
-      </main>
+      </section>
     </div>
   );
 };
 
 const CollectionCard: React.FC<CollectionCardProps> = ({ title, onAction }) => (
   <button
+    type="button"
     onClick={onAction}
     className="group flex w-full flex-col items-center text-center rounded-lg border border-main-border bg-cream-soft p-6 shadow-[var(--shadow-card)] transition-shadow duration-300 hover:shadow-[var(--shadow-raised)]"
   >
@@ -49,7 +48,7 @@ const CollectionCard: React.FC<CollectionCardProps> = ({ title, onAction }) => (
     <h3 className="font-display text-lg text-main-text mt-4 transition-colors group-hover:text-secondary">{title}</h3>
     <span className="mt-2 flex items-center gap-1.5 text-sm text-secondary">
       Kunjungi
-      <ExternalLink size={14} className="transition-transform group-hover:translate-x-0.5" />
+      <ExternalLink aria-hidden="true" size={14} className="transition-transform group-hover:translate-x-0.5" />
     </span>
   </button>
 );

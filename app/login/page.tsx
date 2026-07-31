@@ -39,13 +39,16 @@ export default function LoginPage() {
             <div className="mb-8">
               <h1 className="text-3xl font-display text-secondary">Portal Masuk</h1>
               <p className="mt-2 text-sm text-main-text/60">
-                Akses Mandiri Perpustakaan Cakrawala
+                Akses mandiri UPT Perpustakaan UNSRAT
+              </p>
+              <p className="mt-3 rounded-md bg-surface px-3 py-2 text-xs text-main-text-muted">
+                Mode dummy: gunakan admin@unsrat.ac.id, staff@unsrat.ac.id, atau mahasiswa@unsrat.ac.id. Kata sandi bebas.
               </p>
             </div>
 
             <form onSubmit={handleLogin} className="space-y-5">
               {displayError && (
-                <div className="rounded-md border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
+                <div id="login-error" role="alert" className="rounded-md border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
                   {displayError}
                 </div>
               )}
@@ -56,7 +59,11 @@ export default function LoginPage() {
                 </label>
                 <input
                   id="email"
+                  name="email"
                   type="text"
+                  autoComplete="username"
+                  aria-invalid={displayError ? true : undefined}
+                  aria-describedby={displayError ? "login-error" : undefined}
                   className="w-full rounded-md border border-main-border bg-cream-soft px-4 py-2.5 text-main-text outline-none transition-colors placeholder:text-main-text/40 focus:border-secondary focus:ring-1 focus:ring-secondary"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -71,7 +78,11 @@ export default function LoginPage() {
                 </label>
                 <input
                   id="password"
+                  name="password"
                   type="password"
+                  autoComplete="current-password"
+                  aria-invalid={displayError ? true : undefined}
+                  aria-describedby={displayError ? "login-error" : undefined}
                   className="w-full rounded-md border border-main-border bg-cream-soft px-4 py-2.5 text-main-text outline-none transition-colors placeholder:text-main-text/40 focus:border-secondary focus:ring-1 focus:ring-secondary"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -85,7 +96,7 @@ export default function LoginPage() {
                 disabled={isLoading}
                 className="flex w-full items-center justify-center gap-2 rounded-md bg-secondary py-3 font-medium text-white transition-colors hover:bg-secondary-hover disabled:opacity-50"
               >
-                {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+                {isLoading && <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />}
                 {isLoading ? "Memverifikasi..." : "Masuk Sekarang"}
               </button>
             </form>

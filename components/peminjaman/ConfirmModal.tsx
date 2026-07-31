@@ -2,33 +2,33 @@
 
 import React from "react";
 import { BookOpen } from "lucide-react";
+import AccessibleDialog from "@/components/AccessibleDialog";
 
 interface ConfirmModalProps {
   onConfirm: () => void;
   onCancel: () => void;
+  isPending?: boolean;
 }
 
-const ConfirmModal: React.FC<ConfirmModalProps> = ({ onConfirm, onCancel }) => {
+const ConfirmModal: React.FC<ConfirmModalProps> = ({ onConfirm, onCancel, isPending = false }) => {
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4" onClick={onCancel}>
-      <div className="w-full max-w-sm rounded-lg bg-cream p-8 text-center shadow-[var(--shadow-overlay)]" onClick={(e) => e.stopPropagation()}>
+    <AccessibleDialog titleId="borrow-confirm-title" descriptionId="borrow-confirm-description" onClose={onCancel} overlayClassName="z-[60] bg-black/50" className="w-full max-w-sm rounded-lg bg-cream p-8 text-center shadow-[var(--shadow-overlay)]">
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-secondary/10 text-secondary">
-          <BookOpen size={26} strokeWidth={1.75} />
+          <BookOpen aria-hidden="true" size={26} strokeWidth={1.75} />
         </div>
-        <h3 className="font-display text-xl text-main-text">Konfirmasi Pinjam</h3>
-        <p className="mb-7 mt-2 text-sm text-main-text/60">
+        <h3 id="borrow-confirm-title" className="font-display text-xl text-main-text">Konfirmasi Pinjam</h3>
+        <p id="borrow-confirm-description" className="mb-7 mt-2 text-sm text-main-text/60">
           Pastikan kamu mengembalikan buku tepat waktu sesuai aturan perpustakaan.
         </p>
         <div className="grid grid-cols-2 gap-3">
-          <button onClick={onCancel} className="rounded-md bg-surface px-4 py-2.5 text-sm font-medium text-main-text/70 transition hover:bg-surface-hover">
+          <button type="button" disabled={isPending} onClick={onCancel} className="rounded-md bg-surface px-4 py-2.5 text-sm font-medium text-main-text/70 transition hover:bg-surface-hover disabled:opacity-50">
             Batal
           </button>
-          <button onClick={onConfirm} className="rounded-md bg-secondary px-4 py-2.5 text-sm font-medium text-white transition hover:bg-secondary-hover">
-            Ya, Pinjam
+          <button type="button" disabled={isPending} onClick={onConfirm} className="rounded-md bg-secondary px-4 py-2.5 text-sm font-medium text-white transition hover:bg-secondary-hover disabled:opacity-50">
+            {isPending ? "Meminjam..." : "Ya, Pinjam"}
           </button>
         </div>
-      </div>
-    </div>
+    </AccessibleDialog>
   );
 };
 

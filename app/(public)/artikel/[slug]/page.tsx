@@ -12,15 +12,15 @@ export default function ArtikelDetail() {
 
   if (isLoading)
     return (
-      <div className="flex min-h-screen items-center justify-center gap-3 text-secondary">
-        <Loader2 className="h-5 w-5 animate-spin" />
+      <div role="status" className="flex min-h-screen items-center justify-center gap-3 text-secondary">
+        <Loader2 aria-hidden="true" className="h-5 w-5 animate-spin" />
         <span className="text-sm">Memuat arsip...</span>
       </div>
     );
   if (isError || !article)
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <p className="text-main-text/60">Arsip tidak ditemukan.</p>
+        <p role="alert" className="text-main-text-muted">Arsip tidak ditemukan.</p>
       </div>
     );
 
@@ -28,10 +28,11 @@ export default function ArtikelDetail() {
     <div className="min-h-screen bg-cream px-4 py-20 font-sans">
       <article className="container mx-auto max-w-3xl">
         <button
+          type="button"
           onClick={() => router.back()}
-          className="group mb-10 inline-flex items-center gap-2 text-sm text-main-text/50 transition-colors hover:text-secondary"
+          className="group mb-10 inline-flex items-center gap-2 text-sm text-main-text-muted transition-colors hover:text-secondary"
         >
-          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+           <ArrowLeft aria-hidden="true" className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
           Kembali
         </button>
 
@@ -41,10 +42,10 @@ export default function ArtikelDetail() {
 
         <h1 className="font-display text-4xl leading-tight text-main-text md:text-5xl">{article.title}</h1>
 
-        <div className="mt-6 mb-10 flex flex-wrap items-center gap-3 border-b border-main-border pb-8 text-sm text-main-text/60">
-          <span className="rounded-full bg-secondary px-3 py-1 text-xs text-white">{article.author?.full_name}</span>
+        <div className="mt-6 mb-10 flex flex-wrap items-center gap-3 border-b border-main-border pb-8 text-sm text-main-text-muted">
+          <span className="rounded-full bg-secondary px-3 py-1 text-xs text-white">{article.author?.full_name || "Penulis tidak diketahui"}</span>
           <span className="flex items-center gap-1.5">
-            <CalendarDays className="h-4 w-4" />
+            <CalendarDays aria-hidden="true" className="h-4 w-4" />
             {new Date(article.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
           </span>
         </div>

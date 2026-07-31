@@ -2,8 +2,7 @@ export const collectionSections = [
   {
     title: "E-Journal Nasional",
     collections: [
-      { imgSrc: "/images/e-journal.png", imgAlt: "E-Journal Cakrawala", title: "E-Journal Cakrawala", link: "https://ejournal.example/" },
-      { imgSrc: "/images/garuda.png", imgAlt: "Garuda Ristekdikti", title: "Garuda", link: "http://garuda.ristekdikti.go.id/" },
+      { imgSrc: "/images/garuda.png", imgAlt: "Garuda Ristekdikti", title: "Garuda", link: "https://garuda.kemdikbud.go.id/" },
       { imgSrc: "/images/neliti.png", imgAlt: "Neliti", title: "Neliti", link: "https://www.neliti.com/id/" },
     ],
   },
@@ -25,7 +24,7 @@ export const collectionSections = [
     title: "Buku Elektronik (E-Book)",
     collections: [
       { imgSrc: "/images/wiley.png", imgAlt: "Wiley Online Library", title: "Wiley Online Library", link: "https://olabout.wiley.com/WileyCDA/Section/id-829579.html" },
-      { imgSrc: "/images/oxford.png", imgAlt: "Oxford Books", title: "Oxford Books", link: "http://www.oxfordscholarship.com/" },
+      { imgSrc: "/images/oxford.png", imgAlt: "Oxford Books", title: "Oxford Books", link: "https://www.oxfordscholarship.com/" },
       { imgSrc: "/images/springer-link.png", imgAlt: "Springer Link", title: "Springer Link", link: "https://link.springer.com/" },
       { imgSrc: "/images/onesearch.png", imgAlt: "OneSearch", title: "OneSearch", link: "https://onesearch.id/" },
       { imgSrc: "/images/perpusnas.png", imgAlt: "Perpusnas", title: "Perpusnas", link: "https://e-resources.perpusnas.go.id/" },

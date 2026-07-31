@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { API_BASE_URL, handleApiResponse } from "@/constants/api";
+import { getMockState, wait } from "@/lib/mockData";
 
 export function useAuthLogic(setUser: any, setToken: any) {
   const router = useRouter();
@@ -14,21 +14,11 @@ export function useAuthLogic(setUser: any, setToken: any) {
     setError(null);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const result = await handleApiResponse(response);
-
-      const apiResponse = result.data || result;
-      const userData = apiResponse.user;
-      const accessToken = apiResponse.access_token;
-
-      if (!userData || !accessToken) {
-        throw new Error("Data user atau token tidak ditemukan.");
-      }
+      await wait(null);
+      if (!password) throw new Error("Kata sandi wajib diisi.");
+      const userData = getMockState().users.find((user) => user.email.toLowerCase() === email.toLowerCase());
+      if (!userData) throw new Error("Akun dummy tidak ditemukan. Gunakan admin@unsrat.ac.id, staff@unsrat.ac.id, atau mahasiswa@unsrat.ac.id.");
+      const accessToken = `dummy-token-${userData.id}`;
 
       setToken(accessToken);
       setUser(userData);
@@ -62,4 +52,3 @@ export function useAuthLogic(setUser: any, setToken: any) {
 
   return { login, logout, isLoading, error };
 }
-

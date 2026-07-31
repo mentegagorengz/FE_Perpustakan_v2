@@ -2,24 +2,22 @@
 
 import React from "react";
 import { X } from "lucide-react";
+import AccessibleDialog from "@/components/AccessibleDialog";
 
 interface DetailModalProps {
   book: any;
   availableCount: number;
   onClose: () => void;
   onBorrow: () => void;
+  active?: boolean;
 }
 
-const DetailModal: React.FC<DetailModalProps> = ({ book, availableCount, onClose, onBorrow }) => {
+const DetailModal: React.FC<DetailModalProps> = ({ book, availableCount, onClose, onBorrow, active = true }) => {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={onClose}>
-      <div
-        className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-lg bg-cream shadow-[var(--shadow-overlay)]"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <AccessibleDialog titleId="book-detail-title" onClose={onClose} active={active} overlayClassName="z-50 bg-black/60" className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-lg bg-cream shadow-[var(--shadow-overlay)]">
         <div className="flex items-center justify-between border-b border-main-border p-4">
-          <h2 className="font-display text-xl text-main-text">Informasi Koleksi</h2>
-          <button onClick={onClose} className="text-main-text/50 transition-colors hover:text-secondary" aria-label="Tutup">
+          <h2 id="book-detail-title" className="font-display text-xl text-main-text">Informasi Koleksi</h2>
+          <button onClick={onClose} className="text-main-text-muted transition-colors hover:text-secondary" aria-label="Tutup">
             <X size={22} />
           </button>
         </div>
@@ -40,8 +38,8 @@ const DetailModal: React.FC<DetailModalProps> = ({ book, availableCount, onClose
                 <DetailRow label="Status" value={availableCount > 0 ? `${availableCount} tersedia` : "Kosong"} />
               </div>
               <div className="border-t border-main-border pt-4">
-                <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-main-text/45">Sinopsis / Catatan</p>
-                <p className="text-sm leading-relaxed text-main-text/70">
+                <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-main-text-muted">Sinopsis / Catatan</p>
+                <p className="text-sm leading-relaxed text-main-text-muted">
                   {book.description || "Tidak ada deskripsi tambahan untuk buku ini."}
                 </p>
               </div>
@@ -50,7 +48,7 @@ const DetailModal: React.FC<DetailModalProps> = ({ book, availableCount, onClose
         </div>
 
         <div className="flex justify-end gap-3 border-t border-main-border bg-surface p-4">
-          <button onClick={onClose} className="rounded-md px-5 py-2 text-sm font-medium text-main-text/70 transition hover:bg-surface-hover">
+          <button onClick={onClose} className="rounded-md px-5 py-2 text-sm font-medium text-main-text-muted transition hover:bg-surface-hover">
             Tutup
           </button>
           {availableCount > 0 ? (
@@ -63,14 +61,13 @@ const DetailModal: React.FC<DetailModalProps> = ({ book, availableCount, onClose
             </button>
           )}
         </div>
-      </div>
-    </div>
+    </AccessibleDialog>
   );
 };
 
 const DetailRow = ({ label, value }: { label: string; value: any }) => (
   <div>
-    <p className="text-xs uppercase tracking-wide text-main-text/40">{label}</p>
+    <p className="text-xs uppercase tracking-wide text-main-text-muted">{label}</p>
     <p className="font-medium text-main-text">{value || "-"}</p>
   </div>
 );

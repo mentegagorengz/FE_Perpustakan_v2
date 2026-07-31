@@ -11,14 +11,14 @@ export default function AdminDashboard() {
 
   if (isLoading)
     return (
-      <div className="flex items-center gap-2 p-10 text-secondary">
-        <Loader2 className="h-5 w-5 animate-spin" />
+      <div role="status" className="flex items-center gap-2 p-4 text-secondary sm:p-6 lg:p-10">
+        <Loader2 aria-hidden="true" className="h-5 w-5 animate-spin" />
         <span>Memuat data sistem...</span>
       </div>
     );
 
   if (isError)
-    return <div className="p-10 text-red-600">Terjadi kesalahan saat memuat data database.</div>;
+    return <div className="p-4 text-red-600 sm:p-6 lg:p-10">Terjadi kesalahan saat memuat data database.</div>;
 
   const stats = [
     { label: "Total koleksi", value: data?.total_books, icon: BookOpen },
@@ -28,17 +28,17 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-cream p-10 font-sans">
+    <div className="min-h-screen bg-cream p-4 font-sans sm:p-6 lg:p-10">
       <div className="mb-8 border-b border-main-border pb-6">
         <h1 className="text-3xl font-display text-secondary">Command Center</h1>
-        <p className="mt-2 text-sm text-main-text/60">
+        <p className="mt-2 text-sm text-main-text-muted">
           Server: <span className="text-green-700">{data?.server_status}</span> &middot; Sync{" "}
           {new Date(data?.last_updated || "").toLocaleTimeString()}
         </p>
       </div>
 
       
-      <div className="mb-10 grid grid-cols-1 gap-6 md:grid-cols-4">
+      <div className="mb-10 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
         {stats.map((item) => {
           const Icon = item.icon;
           return (
@@ -50,21 +50,21 @@ export default function AdminDashboard() {
                 <Icon className="h-5 w-5" />
               </div>
               <p className="font-display text-3xl text-secondary">{item.value ?? 0}</p>
-              <p className="mt-1 text-sm text-main-text/60">{item.label}</p>
+              <p className="mt-1 text-sm text-main-text-muted">{item.label}</p>
             </div>
           );
         })}
       </div>
 
       
-      <div className="rounded-lg border border-main-border bg-white p-8 shadow-[var(--shadow-card)]">
+      <div className="rounded-lg border border-main-border bg-white p-5 shadow-[var(--shadow-card)] sm:p-8">
         <div className="flex items-start gap-4">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-cream-soft text-secondary">
             <Database className="h-5 w-5" />
           </div>
           <div>
             <h3 className="font-display text-lg text-secondary">Sistem terintegrasi</h3>
-            <p className="mt-1 text-sm leading-relaxed text-main-text/60">
+            <p className="mt-1 text-sm leading-relaxed text-main-text-muted">
               Saat ini terdapat <strong className="text-main-text">{data?.total_logs}</strong> rekaman
               aktivitas yang tersimpan aman di database perpustakaan.
             </p>

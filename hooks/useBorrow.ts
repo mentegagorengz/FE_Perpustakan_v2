@@ -131,6 +131,7 @@ export function useBorrow() {
     showConfirmPopup,
     setShowConfirmPopup,
     handleBorrow,
+    isBorrowing: borrowMutation.isPending,
     borrowSuccess,
     borrowError,
     isAuthenticated,

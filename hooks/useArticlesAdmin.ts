@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useArticles, Article } from "@/hooks/useArticles";
+import { useArticles } from "@/hooks/useArticles";
 
 export function useArticlesAdmin(token: string | null) {
-  const { articles, isLoading, createArticle, updateArticle, deleteArticle, isProcessing } = useArticles(token);
+  const { articles, isLoading, createArticle, updateArticle, deleteArticle, articleError, isProcessing } = useArticles(token);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [showForm, setShowForm] = useState(false);
@@ -57,6 +57,7 @@ export function useArticlesAdmin(token: string | null) {
     articles: filteredArticles,
     isLoading,
     isProcessing,
+    articleError,
     form: {
       title: formTitle,
       setTitle: setFormTitle,
@@ -77,8 +78,7 @@ export function useArticlesAdmin(token: string | null) {
     handleOpenEdit,
     handleActionSubmit,
     handleDelete: (id: number) => {
-      deleteArticle(id);
-      setShowDeleteConfirm(null);
+      deleteArticle(id, { onSuccess: () => setShowDeleteConfirm(null) });
     },
     resetForm,
   };

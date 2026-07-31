@@ -1,17 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { API_BASE_URL, handleApiResponse } from "@/constants/api";
+import { getMockState, wait } from "@/lib/mockData";
 
 export function useDashboardSummary(token: string | null) {
   return useQuery({
     queryKey: ["dashboard-summary"],
     queryFn: async () => {
-      const response = await fetch(`${API_BASE_URL}/dashboard/summary`, {
-        headers: { 
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const result = await handleApiResponse(response);
-      return result.data;
+      const state = getMockState();
+      return wait({ total_books: state.books.length, total_users: state.users.length, login_attempts: state.logs.filter((log) => log.action === "LOGIN").length, failed_actions: state.logs.filter((log) => log.status === "FAILED").length, server_status: "MODE DUMMY", last_updated: new Date().toISOString(), total_logs: state.logs.length });
     },
     enabled: !!token,
   });

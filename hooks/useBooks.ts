@@ -1,5 +1,5 @@
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { API_BASE_URL, handleApiResponse } from "@/constants/api";
+import { getMockState, paginate, wait } from "@/lib/mockData";
 import type { ApiBook, Paginated } from "@/types/api";
 
 export function useBooks(params: { page: number; search?: string; limit?: number }) {
@@ -7,14 +7,8 @@ export function useBooks(params: { page: number; search?: string; limit?: number
   return useQuery({
     queryKey: ["books", { page, search, limit }],
     queryFn: async () => {
-      const query = new URLSearchParams({
-        page: String(page),
-        limit: String(limit),
-        ...(search ? { search } : {}),
-      });
-      const response = await fetch(`${API_BASE_URL}/books?${query}`);
-      const result = await handleApiResponse(response);
-      return result.data as Paginated<ApiBook>;
+      const books = getMockState().books.filter((book) => !search || book.title.toLowerCase().includes(search.toLowerCase()));
+      return wait(paginate(books, page, limit) as Paginated<ApiBook>);
     },
     placeholderData: keepPreviousData,
   });
@@ -24,9 +18,7 @@ export function useBookDetail(id: number | null) {
   return useQuery({
     queryKey: ["book", id],
     queryFn: async () => {
-      const response = await fetch(`${API_BASE_URL}/books/${id}`);
-      const result = await handleApiResponse(response);
-      return result.data as ApiBook;
+      return wait(getMockState().books.find((book) => book.id === id) as ApiBook);
     },
     enabled: id != null,
   });

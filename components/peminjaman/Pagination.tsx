@@ -21,20 +21,21 @@ const Pagination: React.FC<PaginationProps> = ({ current, total, onChange }) => 
   };
 
   return (
-    <div className="mt-14 flex flex-wrap items-center justify-center gap-2">
+    <nav aria-label="Paginasi koleksi" className="mt-14 flex flex-wrap items-center justify-center gap-2">
       <button
+        type="button"
         onClick={() => onChange(Math.max(current - 1, 1))}
         disabled={current === 1}
         className="flex items-center gap-1 rounded-md border border-main-border px-3 py-2 text-sm text-main-text/70 transition-colors hover:border-secondary hover:text-secondary disabled:opacity-40 disabled:hover:border-main-border disabled:hover:text-main-text/70"
       >
-        <ChevronLeft size={16} /> Prev
+        <ChevronLeft aria-hidden="true" size={16} /> Sebelumnya
       </button>
 
       <div className="flex items-center gap-1">
         {current > 3 && (
           <>
             <PageButton num={1} active={false} onClick={() => onChange(1)} />
-            {current > 4 && <span className="px-1 text-main-text/40">…</span>}
+            {current > 4 && <span className="px-1 text-main-text-muted">…</span>}
           </>
         )}
 
@@ -44,28 +45,32 @@ const Pagination: React.FC<PaginationProps> = ({ current, total, onChange }) => 
 
         {current < total - 2 && (
           <>
-            {current < total - 3 && <span className="px-1 text-main-text/40">…</span>}
+            {current < total - 3 && <span className="px-1 text-main-text-muted">…</span>}
             <PageButton num={total} active={false} onClick={() => onChange(total)} />
           </>
         )}
       </div>
 
       <button
+        type="button"
         onClick={() => onChange(Math.min(current + 1, total))}
         disabled={current === total}
         className="flex items-center gap-1 rounded-md border border-main-border px-3 py-2 text-sm text-main-text/70 transition-colors hover:border-secondary hover:text-secondary disabled:opacity-40 disabled:hover:border-main-border disabled:hover:text-main-text/70"
       >
-        Next <ChevronRight size={16} />
+        Berikutnya <ChevronRight aria-hidden="true" size={16} />
       </button>
-    </div>
+    </nav>
   );
 };
 
 const PageButton = ({ num, active, onClick }: { num: number; active: boolean; onClick: () => void }) => (
   <button
+    type="button"
     onClick={onClick}
+    aria-label={`Halaman ${num}`}
+    aria-current={active ? "page" : undefined}
     className={`h-9 w-9 rounded-md text-sm transition-colors ${
-      active ? "bg-secondary font-medium text-white" : "text-main-text/60 hover:bg-surface hover:text-main-text"
+      active ? "bg-secondary font-medium text-white" : "text-main-text-muted hover:bg-surface hover:text-main-text"
     }`}
   >
     {num}

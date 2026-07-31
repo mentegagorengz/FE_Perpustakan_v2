@@ -5,6 +5,8 @@
   --color-secondary-hover: #5a3516;
 
   --color-main-text: #333333;
+  --color-main-text-muted: #62564b;
+  --color-on-secondary-muted: #f5ede4;
 
   --color-main-bg: #928776;
   --color-main-border: #d4c9bc;
@@ -13,6 +15,9 @@
 
   --color-cream: #fdf8f3;
   --color-cream-soft: #f5ede4;
+  --color-footer: #292929;
+  --color-footer-muted: #d8cec4;
+  --color-footer-subtle: #bdb0a3;
 
   --font-sans: Arial, Helvetica, sans-serif;
   --font-display: Arial, Helvetica, sans-serif;
