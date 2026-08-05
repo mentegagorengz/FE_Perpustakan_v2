@@ -7,25 +7,12 @@ import { BookOpen, Users, FileText, FlaskConical, ChevronLeft, ChevronRight, Arr
 
 export default function Home() {
   const [currentSlide, setCurrentSlide] = React.useState(0);
-  const [isPaused, setIsPaused] = React.useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false);
 
   const slides = [
-    {
-      image: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2000&auto=format&fit=crop",
-      title: "Portal Garuda",
-      href: "https://garuda.kemdikbud.go.id/",
-    },
-    {
-      image: "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=2000&auto=format&fit=crop",
-      title: "Koleksi Terbaru",
-      href: "/koleksi",
-    },
-    {
-      image: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=2000&auto=format&fit=crop",
-      title: "Akses E-Journal",
-      href: "/koleksidaring",
-    }
+      { image: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2000&auto=format&fit=crop" },
+      { image: "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=2000&auto=format&fit=crop" },
+      { image: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=2000&auto=format&fit=crop" },
   ];
 
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
@@ -40,77 +27,94 @@ export default function Home() {
   }, []);
 
   React.useEffect(() => {
-    if (isPaused || prefersReducedMotion) return;
+    if (prefersReducedMotion) return;
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, [isPaused, prefersReducedMotion, slides.length]);
+  }, [prefersReducedMotion, slides.length]);
 
   return (
     <div className="min-h-screen bg-cream font-sans text-main-text">
       {/* Hero Section */}
-      <section className="relative h-[500px] w-full overflow-hidden">
-        {slides.map((slide, index) => (
-          <div 
-            key={index}
-            className={`absolute inset-0 h-full w-full ease-in-out ${prefersReducedMotion ? "transition-none" : "transition-transform duration-500"}`}
-            style={{ transform: `translateX(${(index - currentSlide) * 100}%)` }}
-          >
-            {/* Background */}
-            <Image
-              src={slide.image}
-              alt=""
-              fill
-              sizes="100vw"
-              priority={index === 0}
-              loading={index === 0 ? undefined : "lazy"}
-              className="object-cover object-center"
-              aria-hidden="true"
-            />
-            {/* Overlay */}
-            <div className="absolute inset-0 bg-black/60" />
-            
-            {/* Content */}
-            <div className="relative z-10 flex h-full flex-col items-center justify-center text-center text-white px-4">
-              <h1 className="mb-4 font-display text-4xl font-bold md:text-5xl">{slide.title}</h1>
-              <Link href={slide.href} className="rounded bg-secondary px-6 py-2.5 text-sm font-medium transition hover:bg-secondary-hover">
-                Kunjungi Portal
-              </Link>
+      <section
+        aria-roledescription="carousel"
+        aria-label="Sorotan layanan perpustakaan"
+        className="group relative isolate flex h-[78vh] min-h-[440px] w-full flex-col justify-end overflow-hidden bg-secondary lg:max-h-[680px]"
+      >
+        {slides.map((slide, index) => {
+          const isActive = index === currentSlide;
+          return (
+            <div
+              key={slide.image}
+              inert={!isActive}
+              aria-hidden={!isActive}
+              className={`absolute inset-0 ${isActive ? "opacity-100" : "opacity-0"} ${
+                prefersReducedMotion ? "transition-none" : "transition-opacity duration-1000 ease-in-out"
+              }`}
+            >
+              <Image
+                src={slide.image}
+                alt=""
+                fill
+                sizes="100vw"
+                priority={index === 0}
+                 className="object-cover object-center scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/25" />
             </div>
-          </div>
-        ))}
+          );
+        })}
 
-        {/* Navigation Arrows */}
-        <button type="button" onClick={prevSlide} aria-label="Slide sebelumnya" className="absolute left-4 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center bg-black/50 text-white hover:bg-black/70">
+        {/* Welcoming Text */}
+        <div className="absolute inset-0 flex items-center justify-center text-center">
+          <div className="container mx-auto px-6 max-w-3xl">
+            <span className="inline-block px-3.5 py-1 mb-4 text-[11px] font-medium tracking-[0.25em] uppercase text-white/80 bg-white/10 backdrop-blur-md rounded-full border border-white/15">
+              Portal Literasi &amp; Informasi
+            </span>
+            <h1 className="font-display text-4xl leading-tight tracking-tight text-white md:text-6xl lg:text-7xl font-bold">
+              Selamat Datang di Perpustakaan
+            </h1>
+            <p className="mt-4 text-base md:text-lg text-white/80 max-w-xl mx-auto font-normal leading-relaxed">
+              Pusat ilmu pengetahuan, koleksi literatur digital, dan ruang belajar untuk mendukung riset dan inovasi.
+            </p>
+          </div>
+        </div>
+
+        {/* Subtle Next/Prev Arrows */}
+        <button
+          type="button"
+          onClick={prevSlide}
+          aria-label="Slide sebelumnya"
+          className="absolute left-6 top-1/2 z-10 hidden -translate-y-1/2 items-center justify-center h-10 w-10 rounded-full bg-white/10 text-white/70 backdrop-blur-md transition-all hover:bg-white/25 hover:text-white md:flex opacity-60 hover:opacity-100"
+        >
           <ChevronLeft aria-hidden="true" size={20} />
         </button>
-        <button type="button" onClick={nextSlide} aria-label="Slide berikutnya" className="absolute right-4 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center bg-black/50 text-white hover:bg-black/70">
+        <button
+          type="button"
+          onClick={nextSlide}
+          aria-label="Slide berikutnya"
+          className="absolute right-6 top-1/2 z-10 hidden -translate-y-1/2 items-center justify-center h-10 w-10 rounded-full bg-white/10 text-white/70 backdrop-blur-md transition-all hover:bg-white/25 hover:text-white md:flex opacity-60 hover:opacity-100"
+        >
           <ChevronRight aria-hidden="true" size={20} />
         </button>
 
-        <button
-          type="button"
-          onClick={() => setIsPaused((paused) => !paused)}
-          aria-label={isPaused ? "Putar carousel" : "Jeda carousel"}
-          aria-pressed={isPaused}
-          className="absolute bottom-6 right-4 z-20 rounded bg-black/60 px-3 py-2 text-xs text-white hover:bg-black/80"
-        >
-          {isPaused ? "Putar" : "Jeda"}
-        </button>
-
-        {/* Dots */}
-        <div className="absolute bottom-6 left-1/2 z-20 flex -translate-x-1/2 gap-2">
+        {/* Subtle Indicator Pills */}
+        <div className="relative z-10 pb-6 flex items-center justify-center gap-2">
           {slides.map((_, index) => (
-            <button 
+            <button
+              key={index}
               type="button"
-              key={index} 
-              onClick={() => setCurrentSlide(index)} 
-              aria-label={`Tampilkan slide ${index + 1}`}
-              aria-current={currentSlide === index ? "true" : undefined}
-              className="flex h-11 w-11 items-center justify-center rounded-full"
+              onClick={() => setCurrentSlide(index)}
+              aria-label={`Slide ${index + 1}`}
+              className="group p-1"
             >
-            <span aria-hidden="true" className={`h-2 w-2 rounded-full transition-colors ${currentSlide === index ? "bg-white" : "bg-white/70"}`} />
+              <span
+                aria-hidden="true"
+                className={`block h-1.5 rounded-full transition-all duration-300 ${
+                  currentSlide === index ? "w-8 bg-white" : "w-2 bg-white/40 group-hover:bg-white/70"
+                }`}
+              />
             </button>
           ))}
         </div>
@@ -119,26 +123,26 @@ export default function Home() {
        {/* Service navigation */}
       <section className="container mx-auto py-12 px-6 max-w-5xl">
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          <div className="flex flex-col items-center justify-center rounded-lg border border-main-border bg-cream-soft p-6 text-center shadow-[var(--shadow-card)]">
+          <div className="flex flex-col items-center justify-center rounded-sm border border-main-border bg-cream-soft p-6 text-center shadow-[var(--shadow-card)]">
             <BookOpen aria-hidden="true" className="mb-3 text-secondary" size={28} strokeWidth={1.5} />
-            <h3 className="text-lg font-bold">Koleksi fisik</h3>
+            <h3 className="text-lg font-bold">Koleksi</h3>
             <p className="text-sm text-main-text-muted">Telusuri katalog buku</p>
           </div>
-          <div className="flex flex-col items-center justify-center rounded-lg border border-main-border bg-cream-soft p-6 text-center shadow-[var(--shadow-card)]">
+          <div className="flex flex-col items-center justify-center rounded-sm border border-main-border bg-cream-soft p-6 text-center shadow-[var(--shadow-card)]">
             <Users aria-hidden="true" className="mb-3 text-secondary" size={28} strokeWidth={1.5} />
             <h3 className="text-lg font-bold">Koleksi daring</h3>
             <p className="text-sm text-main-text-muted">Akses sumber elektronik</p>
           </div>
-          <div className="flex flex-col items-center justify-center rounded-lg border border-main-border bg-cream-soft p-6 text-center shadow-[var(--shadow-card)]">
+          <div className="flex flex-col items-center justify-center rounded-sm border border-main-border bg-cream-soft p-6 text-center shadow-[var(--shadow-card)]">
             <FileText aria-hidden="true" className="mb-3 text-secondary" size={28} strokeWidth={1.5} />
             <h3 className="text-lg font-bold">Warta</h3>
             <p className="text-sm text-main-text-muted">Baca informasi perpustakaan</p>
           </div>
-          <div className="flex flex-col items-center justify-center rounded-lg border border-main-border bg-cream-soft p-6 text-center shadow-[var(--shadow-card)]">
+          <Link href="/profil" className="flex flex-col items-center justify-center rounded-sm border border-main-border bg-cream-soft p-6 text-center shadow-[var(--shadow-card)] hover:bg-surface">
             <FlaskConical aria-hidden="true" className="mb-3 text-secondary" size={28} strokeWidth={1.5} />
-            <h3 className="text-lg font-bold">Profil UPT</h3>
+            <h3 className="text-lg font-bold">Profil Perpustakaan</h3>
             <p className="text-sm text-main-text-muted">Kenali layanan perpustakaan</p>
-          </div>
+          </Link>
         </div>
       </section>
 
@@ -148,18 +152,18 @@ export default function Home() {
           <div className="flex-1">
             <h2 className="mb-4 font-display text-2xl font-bold text-main-text">Tentang Perpustakaan</h2>
             <p className="mb-6 text-[15px] leading-relaxed text-main-text-muted">
-              UPT Perpustakaan Universitas Sam Ratulangi menyediakan akses ke koleksi dan informasi ilmiah untuk
+              Perpustakaan menyediakan akses ke koleksi dan informasi ilmiah untuk
               mendukung kegiatan akademik sivitas akademika.
             </p>
-            <Link href="/koleksi" className="inline-block rounded bg-secondary px-6 py-2.5 text-sm font-medium text-white transition hover:bg-secondary-hover">
+            <Link href="/koleksi" className="inline-block rounded-sm bg-secondary px-6 py-2.5 text-sm font-medium text-white transition hover:bg-secondary-hover">
               Lihat Koleksi
             </Link>
           </div>
           <div className="flex-1 w-full">
-            <div className="overflow-hidden rounded-lg">
+            <div className="overflow-hidden rounded-sm">
               <Image
                 src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=1000&auto=format&fit=crop"
-                alt="Interior perpustakaan UNSRAT"
+                alt="Interior perpustakaan"
                 width={1000}
                 height={300}
                 sizes="(min-width: 1024px) 50vw, 100vw"
@@ -182,14 +186,14 @@ export default function Home() {
               { title: "Basis Data Relasional", author: "Fathansyah", status: "Tersedia", color: "bg-green-50 text-green-700" },
               { title: "Jaringan Komputer", author: "Forouzan", status: "Tersedia", color: "bg-green-50 text-green-700" },
             ].map((book, i) => (
-              <div key={i} className="flex flex-col rounded-lg border border-main-border bg-cream p-4 shadow-[var(--shadow-card)] transition-transform hover:-translate-y-1 motion-reduce:transform-none motion-reduce:transition-none">
-                <div className="mb-4 flex h-36 items-center justify-center rounded bg-surface text-main-text-muted">
+              <div key={i} className="flex flex-col rounded-sm border border-main-border bg-cream p-4 shadow-[var(--shadow-card)] transition-transform hover:-translate-y-1 motion-reduce:transform-none motion-reduce:transition-none">
+                <div className="mb-4 flex h-36 items-center justify-center rounded-sm bg-surface text-main-text-muted">
                   <BookOpen aria-hidden="true" size={40} strokeWidth={1} />
                 </div>
                 <h3 className="mb-1 text-sm font-bold leading-tight text-main-text">{book.title}</h3>
                 <p className="mb-4 text-xs text-main-text-muted">{book.author}</p>
                 <div className="mt-auto">
-                  <span className={`inline-block rounded px-2.5 py-1 text-[11px] font-semibold ${book.color}`}>
+                  <span className={`inline-block rounded-sm px-2.5 py-1 text-[11px] font-semibold ${book.color}`}>
                     {book.status}
                   </span>
                 </div>
@@ -212,7 +216,7 @@ export default function Home() {
           <p className="mx-auto mb-8 max-w-lg text-[15px] text-on-secondary-muted">
             Masuk untuk mengakses layanan perpustakaan sesuai hak akses civitas akademika.
           </p>
-          <Link href="/login" className="inline-block rounded bg-cream px-8 py-3 text-sm font-semibold text-secondary transition hover:bg-cream-soft">
+          <Link href="/login" className="inline-block rounded-sm bg-cream px-8 py-3 text-sm font-semibold text-secondary transition hover:bg-cream-soft">
             Masuk Sekarang
           </Link>
         </div>

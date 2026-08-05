@@ -8,6 +8,11 @@ export interface ApiRef { id: number; name: string }
 export interface ApiBookItem {
   id: number;
   barcode: string;
+  inventory_number?: string | null;
+  location?: string | null;
+  collection_type?: "CIRCULATION" | "REFERENCE" | "RESERVE";
+  acquisition_source?: "PURCHASE" | "DONATION" | "OTHER";
+  price?: number | null;
   status: "AVAILABLE" | "RESERVED" | "BORROWED" | "LOST" | "DAMAGED";
   condition: "BAIK" | "RUSAK_RINGAN" | "RUSAK_BERAT";
   added_at: string;
@@ -18,9 +23,18 @@ export interface ApiBook {
   id: number;
   title: string;
   sub_title: string | null;
+  edition?: string | null;
+  gmd?: "TEXT" | "DVD" | "EBOOK" | "AUDIO" | null;
   isbn_13: string | null;
   isbn_10: string | null;
+  issn?: string | null;
   published_year: number | null;
+  publication_city?: string | null;
+  physical_description?: string | null;
+  classification_number?: string | null;
+  call_number?: string | null;
+  subjects?: string[];
+  attachment_url?: string | null;
   description: string | null;
   image_url: string | null;
   category: ApiRef | null;

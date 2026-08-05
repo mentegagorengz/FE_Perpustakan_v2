@@ -29,7 +29,7 @@ export default function AdminSidebar({ onNavigate, onClose }: { onNavigate?: () 
         <div className="flex items-center gap-3 pr-8">
           <BookOpen aria-hidden="true" size={30} strokeWidth={1.5} />
           <div>
-            <h2 className="font-display text-base leading-none">UPT Perpustakaan UNSRAT</h2>
+            <h2 className="font-display text-base leading-none">Perpustakaan</h2>
             <p className="mt-0.5 text-xs text-on-secondary-muted">Panel Manajemen</p>
           </div>
         </div>
@@ -70,7 +70,7 @@ export default function AdminSidebar({ onNavigate, onClose }: { onNavigate?: () 
 
         <button
           onClick={logout}
-          className="flex w-full items-center justify-center gap-2 rounded-md border border-white/25 py-2.5 text-sm text-on-secondary-muted transition-colors hover:bg-white/10 hover:text-white"
+          className="flex w-full items-center justify-center gap-2 rounded-sm border border-white/25 py-2.5 text-sm text-on-secondary-muted transition-colors hover:bg-white/10 hover:text-white"
         >
           <LogOut size={16} /> Keluar
         </button>

@@ -82,12 +82,6 @@ function BookCard({ book, onDetailClick, saved, onSave }: BookCardProps) {
           </p>
         </div>
 
-        {/* Bottom Call Number Info */}
-        <div className="pt-2 border-t border-main-border/40 flex items-center justify-between text-[11px] text-main-text-muted">
-          <span className="truncate">
-            No. Panggil: <span className="font-mono font-medium text-main-text">{book.callNumber}</span>
-          </span>
-        </div>
       </div>
     </article>
   );

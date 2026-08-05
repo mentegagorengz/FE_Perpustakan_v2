@@ -9,9 +9,8 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
           {/* Col 1 */}
           <div>
-            <h4 className="mb-4 font-bold text-[15px]">UPT Perpustakaan UNSRAT</h4>
+            <h4 className="mb-4 font-bold text-[15px]">Perpustakaan</h4>
             <div className="space-y-1 text-sm text-footer-muted">
-              <p>Universitas Sam Ratulangi</p>
               <p>Informasi lokasi tersedia melalui profil resmi perpustakaan.</p>
             </div>
           </div>
@@ -29,14 +28,14 @@ export default function Footer() {
           {/* Col 3 */}
           <div>
             <h4 className="mb-4 font-bold text-[15px]">Informasi layanan</h4>
-            <p className="text-sm text-footer-muted">Jadwal layanan mengikuti informasi resmi UPT Perpustakaan UNSRAT.</p>
+            <p className="text-sm text-footer-muted">Jadwal layanan mengikuti informasi resmi perpustakaan.</p>
           </div>
         </div>
       </div>
       
       {/* Copyright */}
       <div className="border-t border-white/10 py-6 text-center text-xs text-footer-subtle">
-        <p>&copy; {new Date().getFullYear()} UPT Perpustakaan Universitas Sam Ratulangi</p>
+        <p>&copy; {new Date().getFullYear()} Perpustakaan</p>
       </div>
     </footer>
   );

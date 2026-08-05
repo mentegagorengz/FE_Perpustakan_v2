@@ -4,8 +4,8 @@ import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useBooks, useBookDetail } from "@/hooks/useBooks";
-import { useBorrowMutation } from "@/hooks/useTransactions";
-import type { ApiBook } from "@/types/api";
+import { useBorrowMutation, useTransactionsList } from "@/hooks/useTransactions";
+import type { ApiBook, ApiBookItem } from "@/types/api";
 
 export interface UiBook {
   id: number;
@@ -18,13 +18,28 @@ export interface UiBook {
   publisher: string;
   year: string;
   language: string;
+  subtitle: string;
+  contributors: string;
+  edition: string;
+  gmd: string;
+  publicationCity: string;
+  physicalDescription: string;
+  classificationNumber: string;
+  callNumber: string;
+  subjects: string[];
+  attachmentUrl: string;
+  items: ApiBookItem[];
 }
+
+const gmdLabels = { TEXT: "Teks", DVD: "DVD", EBOOK: "E-book", AUDIO: "Audio" } as const;
 
 function mapBook(b: ApiBook): UiBook {
   return {
     id: b.id,
     title: b.title,
+    subtitle: b.sub_title ?? "",
     mainAuthor: b.authors?.[0]?.name ?? "-",
+    contributors: b.authors?.map((author) => author.name).join(", ") ?? "-",
     category: b.category?.name ?? "-",
     imageUrl: b.image_url ?? "",
     description: b.description ?? "",
@@ -32,14 +47,24 @@ function mapBook(b: ApiBook): UiBook {
     publisher: b.publisher?.name ?? "-",
     year: b.published_year ? String(b.published_year) : "-",
     language: b.language?.name ?? "-",
+    edition: b.edition ?? "-",
+    gmd: b.gmd ? gmdLabels[b.gmd] : "-",
+    publicationCity: b.publication_city ?? "-",
+    physicalDescription: b.physical_description ?? "-",
+    classificationNumber: b.classification_number ?? "-",
+    callNumber: b.call_number ?? "-",
+    subjects: b.subjects ?? [],
+    attachmentUrl: b.attachment_url ?? "",
+    items: b.items ?? [],
   };
 }
 
 export function useBorrow() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, token } = useAuth();
   const router = useRouter();
   const { data, isLoading, isError } = useBooks({ page: 1 });
   const borrowMutation = useBorrowMutation();
+  const { data: transactions } = useTransactionsList({ token, page: 1 });
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Semua");
@@ -86,6 +111,11 @@ export function useBorrow() {
   const { data: detail } = useBookDetail(selectedBook?.id ?? null);
   const availableCount =
     detail?.items?.filter((it) => it.status === "AVAILABLE").length ?? 0;
+  const returnEstimates = Object.fromEntries(
+    (transactions?.data ?? [])
+      .filter((transaction) => transaction.status !== "RETURNED" && transaction.bookItem?.barcode && transaction.due_date)
+      .map((transaction) => [transaction.bookItem!.barcode, transaction.due_date!]),
+  );
 
   const handleBorrow = async () => {
     setBorrowError(null);
@@ -138,5 +168,6 @@ export function useBorrow() {
     isLoading,
     isError,
     availableCount,
+    returnEstimates,
   };
 }

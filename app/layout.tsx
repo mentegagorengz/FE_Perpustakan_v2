@@ -6,8 +6,8 @@ import "./globals.css";
 
 
 export const metadata = {
-  title: "UPT Perpustakaan UNSRAT",
-  description: "Layanan perpustakaan Universitas Sam Ratulangi",
+  title: "Perpustakaan",
+  description: "Layanan Perpustakaan",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

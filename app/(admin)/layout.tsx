@@ -30,7 +30,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         aria-controls="admin-sidebar"
         aria-expanded={isSidebarOpen}
         onClick={() => setIsSidebarOpen(true)}
-        className="fixed left-4 top-4 z-30 flex h-11 w-11 items-center justify-center rounded-md border border-main-border bg-cream text-secondary shadow-[var(--shadow-card)] md:hidden"
+        className="fixed left-4 top-4 z-30 flex h-11 w-11 items-center justify-center rounded-sm border border-main-border bg-cream text-secondary shadow-[var(--shadow-card)] md:hidden"
       >
         <Menu aria-hidden="true" className="h-5 w-5" />
       </button>

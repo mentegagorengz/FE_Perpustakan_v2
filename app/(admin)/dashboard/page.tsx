@@ -44,7 +44,7 @@ export default function AdminDashboard() {
           return (
             <div
               key={item.label}
-              className="rounded-lg border border-main-border bg-white p-6 shadow-[var(--shadow-card)]"
+              className="rounded-sm border border-main-border bg-white p-6 shadow-[var(--shadow-card)]"
             >
               <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-cream-soft text-secondary">
                 <Icon className="h-5 w-5" />
@@ -57,7 +57,7 @@ export default function AdminDashboard() {
       </div>
 
       
-      <div className="rounded-lg border border-main-border bg-white p-5 shadow-[var(--shadow-card)] sm:p-8">
+      <div className="rounded-sm border border-main-border bg-white p-5 shadow-[var(--shadow-card)] sm:p-8">
         <div className="flex items-start gap-4">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-cream-soft text-secondary">
             <Database className="h-5 w-5" />

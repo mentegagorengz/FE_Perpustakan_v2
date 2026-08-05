@@ -36,7 +36,7 @@ export default function ArtikelDetail() {
           Kembali
         </button>
 
-        <div className="relative mb-10 h-[420px] w-full overflow-hidden rounded-lg border border-main-border shadow-[var(--shadow-card)]">
+        <div className="relative mb-10 h-[420px] w-full overflow-hidden rounded-sm border border-main-border shadow-[var(--shadow-card)]">
           <div className="absolute inset-0 bg-surface" aria-hidden="true" />
         </div>
 

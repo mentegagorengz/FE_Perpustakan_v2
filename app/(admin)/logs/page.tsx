@@ -35,7 +35,7 @@ export default function AuditLogsPage() {
                 setFilterAction(act);
                 setCurrentPage(1);
               }}
-              className={`rounded-md border px-3 py-1.5 text-xs font-medium transition-colors ${filterAction === act ? "border-secondary bg-secondary text-white" : "border-main-border bg-white text-main-text/60 hover:bg-surface"}`}
+              className={`rounded-sm border px-3 py-1.5 text-xs font-medium transition-colors ${filterAction === act ? "border-secondary bg-secondary text-white" : "border-main-border bg-white text-main-text/60 hover:bg-surface"}`}
             >
               {act === "all" ? "Semua" : act}
             </button>
@@ -43,7 +43,7 @@ export default function AuditLogsPage() {
         </div>
       </div>
 
-      <div className={`mb-6 overflow-x-auto rounded-lg border border-main-border bg-white shadow-[var(--shadow-card)] transition-opacity ${isPlaceholderData ? "opacity-50" : "opacity-100"}`}>
+      <div className={`mb-6 overflow-x-auto rounded-sm border border-main-border bg-white shadow-[var(--shadow-card)] transition-opacity ${isPlaceholderData ? "opacity-50" : "opacity-100"}`}>
         <table className="min-w-[48rem] w-full text-left text-sm">
           <thead className="border-b border-main-border bg-surface text-main-text/60">
             <tr>
@@ -76,7 +76,7 @@ export default function AuditLogsPage() {
                     </div>
                   </td>
                   <td className="p-4">
-                    <span className="rounded-md bg-surface px-2 py-1 text-xs font-medium text-main-text/70">{log.action}</span>
+                    <span className="rounded-sm bg-surface px-2 py-1 text-xs font-medium text-main-text/70">{log.action}</span>
                   </td>
                   <td className="p-4">
                     <div className={`flex items-center gap-1.5 text-xs font-medium ${log.status === "SUCCESS" ? "text-green-700" : "text-red-600"}`}>
@@ -95,14 +95,14 @@ export default function AuditLogsPage() {
         <div className="flex flex-col gap-3 px-1 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-main-text/50">Total {meta.total} catatan ditemukan</p>
           <div className="flex flex-wrap items-center gap-2">
-            <button disabled={currentPage === 1} onClick={() => setCurrentPage((p) => p - 1)} className="inline-flex items-center gap-1 rounded-md border border-main-border bg-white px-3 py-2 text-xs font-medium transition-colors hover:bg-surface disabled:opacity-40">
+            <button disabled={currentPage === 1} onClick={() => setCurrentPage((p) => p - 1)} className="inline-flex items-center gap-1 rounded-sm border border-main-border bg-white px-3 py-2 text-xs font-medium transition-colors hover:bg-surface disabled:opacity-40">
               <ChevronLeft className="h-4 w-4" />
               Sebelumnya
             </button>
-            <div className="rounded-md bg-secondary px-4 py-2 text-xs font-medium text-white">
+            <div className="rounded-sm bg-secondary px-4 py-2 text-xs font-medium text-white">
               Halaman {meta.page} dari {meta.totalPages}
             </div>
-            <button disabled={currentPage === meta.totalPages} onClick={() => setCurrentPage((p) => p + 1)} className="inline-flex items-center gap-1 rounded-md border border-main-border bg-white px-3 py-2 text-xs font-medium transition-colors hover:bg-surface disabled:opacity-40">
+            <button disabled={currentPage === meta.totalPages} onClick={() => setCurrentPage((p) => p + 1)} className="inline-flex items-center gap-1 rounded-sm border border-main-border bg-white px-3 py-2 text-xs font-medium transition-colors hover:bg-surface disabled:opacity-40">
               Berikutnya
               <ChevronRight className="h-4 w-4" />
             </button>

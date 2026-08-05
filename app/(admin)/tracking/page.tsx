@@ -47,7 +47,7 @@ export default function SecurityTrackingPage() {
 
       
       {toast && (
-        <div role={toast.type === "error" ? "alert" : "status"} className={`fixed right-5 top-5 z-50 inline-flex items-center gap-2 rounded-md px-4 py-3 text-sm font-medium text-white shadow-[var(--shadow-overlay)] ${toast.type === "error" ? "bg-red-700" : "bg-green-700"}`}>
+        <div role={toast.type === "error" ? "alert" : "status"} className={`fixed right-5 top-5 z-50 inline-flex items-center gap-2 rounded-sm px-4 py-3 text-sm font-medium text-white shadow-[var(--shadow-overlay)] ${toast.type === "error" ? "bg-red-700" : "bg-green-700"}`}>
           {toast.type === "error" ? <AlertCircle aria-hidden="true" className="h-4 w-4" /> : <CheckCircle2 aria-hidden="true" className="h-4 w-4" />}
           {toast.message}
         </div>
@@ -55,26 +55,26 @@ export default function SecurityTrackingPage() {
 
       
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-lg border border-main-border bg-white p-5 shadow-[var(--shadow-card)]">
+        <div className="rounded-sm border border-main-border bg-white p-5 shadow-[var(--shadow-card)]">
           <p className="text-sm text-main-text/50">Total ditemukan</p>
           <p className="mt-1 font-display text-3xl text-main-text">{data?.meta.total ?? 0}</p>
         </div>
-        <div className="rounded-lg border border-main-border bg-white p-5 shadow-[var(--shadow-card)]">
+        <div className="rounded-sm border border-main-border bg-white p-5 shadow-[var(--shadow-card)]">
           <p className="text-sm text-main-text/50">Aktif</p>
           <p className="mt-1 font-display text-3xl text-secondary">{activeCount}</p>
         </div>
-        <div className="rounded-lg border border-main-border bg-white p-5 shadow-[var(--shadow-card)]">
+        <div className="rounded-sm border border-main-border bg-white p-5 shadow-[var(--shadow-card)]">
           <p className="text-sm text-main-text/50">Terlambat</p>
           <p className="mt-1 font-display text-3xl text-red-600">{overdueCount}</p>
         </div>
-        <div className="rounded-lg border border-main-border bg-white p-5 shadow-[var(--shadow-card)]">
+        <div className="rounded-sm border border-main-border bg-white p-5 shadow-[var(--shadow-card)]">
           <p className="text-sm text-main-text/50">Dikembalikan</p>
           <p className="mt-1 font-display text-3xl text-green-700">{returnedCount}</p>
         </div>
       </div>
 
       
-      <div className="overflow-x-auto rounded-lg border border-main-border bg-white shadow-[var(--shadow-card)]">
+      <div className="overflow-x-auto rounded-sm border border-main-border bg-white shadow-[var(--shadow-card)]">
         <table className="min-w-[72rem] w-full text-left text-sm">
           <thead className="border-b border-main-border bg-surface text-main-text/60">
             <tr>
@@ -103,7 +103,7 @@ export default function SecurityTrackingPage() {
                 </td>
                 <td className="p-4 text-right">
                   {t.status !== "RETURNED" && t.bookItem && (
-                    <button disabled={returnMutation.isPending} onClick={() => handleReturn(t.bookItem!.barcode, t.bookItem?.book?.title ?? "")} className="inline-flex items-center gap-1.5 rounded-md border border-main-border px-3 py-1.5 text-xs font-medium text-secondary transition-colors hover:bg-surface disabled:opacity-50">
+                    <button disabled={returnMutation.isPending} onClick={() => handleReturn(t.bookItem!.barcode, t.bookItem?.book?.title ?? "")} className="inline-flex items-center gap-1.5 rounded-sm border border-main-border px-3 py-1.5 text-xs font-medium text-secondary transition-colors hover:bg-surface disabled:opacity-50">
                       <RotateCcw className="h-3.5 w-3.5" />
                       Kembalikan
                     </button>
@@ -126,13 +126,13 @@ export default function SecurityTrackingPage() {
       
       {data && data.meta.totalPages > 1 && (
         <div className="mt-6 flex items-center justify-center gap-3">
-          <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1} className="rounded-md border border-main-border bg-white px-3 py-1.5 text-sm text-main-text/70 disabled:opacity-40">
+          <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1} className="rounded-sm border border-main-border bg-white px-3 py-1.5 text-sm text-main-text/70 disabled:opacity-40">
             Sebelumnya
           </button>
           <span className="text-sm text-main-text/60">
             {page} / {data.meta.totalPages}
           </span>
-          <button onClick={() => setPage((p) => Math.min(data.meta.totalPages, p + 1))} disabled={page >= data.meta.totalPages} className="rounded-md border border-main-border bg-white px-3 py-1.5 text-sm text-main-text/70 disabled:opacity-40">
+          <button onClick={() => setPage((p) => Math.min(data.meta.totalPages, p + 1))} disabled={page >= data.meta.totalPages} className="rounded-sm border border-main-border bg-white px-3 py-1.5 text-sm text-main-text/70 disabled:opacity-40">
             Berikutnya
           </button>
         </div>

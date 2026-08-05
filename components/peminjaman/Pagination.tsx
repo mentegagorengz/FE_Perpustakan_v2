@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface PaginationProps {
@@ -9,7 +8,7 @@ interface PaginationProps {
   onChange: (page: number) => void;
 }
 
-const Pagination: React.FC<PaginationProps> = ({ current, total, onChange }) => {
+function Pagination({ current, total, onChange }: PaginationProps) {
   if (total <= 1) return null;
 
   const getPages = () => {
@@ -26,7 +25,7 @@ const Pagination: React.FC<PaginationProps> = ({ current, total, onChange }) => 
         type="button"
         onClick={() => onChange(Math.max(current - 1, 1))}
         disabled={current === 1}
-        className="flex items-center gap-1 rounded-md border border-main-border px-3 py-2 text-sm text-main-text/70 transition-colors hover:border-secondary hover:text-secondary disabled:opacity-40 disabled:hover:border-main-border disabled:hover:text-main-text/70"
+        className="flex items-center gap-1 rounded-sm border border-main-border px-3 py-2 text-sm text-main-text/70 transition-colors hover:border-secondary hover:text-secondary disabled:opacity-40 disabled:hover:border-main-border disabled:hover:text-main-text/70"
       >
         <ChevronLeft aria-hidden="true" size={16} /> Sebelumnya
       </button>
@@ -55,13 +54,13 @@ const Pagination: React.FC<PaginationProps> = ({ current, total, onChange }) => 
         type="button"
         onClick={() => onChange(Math.min(current + 1, total))}
         disabled={current === total}
-        className="flex items-center gap-1 rounded-md border border-main-border px-3 py-2 text-sm text-main-text/70 transition-colors hover:border-secondary hover:text-secondary disabled:opacity-40 disabled:hover:border-main-border disabled:hover:text-main-text/70"
+        className="flex items-center gap-1 rounded-sm border border-main-border px-3 py-2 text-sm text-main-text/70 transition-colors hover:border-secondary hover:text-secondary disabled:opacity-40 disabled:hover:border-main-border disabled:hover:text-main-text/70"
       >
         Berikutnya <ChevronRight aria-hidden="true" size={16} />
       </button>
     </nav>
   );
-};
+}
 
 const PageButton = ({ num, active, onClick }: { num: number; active: boolean; onClick: () => void }) => (
   <button
@@ -69,7 +68,7 @@ const PageButton = ({ num, active, onClick }: { num: number; active: boolean; on
     onClick={onClick}
     aria-label={`Halaman ${num}`}
     aria-current={active ? "page" : undefined}
-    className={`h-9 w-9 rounded-md text-sm transition-colors ${
+    className={`h-9 w-9 rounded-sm text-sm transition-colors ${
       active ? "bg-secondary font-medium text-white" : "text-main-text-muted hover:bg-surface hover:text-main-text"
     }`}
   >
