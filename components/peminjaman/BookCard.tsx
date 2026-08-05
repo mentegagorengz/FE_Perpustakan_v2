@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { Bookmark } from "lucide-react";
 import type { UiBook } from "@/hooks/useBorrow";
@@ -14,6 +15,7 @@ interface BookCardProps {
 function BookCard({ book, onDetailClick, saved, onSave }: BookCardProps) {
   const availableCount = book.items.filter((item) => item.status === "AVAILABLE").length;
   const isAvailable = availableCount > 0;
+  const [imgSrc, setImgSrc] = useState(book.imageUrl || "/placeholder_koleksi.svg");
 
   return (
     <article
@@ -23,11 +25,12 @@ function BookCard({ book, onDetailClick, saved, onSave }: BookCardProps) {
       {/* Top Cover Image Area */}
       <div className="relative aspect-[3/4] w-full overflow-hidden border-b border-main-border bg-surface">
         <Image
-          src={book.imageUrl || "/placeholder_koleksi.svg"}
+          src={imgSrc}
           alt={`Sampul ${book.title}`}
           fill
           sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"
           className="object-cover object-center transition-transform duration-300 group-hover:scale-105"
+          onError={() => setImgSrc("/placeholder_koleksi.svg")}
         />
 
         {/* Floating Bookmark Button */}

@@ -38,6 +38,7 @@ export default function DetailModal({
   active = true,
 }: DetailModalProps) {
   const [activeTab, setActiveTab] = useState<"detail" | "items">("detail");
+  const [imgSrc, setImgSrc] = useState(book.imageUrl || "/placeholder_koleksi.svg");
   const isAvailable = availableCount > 0;
 
   return (
@@ -72,11 +73,12 @@ export default function DetailModal({
           <div className="shrink-0 mx-auto sm:mx-0">
             <div className="relative aspect-[3/4] w-36 sm:w-40 overflow-hidden rounded border border-slate-300 bg-white shadow-xs">
               <Image
-                src={book.imageUrl || "/placeholder_koleksi.svg"}
+                src={imgSrc}
                 alt={`Sampul ${book.title}`}
                 fill
                 sizes="160px"
                 className="object-cover"
+                onError={() => setImgSrc("/placeholder_koleksi.svg")}
               />
             </div>
           </div>
