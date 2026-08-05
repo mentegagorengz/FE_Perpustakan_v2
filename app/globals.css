@@ -10,12 +10,16 @@
 
   --color-main-bg: #f8fafc;
   --color-main-border: #e2e8f0;
+  --color-main-border-subtle: #cbd5e1;
   --color-surface: #f1f5f9;
+  --color-surface-subtle: #f8fafc;
+  --color-surface-muted: #f1f5f9;
   --color-surface-hover: #e2e8f0;
 
   --color-cream: #f8fafc;
   --color-cream-soft: #f1f5f9;
   --color-paper: #ffffff;
+  --color-card-bg: #ffffff;
 
   --color-footer: #0f172a;
   --color-footer-muted: #94a3b8;
