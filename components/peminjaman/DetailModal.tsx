@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Download, X, Info, Layers, BookOpen } from "lucide-react";
 import AccessibleDialog from "@/components/AccessibleDialog";
@@ -41,6 +41,10 @@ export default function DetailModal({
   const [imgSrc, setImgSrc] = useState(book.imageUrl || "/placeholder_koleksi.svg");
   const isAvailable = availableCount > 0;
 
+  useEffect(() => {
+    setImgSrc(book.imageUrl || "/placeholder_koleksi.svg");
+  }, [book.imageUrl]);
+
   return (
     <AccessibleDialog
       titleId="book-detail-title"
@@ -76,6 +80,7 @@ export default function DetailModal({
                 src={imgSrc}
                 alt={`Sampul ${book.title}`}
                 fill
+                unoptimized={imgSrc.endsWith(".svg")}
                 sizes="160px"
                 className="object-cover"
                 onError={() => setImgSrc("/placeholder_koleksi.svg")}

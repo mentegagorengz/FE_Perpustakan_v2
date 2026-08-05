@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Bookmark } from "lucide-react";
 import type { UiBook } from "@/hooks/useBorrow";
@@ -17,6 +17,10 @@ function BookCard({ book, onDetailClick, saved, onSave }: BookCardProps) {
   const isAvailable = availableCount > 0;
   const [imgSrc, setImgSrc] = useState(book.imageUrl || "/placeholder_koleksi.svg");
 
+  useEffect(() => {
+    setImgSrc(book.imageUrl || "/placeholder_koleksi.svg");
+  }, [book.imageUrl]);
+
   return (
     <article
       onClick={() => onDetailClick(book)}
@@ -28,6 +32,7 @@ function BookCard({ book, onDetailClick, saved, onSave }: BookCardProps) {
           src={imgSrc}
           alt={`Sampul ${book.title}`}
           fill
+          unoptimized={imgSrc.endsWith(".svg")}
           sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"
           className="object-cover object-center transition-transform duration-300 group-hover:scale-105"
           onError={() => setImgSrc("/placeholder_koleksi.svg")}
