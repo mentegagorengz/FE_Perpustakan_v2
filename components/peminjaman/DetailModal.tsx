@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
-import { Download, X } from "lucide-react";
+import { Download, X, Info, Layers, BookOpen } from "lucide-react";
 import AccessibleDialog from "@/components/AccessibleDialog";
 import type { UiBook } from "@/hooks/useBorrow";
 
@@ -22,104 +23,284 @@ const statusLabels = {
   DAMAGED: "Rusak",
 } as const;
 
-const dateFormat = new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric" });
+const dateFormat = new Intl.DateTimeFormat("id-ID", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+});
 
-export default function DetailModal({ book, availableCount, returnEstimates, onClose, onBorrow, active = true }: DetailModalProps) {
+export default function DetailModal({
+  book,
+  availableCount,
+  returnEstimates,
+  onClose,
+  onBorrow,
+  active = true,
+}: DetailModalProps) {
+  const [activeTab, setActiveTab] = useState<"detail" | "items">("detail");
+  const isAvailable = availableCount > 0;
+
   return (
-    <AccessibleDialog titleId="book-detail-title" onClose={onClose} active={active} overlayClassName="z-50 bg-black/60" className="flex max-h-[92dvh] w-full max-w-5xl flex-col overflow-hidden rounded-sm border border-main-border bg-cream shadow-[var(--shadow-overlay)]">
-      <div className="flex items-center justify-between border-b border-main-border px-5 py-4">
-        <h2 id="book-detail-title" className="text-xl font-bold text-main-text">Detail Koleksi</h2>
-        <button onClick={onClose} className="flex h-11 w-11 items-center justify-center text-main-text-muted hover:text-secondary" aria-label="Tutup">
-          <X aria-hidden="true" size={22} />
+    <AccessibleDialog
+      titleId="book-detail-title"
+      onClose={onClose}
+      active={active}
+      overlayClassName="z-50 bg-black/60 backdrop-blur-xs"
+      className="flex max-h-[92dvh] w-full max-w-4xl flex-col overflow-hidden rounded-md border border-main-border bg-cream shadow-xl"
+    >
+      {/* Modal Header */}
+      <div className="flex items-center justify-between border-b border-main-border px-5 py-3.5 bg-paper/50">
+        <div className="flex items-center gap-2 text-main-text">
+          <BookOpen size={18} className="text-secondary" />
+          <h2 id="book-detail-title" className="text-lg font-bold">
+            Detail Koleksi
+          </h2>
+        </div>
+        <button
+          onClick={onClose}
+          className="flex h-9 w-9 items-center justify-center rounded-full text-main-text-muted hover:bg-main-border/30 hover:text-main-text transition-colors"
+          aria-label="Tutup"
+        >
+          <X aria-hidden="true" size={20} />
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-5 sm:p-7">
-        <section className="grid gap-8 sm:grid-cols-[180px_1fr]">
-          <div>
-            <div className="relative aspect-[3/4] overflow-hidden border border-main-border bg-surface">
+      <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-6">
+        {/* Top Hero Section */}
+        <div className="flex flex-col sm:flex-row gap-5 p-4 rounded-md border border-main-border/60 bg-paper/60 shadow-xs">
+          {/* Book Cover */}
+          <div className="shrink-0 mx-auto sm:mx-0">
+            <div className="relative aspect-[3/4] w-36 sm:w-40 overflow-hidden rounded border border-main-border bg-surface shadow-xs">
               <Image
                 src={book.imageUrl || "/placeholder_koleksi.svg"}
-                alt={book.imageUrl ? `Sampul ${book.title}` : `Placeholder sampul ${book.title}`}
+                alt={`Sampul ${book.title}`}
                 fill
-                sizes="180px"
+                sizes="160px"
                 className="object-cover"
               />
             </div>
-            {book.attachmentUrl ? (
-              <a href={book.attachmentUrl} target="_blank" rel="noreferrer" className="mt-3 flex min-h-11 items-center justify-center gap-2 border border-main-border text-sm font-semibold text-secondary hover:bg-cream-soft">
-                <Download aria-hidden="true" size={17} /> Buka lampiran
-              </a>
-            ) : null}
           </div>
 
-          <div>
-            <p className="text-sm font-semibold text-secondary">{book.gmd}</p>
-            <h3 className="mt-2 text-2xl font-bold leading-tight text-main-text sm:text-3xl">{book.title}</h3>
-            {book.subtitle ? <p className="mt-2 text-lg text-main-text-muted">{book.subtitle}</p> : null}
-            <p className="mt-4 text-sm text-main-text-muted">Oleh <strong className="text-main-text">{book.contributors}</strong></p>
+          {/* Book Meta & Quick Action */}
+          <div className="flex-1 flex flex-col justify-between space-y-3">
+            <div>
+              {book.gmd && (
+                <span className="inline-block rounded-full bg-secondary/10 px-2.5 py-0.5 text-xs font-semibold text-secondary mb-1.5">
+                  {book.gmd}
+                </span>
+              )}
+              <h3 className="text-xl sm:text-2xl font-bold text-main-text leading-snug">
+                {book.title}
+              </h3>
+              {book.subtitle && (
+                <p className="text-sm text-main-text-muted mt-0.5">{book.subtitle}</p>
+              )}
+              <p className="mt-2 text-xs sm:text-sm text-main-text-muted">
+                Oleh <strong className="text-main-text font-semibold">{book.contributors || book.mainAuthor || "Penulis Anonim"}</strong>
+              </p>
+            </div>
 
-            <h4 className="mt-8 border-b border-main-border pb-3 text-lg font-bold">Data bibliografi</h4>
-            <dl className="mt-5 grid gap-x-8 gap-y-5 text-sm sm:grid-cols-2">
-              <DetailRow label="Edisi" value={book.edition} />
-              <DetailRow label="GMD / tipe media" value={book.gmd} />
-              <DetailRow label="Penerbit & tahun" value={`${book.publisher}, ${book.publicationCity}, ${book.year}`} />
-              <DetailRow label="Deskripsi fisik" value={book.physicalDescription} />
-              <DetailRow label="ISBN / ISSN" value={book.isbn} />
-              <DetailRow label="Bahasa" value={book.language} />
-              <DetailRow label="Klasifikasi DDC" value={book.classificationNumber} />
-              <DetailRow label="Nomor panggil" value={book.callNumber} />
-            </dl>
+            {/* Quick Action Bar */}
+            <div className="pt-3 border-t border-main-border/40 flex flex-wrap items-center gap-3">
+              <span
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold border ${
+                  isAvailable
+                    ? "bg-emerald-500/10 text-emerald-700 border-emerald-500/30"
+                    : "bg-amber-500/10 text-amber-700 border-amber-500/30"
+                }`}
+              >
+                <span
+                  className={`h-2 w-2 rounded-full ${
+                    isAvailable ? "bg-emerald-500" : "bg-amber-500"
+                  }`}
+                />
+                {isAvailable ? `Tersedia (${availableCount})` : "Stok Habis"}
+              </span>
 
-            <div className="mt-6">
-              <p className="text-xs font-semibold uppercase tracking-wide text-main-text-muted">Subjek / topik</p>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {book.subjects.length ? book.subjects.map((subject) => <span key={subject} className="rounded-full border border-main-border px-3 py-1 text-xs text-main-text-muted">{subject}</span>) : <span className="text-sm">-</span>}
+              <button
+                onClick={onBorrow}
+                disabled={!isAvailable}
+                className="rounded bg-secondary px-4 py-1.5 text-xs sm:text-sm font-semibold text-white transition-colors hover:bg-secondary-hover disabled:cursor-not-allowed disabled:bg-main-border disabled:text-main-text-muted"
+              >
+                {isAvailable ? "Pinjam Sekarang" : "Stok Habis"}
+              </button>
+
+              {book.attachmentUrl && (
+                <a
+                  href={book.attachmentUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded border border-main-border bg-paper px-3 py-1.5 text-xs sm:text-sm font-semibold text-secondary hover:bg-cream transition-colors"
+                >
+                  <Download aria-hidden="true" size={15} />
+                  Buka lampiran
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="border-b border-main-border flex gap-4 text-sm font-semibold">
+          <button
+            onClick={() => setActiveTab("detail")}
+            className={`pb-2.5 flex items-center gap-2 border-b-2 transition-colors ${
+              activeTab === "detail"
+                ? "border-secondary text-secondary"
+                : "border-transparent text-main-text-muted hover:text-main-text"
+            }`}
+          >
+            <Info size={16} /> Detail & Catatan
+          </button>
+          <button
+            onClick={() => setActiveTab("items")}
+            className={`pb-2.5 flex items-center gap-2 border-b-2 transition-colors ${
+              activeTab === "items"
+                ? "border-secondary text-secondary"
+                : "border-transparent text-main-text-muted hover:text-main-text"
+            }`}
+          >
+            <Layers size={16} /> Data Eksemplar ({book.items.length})
+          </button>
+        </div>
+
+        {/* Tab 1: Detail & Catatan */}
+        {activeTab === "detail" && (
+          <div className="space-y-5">
+            {/* Abstrak / Catatan */}
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-main-text-muted mb-1.5">
+                Abstrak / Catatan
+              </h4>
+              <p className="text-sm leading-relaxed text-main-text bg-paper/40 p-3.5 rounded border border-main-border/40">
+                {book.description || "Tidak ada catatan abstrak."}
+              </p>
+            </div>
+
+            {/* Subjek / Topik */}
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-main-text-muted mb-1.5">
+                Subjek / Topik
+              </h4>
+              <div className="flex flex-wrap gap-1.5">
+                {book.subjects.length ? (
+                  book.subjects.map((subject) => (
+                    <span
+                      key={subject}
+                      className="rounded-full border border-main-border bg-paper px-2.5 py-0.5 text-xs text-main-text-muted"
+                    >
+                      {subject}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-xs text-main-text-muted">-</span>
+                )}
               </div>
             </div>
-            <div className="mt-6 border-t border-main-border pt-5">
-              <p className="text-xs font-semibold uppercase tracking-wide text-main-text-muted">Abstrak / catatan</p>
-              <p className="mt-2 max-w-[70ch] text-sm leading-7 text-main-text-muted">{book.description || "Tidak ada catatan."}</p>
+
+            {/* Grid Bibliografi */}
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-main-text-muted mb-2">
+                Data Bibliografi
+              </h4>
+              <dl className="grid gap-x-6 gap-y-3.5 text-xs sm:text-sm sm:grid-cols-2 bg-paper/40 p-4 rounded border border-main-border/40">
+                <DetailRow label="Edisi" value={book.edition} />
+                <DetailRow label="GMD / Tipe Media" value={book.gmd} />
+                <DetailRow
+                  label="Penerbit & Tahun"
+                  value={[book.publisher, book.publicationCity, book.year].filter(Boolean).join(", ")}
+                />
+                <DetailRow label="Deskripsi Fisik" value={book.physicalDescription} />
+                <DetailRow label="ISBN / ISSN" value={book.isbn} />
+                <DetailRow label="Bahasa" value={book.language} />
+                <DetailRow label="Klasifikasi DDC" value={book.classificationNumber} />
+                <DetailRow label="Nomor Panggil" value={book.callNumber} />
+              </dl>
             </div>
           </div>
-        </section>
+        )}
 
-        <section className="mt-10">
-          <div className="flex items-end justify-between gap-4 border-b border-main-border pb-3">
-            <h4 className="text-lg font-bold">Data eksemplar</h4>
-            <p className="text-sm font-semibold text-secondary">{availableCount} tersedia</p>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[640px] text-left text-sm">
-              <thead className="text-xs uppercase tracking-wide text-main-text-muted">
-                <tr><th className="py-4 pr-5">Barcode ID</th><th className="py-4 pr-5">Lokasi rak</th><th className="py-4 pr-5">Status</th><th className="py-4">Estimasi kembali</th></tr>
+        {/* Tab 2: Data Eksemplar */}
+        {activeTab === "items" && (
+          <div className="overflow-x-auto rounded border border-main-border bg-paper/40">
+            <table className="w-full text-left text-xs sm:text-sm">
+              <thead className="border-b border-main-border bg-surface text-xs uppercase tracking-wider text-main-text-muted">
+                <tr>
+                  <th className="py-3 px-4">Barcode ID</th>
+                  <th className="py-3 px-4">Lokasi Rak</th>
+                  <th className="py-3 px-4">Status</th>
+                  <th className="py-3 px-4">Estimasi Kembali</th>
+                </tr>
               </thead>
-              <tbody className="divide-y divide-main-border border-t border-main-border">
+              <tbody className="divide-y divide-main-border/60">
                 {book.items.map((item) => (
-                  <tr key={item.id}>
-                    <td className="py-4 pr-5 font-medium">{item.barcode}<span className="mt-1 block text-xs font-normal text-main-text-muted">{item.inventory_number || "-"}</span></td>
-                    <td className="py-4 pr-5">{item.location || "-"}</td>
-                    <td className="py-4 pr-5"><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${item.status === "AVAILABLE" ? "bg-green-100 text-green-800" : item.status === "BORROWED" ? "bg-amber-100 text-amber-900" : "bg-surface text-main-text-muted"}`}>{statusLabels[item.status]}</span></td>
-                    <td className="py-4 text-main-text-muted">{item.status === "BORROWED" ? (returnEstimates[item.barcode] ? dateFormat.format(new Date(returnEstimates[item.barcode])) : "Belum tercatat") : "-"}</td>
+                  <tr key={item.id} className="hover:bg-cream-soft/50 transition-colors">
+                    <td className="py-3 px-4 font-medium text-main-text">
+                      {item.barcode}
+                      {item.inventory_number && (
+                        <span className="block text-[11px] font-normal text-main-text-muted">
+                          {item.inventory_number}
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-3 px-4 text-main-text-muted">{item.location || "-"}</td>
+                    <td className="py-3 px-4">
+                      <span
+                        className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold border ${
+                          item.status === "AVAILABLE"
+                            ? "bg-emerald-500/10 text-emerald-700 border-emerald-500/30"
+                            : item.status === "BORROWED"
+                            ? "bg-amber-500/10 text-amber-700 border-amber-500/30"
+                            : "bg-surface text-main-text-muted border-main-border"
+                        }`}
+                      >
+                        {statusLabels[item.status]}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 text-main-text-muted">
+                      {item.status === "BORROWED"
+                        ? returnEstimates[item.barcode]
+                          ? dateFormat.format(new Date(returnEstimates[item.barcode]))
+                          : "Belum tercatat"
+                        : "-"}
+                    </td>
                   </tr>
                 ))}
-                {!book.items.length ? <tr><td colSpan={4} className="py-6 text-center text-main-text-muted">Belum ada data eksemplar.</td></tr> : null}
+                {!book.items.length && (
+                  <tr>
+                    <td colSpan={4} className="py-6 text-center text-main-text-muted">
+                      Belum ada data eksemplar.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
-        </section>
+        )}
       </div>
 
-      <div className="flex justify-end gap-3 border-t border-main-border bg-surface p-4">
-        <button onClick={onClose} className="rounded-sm px-5 py-2.5 text-sm font-medium text-main-text-muted hover:bg-surface-hover">Tutup</button>
-        <button onClick={onBorrow} disabled={availableCount === 0} className="rounded-sm bg-secondary px-5 py-2.5 text-sm font-medium text-white hover:bg-secondary-hover disabled:cursor-not-allowed disabled:bg-main-border">
-          {availableCount > 0 ? "Pinjam Sekarang" : "Stok Habis"}
+      {/* Modal Footer */}
+      <div className="flex justify-end border-t border-main-border bg-surface px-5 py-3">
+        <button
+          onClick={onClose}
+          className="rounded px-4 py-2 text-xs sm:text-sm font-medium text-main-text-muted hover:bg-main-border/30 hover:text-main-text transition-colors"
+        >
+          Tutup
         </button>
       </div>
     </AccessibleDialog>
   );
 }
 
-function DetailRow({ label, value }: { label: string; value: string }) {
-  return <div><dt className="text-xs font-semibold uppercase tracking-wide text-main-text-muted">{label}</dt><dd className="mt-1 font-medium leading-6 text-main-text">{value || "-"}</dd></div>;
+function DetailRow({ label, value }: { label: string; value?: string }) {
+  return (
+    <div>
+      <dt className="text-[11px] font-bold uppercase tracking-wider text-main-text-muted">
+        {label}
+      </dt>
+      <dd className="mt-0.5 font-medium leading-relaxed text-main-text">
+        {value || "-"}
+      </dd>
+    </div>
+  );
 }
