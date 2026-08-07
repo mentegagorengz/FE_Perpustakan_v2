@@ -14,7 +14,7 @@ export interface ApiBookItem {
   acquisition_source?: "PURCHASE" | "DONATION" | "OTHER";
   price?: number | null;
   status: "AVAILABLE" | "RESERVED" | "BORROWED" | "LOST" | "DAMAGED";
-  condition: "BAIK" | "RUSAK_RINGAN" | "RUSAK_BERAT";
+  condition: "GOOD" | "SLIGHTLY_DAMAGED" | "HEAVILY_DAMAGED";
   added_at: string;
   updated_at: string;
 }
@@ -90,6 +90,15 @@ export interface LoginPayload {
 
 export interface ApiSession {
   user: ApiUser | null;
+}
+
+export interface LoginResponse {
+  user: ApiUser;
+  refreshToken: string;
+}
+
+export interface RefreshTokenPayload {
+  refreshToken: string;
 }
 
 export interface ApiArticle {

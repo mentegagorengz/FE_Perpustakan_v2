@@ -7,13 +7,12 @@ interface UseUsersParams {
   enabled: boolean;
   page: number;
   search?: string;
-  role?: SystemRole;
 }
 
-export function useUsers({ enabled, page, search, role }: UseUsersParams) {
+export function useUsers({ enabled, page, search }: UseUsersParams) {
   return useQuery({
-    queryKey: queryKeys.users({ page, search, role }),
-    queryFn: () => http.get<Paginated<ApiUser>>("/users", { params: { page, search, role } }),
+    queryKey: queryKeys.users({ page, search }),
+    queryFn: () => http.get<Paginated<ApiUser>>("/users", { params: { page, search } }),
     enabled,
     placeholderData: keepPreviousData,
   });

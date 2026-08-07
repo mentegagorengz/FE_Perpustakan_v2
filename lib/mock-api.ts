@@ -62,15 +62,17 @@ function route(method: string, pathname: string): MockHandler | null {
     const user = getMockState().users.find((item) => item.email.toLowerCase() === email.toLowerCase());
     if (!user) throw new MockHttpError(400, "Akun tidak ditemukan. Gunakan admin@unsrat.ac.id, staff@unsrat.ac.id, atau mahasiswa@unsrat.ac.id.");
     setMockCookie(`dummy-${user.id}`);
-    return { user } satisfies ApiSession;
+    return { user, refreshToken: `dummy-rt-${user.id}` };
   };
 
-  const logout = async () => {
+  const logout = async (_params: URLSearchParams, body: unknown) => {
+    const { refreshToken } = (body ?? {}) as Partial<{ refreshToken: string }>;
+    if (!refreshToken) throw new MockHttpError(400, "Refresh token wajib dikirim.");
     clearMockCookie();
     return { success: true };
   };
 
-  const me = async () => {
+  const profile = async () => {
     const raw = readMockCookie();
     if (!raw) return { user: null } satisfies ApiSession;
     const user = getMockState().users.find((item) => item.id === Number(raw.replace("dummy-", "")));
@@ -269,7 +271,7 @@ function route(method: string, pathname: string): MockHandler | null {
   const table = [
     get(/^\/auth\/login$/, login),
     get(/^\/auth\/logout$/, logout),
-    get(/^\/auth\/me$/, me),
+    get(/^\/auth\/profile$/, profile),
     get(/^\/books$/, listBooks),
     get(/^\/books\/(\d+)$/, (params) => bookDetail(params)),
     get(/^\/articles$/, method === "GET" ? listArticles : method === "POST" ? createArticle : null),

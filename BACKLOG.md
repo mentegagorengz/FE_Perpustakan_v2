@@ -48,17 +48,21 @@ Backlog ini diturunkan dari `PRD_Refactory_FE.md`. Pekerjaan diurutkan berdasark
 - Konfirmasi kontrak cookie HttpOnly backend NestJS (kandidat backend: NestJS berjalan di `localhost:3000`)
 - Proxy `/api/*` di `next.config.ts` (mock mode default aktif)
 
-**Update kontrak backend (diverifikasi 2026-08-07 via curl ke NestJS di :3000):**
+**Update kontrak backend (diverifikasi 2026-08-07 via Swagger UI `localhost:3000/api/docs`):**
 
-- `POST /api/v1/auth/login` eksis; credential mock (`admin@unsrat.ac.id`) ditolak 401 di backend asli — akun asli perlu dikonfirmasi.
-- `GET /api/v1/auth/me` TIDAK ada (404) — sesi user pasca login perlu endpoint alternatif atau decode payload JWT di client.
-- Mekanisme cookie HttpOnly belum terverifikasi (login selalu 401 tanpa credential valid); lihat `Set-Cookie` saat login sukses.
-- Proxy `/api/*` -> `NEXT_PUBLIC_API_URL` sudah dipasang di `next.config.ts`; mock tetap default via `NEXT_PUBLIC_MOCK_API !== "false"`.
+- Spec lengkap diekstrak dari `/api/docs/swagger-ui-init.js` (tersimpan `/tmp/spec.json`); title "Library Digital API" v1.0.
+- Semua response dibungkus envelope `{ statusCode, message, data }` oleh interceptor global; paginated: `data: { data: [...], meta: {...} }`. `api-client.ts` kini unwrap `.data` di mode real (mock tetap polos — hasil akhir bentuk identik).
+- Auth: `POST /auth/login` set cookie `auth_token` (HttpOnly) + `refreshToken` di body; `GET /auth/profile` (BUKAN `/auth/me` — sudah diganti di FE); `POST /auth/refresh` (rotasi, body `{ refreshToken }`); `POST /auth/logout` (body `{ refreshToken }`, revoke + hapus cookie).
+- Keputusan: refresh token (opaque, bukan JWT) disimpan FE di localStorage key `unsrat-library-refresh-token` untuk dipakai `/logout` — mengikuti kontrak backend yang menyerahkan token via body.
+- Pagination semua list: `page`, `limit`, `search` saja (users TIDAK punya filter `role` — param role dihapus dari `use-users`, filter jadi client-side di halaman roles).
+- Enum backend: kondisi buku `GOOD | SLIGHTLY_DAMAGED | HEAVILY_DAMAGED` (mock diubah dari `BAIK`); status item `AVAILABLE | RESERVED | BORROWED | LOST | DAMAGED`; transaksi `BORROWED | RETURNED | OVERDUE`; role `SUPER_ADMIN | STAFF | USER`; kategori user `STUDENT | LECTURER | LIBRARY_STAFF | PUBLIC`.
+- CRUD: books/items/authors/categories/publishers/languages/articles + bulk; borrow `POST /transactions/borrow` body `{ barcode }`; return `PATCH /transactions/return/{barcode}`; riwayat user `GET /transactions/my-history`; `GET /dashboard/summary`, `GET /activity-logs`, `GET/PATCH /policy` (DTO: fine_per_day, loan_duration_days, max_books_per_user); soft delete users/books/items (`deleted_at`).
+- Login dengan credential mock ditolak backend asli (401) — 1 akun valid masih dibutuhkan untuk verifikasi `Set-Cookie` end-to-end.
 
 **Test runner (Fase 13):**
 
 - Vitest + jsdom + Testing Library terpasang; script `npm test`.
-- 44 test hijau: `cn`, format (menangkap bug `dateTimeFormatter` tanpa opsi jam), validasi zod, `api-client` (serialisasi query, error normalization, 401 redirect), `mock-api` (login/logout/me cookie, 401, artikel publik), `proxy` (307 redirect + matcher).
+- 47 test hijau: `cn`, format (menangkap bug `dateTimeFormatter` tanpa opsi jam), validasi zod, `api-client` (serialisasi query, error normalization, 401 redirect, unwrap envelope `{statusCode, message, data}` + paginated), `mock-api` (login/logout/profile cookie, logout wajib refresh token, artikel publik), `proxy` (307 redirect + matcher).
 - Fix turunan: `wait()` di `lib/mockData.ts` diubah agar handler ter-attach sinkron (mencegah unhandled rejection), `dateTimeFormatter` kini menampilkan jam.
 - E2E Playwright belum dikerjakan (scope terpisah).
 

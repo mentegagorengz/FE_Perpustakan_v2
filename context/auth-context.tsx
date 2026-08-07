@@ -3,13 +3,13 @@
 import { createContext, useCallback, useContext, useMemo, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { useLoginMutation, useLogoutMutation, useSessionQuery } from "@/hooks/use-auth";
-import type { ApiSession, ApiUser } from "@/types/api";
+import type { ApiUser, LoginResponse } from "@/types/api";
 
 interface AuthContextValue {
   user: ApiUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<ApiSession>;
+  login: (email: string, password: string) => Promise<LoginResponse>;
   logout: () => Promise<void>;
 }
 

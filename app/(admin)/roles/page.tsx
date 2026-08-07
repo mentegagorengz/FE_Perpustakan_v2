@@ -23,12 +23,12 @@ export default function RoleManagementPage() {
     enabled: isAuthenticated,
     page,
     search: deferredSearchTerm || undefined,
-    role: filterRole === "all" ? undefined : filterRole,
   });
   const updateRole = useUpdateRoleMutation();
   const deleteUser = useDeleteUserMutation();
 
-  const users = data?.data ?? [];
+  const filteredUsers = (data?.data ?? []).filter((user) => filterRole === "all" || user.role === filterRole);
+  const users = filteredUsers;
   const total = data?.meta.total ?? 0;
   const totalPages = data?.meta.totalPages ?? 1;
 
@@ -108,7 +108,7 @@ export default function RoleManagementPage() {
         </div>
         <div className="rounded-sm border border-main-border bg-paper p-5 shadow-[var(--shadow-card)]">
           <p className="text-sm text-main-text-muted">Hasil filter role</p>
-          <p className="mt-1 font-display text-3xl text-secondary">{total}</p>
+          <p className="mt-1 font-display text-3xl text-secondary">{filteredUsers.length}</p>
         </div>
       </div>
 

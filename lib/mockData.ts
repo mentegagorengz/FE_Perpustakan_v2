@@ -13,8 +13,8 @@ const books: ApiBook[] = [
     image_url: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=800&auto=format&fit=crop", attachment_url: "https://example.com/lampiran/pengantar-ilmu-komputer.pdf",
     category: { id: 1, name: "Komputer" }, publisher: { id: 1, name: "Informatika" }, language: { id: 1, name: "Indonesia" }, authors: [{ id: 1, name: "Raka Pratama" }, { id: 4, name: "Nadia Kusuma (Editor)" }],
     items: [
-      { id: 1, barcode: "BK-0001-01", inventory_number: "INV/2022/00124", location: "Lantai 2 · Rak 004-A", status: "AVAILABLE", condition: "BAIK", collection_type: "CIRCULATION", acquisition_source: "PURCHASE", price: 185000, added_at: "2024-01-01", updated_at: "2024-01-01" },
-      { id: 4, barcode: "BK-0001-02", inventory_number: "INV/2022/00125", location: "Lantai 2 · Rak 004-A", status: "BORROWED", condition: "BAIK", collection_type: "CIRCULATION", acquisition_source: "PURCHASE", price: 185000, added_at: "2024-01-01", updated_at: "2024-01-01" },
+      { id: 1, barcode: "BK-0001-01", inventory_number: "INV/2022/00124", location: "Lantai 2 · Rak 004-A", status: "AVAILABLE", condition: "GOOD", collection_type: "CIRCULATION", acquisition_source: "PURCHASE", price: 185000, added_at: "2024-01-01", updated_at: "2024-01-01" },
+      { id: 4, barcode: "BK-0001-02", inventory_number: "INV/2022/00125", location: "Lantai 2 · Rak 004-A", status: "BORROWED", condition: "GOOD", collection_type: "CIRCULATION", acquisition_source: "PURCHASE", price: 185000, added_at: "2024-01-01", updated_at: "2024-01-01" },
     ], created_at: "2024-01-01", updated_at: "2024-01-01",
   },
   {
@@ -24,7 +24,7 @@ const books: ApiBook[] = [
     subjects: ["Algoritma", "Pemrograman", "Python"], description: "Pengantar penyusunan algoritma, struktur kontrol, fungsi, struktur data, dan pemecahan masalah melalui contoh program.",
     image_url: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=800&auto=format&fit=crop", attachment_url: null,
     category: { id: 1, name: "Komputer" }, publisher: { id: 2, name: "Andi" }, language: { id: 1, name: "Indonesia" }, authors: [{ id: 2, name: "Budi Santoso" }],
-    items: [{ id: 2, barcode: "BK-0002-01", inventory_number: "INV/2021/00078", location: "Lantai 2 · Rak 005-B", status: "BORROWED", condition: "BAIK", collection_type: "CIRCULATION", acquisition_source: "DONATION", price: 145000, added_at: "2024-01-01", updated_at: "2024-01-01" }],
+    items: [{ id: 2, barcode: "BK-0002-01", inventory_number: "INV/2021/00078", location: "Lantai 2 · Rak 005-B", status: "BORROWED", condition: "GOOD", collection_type: "CIRCULATION", acquisition_source: "DONATION", price: 145000, added_at: "2024-01-01", updated_at: "2024-01-01" }],
     created_at: "2024-01-01", updated_at: "2024-01-01",
   },
   {
@@ -34,7 +34,7 @@ const books: ApiBook[] = [
     subjects: ["Basis data", "SQL", "Perancangan sistem"], description: "Membahas model relasional, normalisasi, perancangan skema, SQL, transaksi, serta penerapan basis data pada sistem informasi.",
     image_url: "https://images.unsplash.com/photo-1544383835-bda2bc66a55d?q=80&w=800&auto=format&fit=crop", attachment_url: "https://example.com/lampiran/basis-data-relasional.pdf",
     category: { id: 1, name: "Komputer" }, publisher: { id: 3, name: "Media Data" }, language: { id: 1, name: "Indonesia" }, authors: [{ id: 3, name: "Fathansyah" }],
-    items: [{ id: 3, barcode: "BK-0003-01", inventory_number: "INV/2020/00042", location: "Koleksi Digital", status: "AVAILABLE", condition: "BAIK", collection_type: "REFERENCE", acquisition_source: "PURCHASE", price: 120000, added_at: "2024-01-01", updated_at: "2024-01-01" }],
+    items: [{ id: 3, barcode: "BK-0003-01", inventory_number: "INV/2020/00042", location: "Koleksi Digital", status: "AVAILABLE", condition: "GOOD", collection_type: "REFERENCE", acquisition_source: "PURCHASE", price: 120000, added_at: "2024-01-01", updated_at: "2024-01-01" }],
     created_at: "2024-01-01", updated_at: "2024-01-01",
   },
 ];

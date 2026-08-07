@@ -1,5 +1,7 @@
 export const AUTH_COOKIE = "auth_token";
 
+export const REFRESH_TOKEN_STORAGE_KEY = "unsrat-library-refresh-token";
+
 export const STORAGE_KEYS = {
   mockState: "unsrat-library-dummy-data-v2",
 } as const;
@@ -31,7 +33,7 @@ export const queryKeys = {
   articles: () => ["articles"] as const,
   articleDetail: (id: string | null) => ["article", id] as const,
   transactions: (params: { page: number; search?: string }) => ["transactions", params] as const,
-  users: (params: { page: number; search?: string; role?: string }) => ["users", params] as const,
+  users: (params: { page: number; search?: string }) => ["users", params] as const,
   policy: () => ["policy"] as const,
   dashboard: () => ["dashboard-summary"] as const,
   logs: (params: { page: number; action?: string }) => ["activity-logs", params] as const,

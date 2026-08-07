@@ -9,13 +9,14 @@ describe("mock-api auth flow", () => {
 
   afterAll(() => new Promise((resolve) => setTimeout(resolve, 200)));
 
-  it("login berhasil menyimpan cookie auth", async () => {
+  it("login berhasil menyimpan cookie auth dan mengembalikan refresh token", async () => {
     const session = await handleMockRequest("POST", "/auth/login", new URLSearchParams(), {
       email: "admin@unsrat.ac.id",
       password: "password123",
     });
 
     expect(session).toMatchObject({ user: { email: "admin@unsrat.ac.id", role: "SUPER_ADMIN" } });
+    expect(session).toMatchObject({ refreshToken: expect.any(String) });
     expect(document.cookie).toContain(AUTH_COOKIE);
   });
 
@@ -36,19 +37,26 @@ describe("mock-api auth flow", () => {
     expect(error).toMatchObject({ status: 401 });
   });
 
-  it("me kembalikan user saat cookie valid", async () => {
+  it("profile kembalikan user saat cookie valid", async () => {
     await handleMockRequest("POST", "/auth/login", new URLSearchParams(), { email: "staff@unsrat.ac.id", password: "x" });
 
-    const session = await handleMockRequest("GET", "/auth/me", new URLSearchParams(), undefined);
+    const session = await handleMockRequest("GET", "/auth/profile", new URLSearchParams(), undefined);
     expect(session).toMatchObject({ user: { email: "staff@unsrat.ac.id", role: "STAFF" } });
   });
 
-  it("logout menghapus cookie dan me menjadi null", async () => {
+  it("logout menolak tanpa refresh token", async () => {
     await handleMockRequest("POST", "/auth/login", new URLSearchParams(), { email: "mahasiswa@unsrat.ac.id", password: "x" });
-    await handleMockRequest("POST", "/auth/logout", new URLSearchParams(), undefined);
+    await expect(handleMockRequest("POST", "/auth/logout", new URLSearchParams(), undefined)).rejects.toMatchObject({
+      status: 400,
+    });
+  });
+
+  it("logout menghapus cookie dan profile menjadi null", async () => {
+    await handleMockRequest("POST", "/auth/login", new URLSearchParams(), { email: "mahasiswa@unsrat.ac.id", password: "x" });
+    await handleMockRequest("POST", "/auth/logout", new URLSearchParams(), { refreshToken: "dummy-rt-3" });
 
     expect(document.cookie).not.toContain(AUTH_COOKIE);
-    const session = await handleMockRequest("GET", "/auth/me", new URLSearchParams(), undefined);
+    const session = await handleMockRequest("GET", "/auth/profile", new URLSearchParams(), undefined);
     expect(session).toEqual({ user: null });
   });
 

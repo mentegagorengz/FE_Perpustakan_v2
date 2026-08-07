@@ -88,7 +88,7 @@ describe("apiClient (mode real)", () => {
     const { http } = await loadApiClient();
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({ message: "Sesi habis" }), { status: 401 })));
 
-    await expect(http.get("/auth/me")).rejects.toThrow();
+    await expect(http.get("/auth/profile")).rejects.toThrow();
     expect(location.href).toBe("");
   });
 
@@ -104,5 +104,47 @@ describe("apiClient (mode real)", () => {
     const [, config] = fetchMock.mock.calls[0] as [string, RequestInit];
     expect(config.body).toBe(JSON.stringify({ email: "a@b.c", password: "x" }));
     expect(config.method).toBe("POST");
+  });
+
+  it("membuka envelope { statusCode, message, data } dari response backend", async () => {
+    const { http } = await loadApiClient();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            statusCode: 200,
+            message: "Success",
+            data: { user: { id: 1, email: "admin@unsrat.ac.id" }, refreshToken: "rt-1" },
+          }),
+          { status: 200, headers: { "Content-Type": "application/json" } },
+        ),
+      ),
+    );
+
+    const result = await http.post<{ user: { id: number }; refreshToken: string }>("/auth/login", { email: "a@b.c", password: "x" });
+
+    expect(result).toEqual({ user: { id: 1, email: "admin@unsrat.ac.id" }, refreshToken: "rt-1" });
+  });
+
+  it("membuka envelope paginated menjadi { data, meta }", async () => {
+    const { http } = await loadApiClient();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            statusCode: 200,
+            message: "Success",
+            data: { data: [{ id: 1 }], meta: { total: 1, page: 1, limit: 10, totalPages: 1 } },
+          }),
+          { status: 200, headers: { "Content-Type": "application/json" } },
+        ),
+      ),
+    );
+
+    const result = await http.get<{ data: Array<{ id: number }>; meta: { total: number } }>("/books");
+
+    expect(result).toEqual({ data: [{ id: 1 }], meta: { total: 1, page: 1, limit: 10, totalPages: 1 } });
   });
 });

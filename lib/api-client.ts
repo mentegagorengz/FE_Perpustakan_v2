@@ -65,7 +65,11 @@ export async function apiClient<T>(endpoint: string, options: FetchOptions = {})
     throw new Error(errorData.message || `HTTP Error: ${response.status}`);
   }
 
-  return (await response.json()) as T;
+  const payload = (await response.json()) as { data?: T };
+  if (payload && typeof payload === "object" && "data" in payload) {
+    return payload.data as T;
+  }
+  return payload as T;
 }
 
 export const http = {
