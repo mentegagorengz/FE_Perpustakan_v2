@@ -1,16 +1,16 @@
 "use client";
 
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Menu } from "lucide-react";
-import AdminSidebar from "@/components/AdminSidebar";
+import AdminSidebar from "@/components/layout/admin-sidebar";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const { user, token, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const isAuthorized = Boolean(token && (user?.role === "SUPER_ADMIN" || user?.role === "STAFF"));
+  const isAuthorized = Boolean(isAuthenticated && (user?.role === "SUPER_ADMIN" || user?.role === "STAFF"));
 
   useEffect(() => {
     if (!isLoading && !isAuthorized) {

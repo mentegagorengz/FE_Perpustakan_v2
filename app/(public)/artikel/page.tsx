@@ -3,10 +3,10 @@
 import React from "react";
 import Link from "next/link";
 import { Loader2, CalendarDays } from "lucide-react";
-import { useArticles } from "@/hooks/useArticles";
+import { useArticles } from "@/hooks/use-articles";
 
 export default function ArtikelPage() {
-  const { articles, isLoading } = useArticles(null);
+  const { articles, isLoading } = useArticles(false);
 
   if (isLoading)
     return (
@@ -27,7 +27,7 @@ export default function ArtikelPage() {
 
         {articles.length > 0 ? (
           <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
-            {articles.map((article: any) => (
+            {articles.map((article) => (
               <Link key={article.id} href={`/artikel/${article.id}`} className="group block">
                 <div className="relative mb-5 h-64 w-full overflow-hidden rounded-sm border border-main-border shadow-[var(--shadow-card)]">
                   <div className="absolute inset-0 bg-surface" aria-hidden="true" />

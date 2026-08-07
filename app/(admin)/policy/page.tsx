@@ -1,93 +1,88 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
-import { usePolicy, useUpdatePolicyMutation } from "@/hooks/usePolicy";
+import { useEffect } from "react";
+import { Loader2, Wallet } from "lucide-react";
+import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useAuth } from "@/context/auth-context";
+import { usePolicy, useUpdatePolicyMutation } from "@/hooks/use-policy";
+import { policySchema, type PolicyFormValues } from "@/lib/schemas";
+import { PageHeader } from "@/components/layout/page-header";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export default function PolicyPage() {
-  const { token } = useAuth();
-  const { data: policy } = usePolicy(token);
+  const { isAuthenticated } = useAuth();
+  const { data: policy } = usePolicy(isAuthenticated);
   const updatePolicy = useUpdatePolicyMutation();
 
-  const [dailyFine, setDailyFine] = useState("");
-  const [maxDays, setMaxDays] = useState("");
-  const [maxBooks, setMaxBooks] = useState("");
-  const [saved, setSaved] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<PolicyFormValues>({
+    resolver: zodResolver(policySchema),
+    defaultValues: { fine_per_day: 0, loan_duration_days: 7, max_books_per_user: 2 },
+  });
 
   useEffect(() => {
-    if (policy) {
-      setDailyFine(String(policy.fine_per_day));
-      setMaxDays(String(policy.loan_duration_days));
-      setMaxBooks(String(policy.max_books_per_user));
-    }
-  }, [policy]);
+    if (policy) reset({ fine_per_day: policy.fine_per_day, loan_duration_days: policy.loan_duration_days, max_books_per_user: policy.max_books_per_user });
+  }, [policy, reset]);
 
-  const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setError(null);
-
-    const fine = Number(dailyFine);
-    const days = Number(maxDays);
-    const books = Number(maxBooks);
-    if (!Number.isInteger(fine) || fine < 0 || !Number.isInteger(days) || days < 1 || !Number.isInteger(books) || books < 1) {
-      setError("Isi denda dengan bilangan bulat minimal 0, serta durasi dan jumlah buku minimal 1.");
-      return;
-    }
-
+  const onSubmit = async (values: PolicyFormValues) => {
     try {
-      await updatePolicy.mutateAsync({ fine_per_day: fine, loan_duration_days: days, max_books_per_user: books });
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Gagal menyimpan kebijakan.");
+      await updatePolicy.mutateAsync(values);
+      toast.success("Kebijakan disimpan!");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Gagal menyimpan kebijakan.");
     }
   };
 
   return (
     <div className="min-h-screen bg-cream p-4 font-sans sm:p-6 lg:p-10">
-      <div className="mb-8 border-b border-main-border pb-6">
-        <h1 className="font-display text-3xl text-secondary">Kebijakan &amp; denda</h1>
-        <p className="mt-2 text-sm text-main-text-muted">Atur parameter denda harian dan kebijakan peminjaman.</p>
-      </div>
-
-      
-      {saved && (
-        <div role="status" className="fixed right-5 top-5 z-50 inline-flex items-center gap-2 rounded-sm bg-green-600 px-4 py-3 text-sm font-medium text-white shadow-[var(--shadow-overlay)]">
-          <CheckCircle2 className="h-4 w-4" />
-          Kebijakan disimpan!
-        </div>
-      )}
+      <PageHeader
+        title="Kebijakan & Denda"
+        description="Atur parameter denda harian dan kebijakan peminjaman."
+        icon={<Wallet size={20} />}
+        className="mb-8 border-b border-main-border pb-6"
+      />
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        
         <div className="rounded-sm border border-main-border bg-secondary p-5 text-white shadow-[var(--shadow-card)] sm:p-8">
           <h3 className="mb-8 font-display text-lg text-white">Pengaturan finansial</h3>
-          <form onSubmit={handleSave} className="space-y-6">
-            {error && <div id="policy-error" role="alert" className="flex items-start gap-2 rounded-sm border border-red-200 bg-red-950/30 p-3 text-sm text-white"><AlertCircle aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0" />{error}</div>}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
             <div>
-              <label htmlFor="daily-fine" className="mb-2 block text-sm text-white/70">Denda telat per hari (Rp)</label>
-              <input id="daily-fine" name="dailyFine" required min="0" step="1" type="number" value={dailyFine} onChange={(e) => setDailyFine(e.target.value)} aria-describedby={error ? "policy-error" : undefined} className="w-full rounded-sm border border-white/20 bg-white/10 p-3 font-medium text-white outline-none focus:border-white" />
+              <label htmlFor="daily-fine" className="mb-2 block text-sm text-white/70">
+                Denda telat per hari (Rp)
+              </label>
+              <Input id="daily-fine" type="number" min="0" step="1" invalid={!!errors.fine_per_day} className="border-white/20 bg-white/10 font-medium text-white placeholder:text-white/50" {...register("fine_per_day")} />
+              {errors.fine_per_day && <p role="alert" className="mt-1 text-xs text-warning-solid">{errors.fine_per_day.message}</p>}
             </div>
             <div>
-              <label htmlFor="max-days" className="mb-2 block text-sm text-white/70">Maks hari peminjaman</label>
-              <input id="max-days" name="maxDays" required min="1" step="1" type="number" value={maxDays} onChange={(e) => setMaxDays(e.target.value)} aria-describedby={error ? "policy-error" : undefined} className="w-full rounded-sm border border-white/20 bg-white/10 p-3 font-medium text-white outline-none focus:border-white" />
+              <label htmlFor="max-days" className="mb-2 block text-sm text-white/70">
+                Maks hari peminjaman
+              </label>
+              <Input id="max-days" type="number" min="1" step="1" invalid={!!errors.loan_duration_days} className="border-white/20 bg-white/10 font-medium text-white placeholder:text-white/50" {...register("loan_duration_days")} />
+              {errors.loan_duration_days && <p role="alert" className="mt-1 text-xs text-warning-solid">{errors.loan_duration_days.message}</p>}
             </div>
             <div>
-              <label htmlFor="max-books" className="mb-2 block text-sm text-white/70">Maks buku per user</label>
-              <input id="max-books" name="maxBooks" required min="1" step="1" type="number" value={maxBooks} onChange={(e) => setMaxBooks(e.target.value)} aria-describedby={error ? "policy-error" : undefined} className="w-full rounded-sm border border-white/20 bg-white/10 p-3 font-medium text-white outline-none focus:border-white" />
+              <label htmlFor="max-books" className="mb-2 block text-sm text-white/70">
+                Maks buku per user
+              </label>
+              <Input id="max-books" type="number" min="1" step="1" invalid={!!errors.max_books_per_user} className="border-white/20 bg-white/10 font-medium text-white placeholder:text-white/50" {...register("max_books_per_user")} />
+              {errors.max_books_per_user && <p role="alert" className="mt-1 text-xs text-warning-solid">{errors.max_books_per_user.message}</p>}
             </div>
-            <button type="submit" disabled={updatePolicy.isPending} className="flex w-full items-center justify-center gap-2 rounded-sm bg-white py-3 text-sm font-medium text-secondary transition-colors hover:bg-cream-soft disabled:opacity-60">
+            <Button type="submit" variant="outline" disabled={updatePolicy.isPending} className="w-full bg-white py-3 text-secondary hover:bg-cream-soft">
               {updatePolicy.isPending && <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />}
               {updatePolicy.isPending ? "Menyimpan..." : "Simpan kebijakan"}
-            </button>
+            </Button>
           </form>
         </div>
 
-        
         <div className="space-y-6">
-          <div className="rounded-sm border border-main-border bg-white p-5 shadow-[var(--shadow-card)] sm:p-8">
+          <div className="rounded-sm border border-main-border bg-paper p-5 shadow-[var(--shadow-card)] sm:p-8">
             <h3 className="mb-6 font-display text-lg text-main-text">Kebijakan aktif</h3>
             <div className="space-y-4">
               <div className="flex items-center justify-between border-b border-main-border pb-3">

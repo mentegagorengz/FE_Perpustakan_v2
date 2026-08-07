@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useArticleDetail } from "@/hooks/useArticles";
+import { useArticleDetail } from "@/hooks/use-articles";
 import { ArrowLeft, Loader2, CalendarDays } from "lucide-react";
 
 export default function ArtikelDetail() {

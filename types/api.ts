@@ -82,3 +82,55 @@ export interface ApiPolicy {
   loan_duration_days: number;
   max_books_per_user: number;
 }
+
+export interface LoginPayload {
+  email: string;
+  password: string;
+}
+
+export interface ApiSession {
+  user: ApiUser | null;
+}
+
+export interface ApiArticle {
+  id: number;
+  title: string;
+  content: string;
+  image_url: string;
+  is_published: boolean;
+  created_at: string;
+  updated_at: string;
+  author?: { full_name: string };
+}
+
+export interface ArticlePayload {
+  title: string;
+  content: string;
+  image_url?: string;
+  is_published: boolean;
+}
+
+export interface ApiLog {
+  id: number;
+  created_at: string;
+  action: string;
+  status: "SUCCESS" | "FAILED";
+  ip_address: string;
+  device_info: string;
+  user?: { full_name: string };
+}
+
+export interface DashboardSummary {
+  total_books: number;
+  total_users: number;
+  login_attempts: number;
+  failed_actions: number;
+  server_status: string;
+  last_updated: string;
+  total_logs: number;
+}
+
+export interface ApiError {
+  message?: string;
+  statusCode?: number;
+}

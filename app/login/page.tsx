@@ -1,33 +1,45 @@
 "use client";
 
-import React, { useState } from "react";
 import { Loader2 } from "lucide-react";
-import Header from "@/components/Header";
-import { useAuth } from "@/context/AuthContext";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import Header from "@/components/layout/header";
+import { useAuth } from "@/context/auth-context";
+import { loginSchema, type LoginFormValues } from "@/lib/schemas";
 
 export default function LoginPage() {
-  const { login, isLoading, error: authError } = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [localError, setLocalError] = useState<string | null>(null);
+  const { login, isLoading } = useAuth();
+  const router = useRouter();
+  const redirect = typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get("redirect");
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLocalError(null);
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: "", password: "" },
+  });
 
-    if (!email || !password) {
-      setLocalError("Email dan password tidak boleh kosong.");
+  const onSubmit = async (values: LoginFormValues) => {
+    let session;
+    try {
+      session = await login(values.email, values.password);
+    } catch (err) {
+      setError("root", { message: err instanceof Error ? err.message : "Terjadi kesalahan koneksi." });
       return;
     }
-
-    try {
-      await login(email, password);
-    } catch (err: any) {
-      console.error("Login failed:", err);
+    if (redirect) {
+      router.replace(redirect);
+      return;
     }
+    const isStaff = session.user?.role === "SUPER_ADMIN" || session.user?.role === "STAFF";
+    router.replace(isStaff ? "/dashboard" : "/");
   };
 
-  const displayError = localError || authError;
+  const displayError = errors.root?.message;
 
   return (
     <div className="min-h-screen flex flex-col bg-cream font-sans">
@@ -38,17 +50,15 @@ export default function LoginPage() {
           <div className="rounded-sm border border-main-border bg-white p-8 shadow-[var(--shadow-card)]">
             <div className="mb-8">
               <h1 className="text-3xl font-display text-secondary">Portal Masuk</h1>
-              <p className="mt-2 text-sm text-main-text/60">
-                Akses mandiri Perpustakaan
-              </p>
+              <p className="mt-2 text-sm text-main-text/60">Akses mandiri Perpustakaan</p>
               <p className="mt-3 rounded-sm bg-surface px-3 py-2 text-xs text-main-text-muted">
-                Mode dummy: gunakan admin@perpus.ac.id, staff@perpus.ac.id, atau mahasiswa@perpus.ac.id. Kata sandi bebas.
+                Mode dummy: gunakan admin@unsrat.ac.id, staff@unsrat.ac.id, atau mahasiswa@unsrat.ac.id. Kata sandi bebas.
               </p>
             </div>
 
-            <form onSubmit={handleLogin} className="space-y-5">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
               {displayError && (
-                <div id="login-error" role="alert" className="rounded-sm border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
+                <div id="login-error" role="alert" className="rounded-sm border border-danger-border bg-danger-surface px-4 py-3 text-sm text-danger-text">
                   {displayError}
                 </div>
               )}
@@ -59,17 +69,20 @@ export default function LoginPage() {
                 </label>
                 <input
                   id="email"
-                  name="email"
-                  type="text"
+                  type="email"
                   autoComplete="username"
-                  aria-invalid={displayError ? true : undefined}
-                  aria-describedby={displayError ? "login-error" : undefined}
+                  aria-invalid={errors.email ? true : undefined}
+                  aria-describedby={errors.email ? "email-error" : undefined}
                   className="w-full rounded-sm border border-main-border bg-cream-soft px-4 py-2.5 text-main-text outline-none transition-colors placeholder:text-main-text/40 focus:border-secondary focus:ring-1 focus:ring-secondary"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={isLoading}
                   placeholder="nama@mahasiswa.example"
+                  disabled={isLoading}
+                  {...register("email")}
                 />
+                {errors.email && (
+                  <p id="email-error" className="text-xs text-danger-text">
+                    {errors.email.message}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-1.5">
@@ -78,17 +91,20 @@ export default function LoginPage() {
                 </label>
                 <input
                   id="password"
-                  name="password"
                   type="password"
                   autoComplete="current-password"
-                  aria-invalid={displayError ? true : undefined}
-                  aria-describedby={displayError ? "login-error" : undefined}
+                  aria-invalid={errors.password ? true : undefined}
+                  aria-describedby={errors.password ? "password-error" : undefined}
                   className="w-full rounded-sm border border-main-border bg-cream-soft px-4 py-2.5 text-main-text outline-none transition-colors placeholder:text-main-text/40 focus:border-secondary focus:ring-1 focus:ring-secondary"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={isLoading}
                   placeholder="••••••••"
+                  disabled={isLoading}
+                  {...register("password")}
                 />
+                {errors.password && (
+                  <p id="password-error" className="text-xs text-danger-text">
+                    {errors.password.message}
+                  </p>
+                )}
               </div>
 
               <button
