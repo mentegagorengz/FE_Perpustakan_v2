@@ -66,5 +66,11 @@ export function paginate<T>(items: T[], page: number, limit = 10): Paginated<T> 
   const start = (page - 1) * limit;
   return { data: items.slice(start, start + limit), meta: { total: items.length, page, limit, totalPages: Math.max(1, Math.ceil(items.length / limit)) } };
 }
-export const wait = <T,>(value: T) => new Promise<T>((resolve) => setTimeout(() => resolve(value), 150));
+export const wait = <T,>(value: T | Promise<T>): Promise<T> =>
+  new Promise<T>((resolve, reject) => {
+    Promise.resolve(value).then(
+      (result) => setTimeout(() => resolve(result), 150),
+      (error: unknown) => setTimeout(() => reject(error), 150),
+    );
+  });
 export const changeUserRole = (users: ApiUser[], id: number, role: SystemRole) => users.map((user) => user.id === id ? { ...user, role } : user);

@@ -48,6 +48,20 @@ Backlog ini diturunkan dari `PRD_Refactory_FE.md`. Pekerjaan diurutkan berdasark
 - Konfirmasi kontrak cookie HttpOnly backend NestJS (kandidat backend: NestJS berjalan di `localhost:3000`)
 - Proxy `/api/*` di `next.config.ts` (mock mode default aktif)
 
+**Update kontrak backend (diverifikasi 2026-08-07 via curl ke NestJS di :3000):**
+
+- `POST /api/v1/auth/login` eksis; credential mock (`admin@unsrat.ac.id`) ditolak 401 di backend asli — akun asli perlu dikonfirmasi.
+- `GET /api/v1/auth/me` TIDAK ada (404) — sesi user pasca login perlu endpoint alternatif atau decode payload JWT di client.
+- Mekanisme cookie HttpOnly belum terverifikasi (login selalu 401 tanpa credential valid); lihat `Set-Cookie` saat login sukses.
+- Proxy `/api/*` -> `NEXT_PUBLIC_API_URL` sudah dipasang di `next.config.ts`; mock tetap default via `NEXT_PUBLIC_MOCK_API !== "false"`.
+
+**Test runner (Fase 13):**
+
+- Vitest + jsdom + Testing Library terpasang; script `npm test`.
+- 44 test hijau: `cn`, format (menangkap bug `dateTimeFormatter` tanpa opsi jam), validasi zod, `api-client` (serialisasi query, error normalization, 401 redirect), `mock-api` (login/logout/me cookie, 401, artikel publik), `proxy` (307 redirect + matcher).
+- Fix turunan: `wait()` di `lib/mockData.ts` diubah agar handler ter-attach sinkron (mencegah unhandled rejection), `dateTimeFormatter` kini menampilkan jam.
+- E2E Playwright belum dikerjakan (scope terpisah).
+
 
 **Acceptance Criteria:**
 
@@ -506,12 +520,12 @@ Kontrak auth target dari PRD masih menunggu konfirmasi backend: login mengirim `
 **Dependensi:** Seluruh fase implementasi
 
 - [ ] Tentukan test runner dan setup test environment
-- [ ] Tambahkan test untuk API client
-- [ ] Tambahkan test untuk query parameter dan error API
-- [ ] Tambahkan test untuk auth redirect
-- [ ] Tambahkan test untuk middleware route protection
-- [ ] Tambahkan test untuk validasi login
-- [ ] Tambahkan test untuk form admin
+- [x] Tambahkan test untuk API client
+- [x] Tambahkan test untuk query parameter dan error API
+- [x] Tambahkan test untuk auth redirect
+- [x] Tambahkan test untuk middleware route protection
+- [x] Tambahkan test untuk validasi login
+- [x] Tambahkan test untuk form admin
 - [ ] Tambahkan test untuk DataTable search
 - [ ] Tambahkan test untuk DataTable sorting
 - [ ] Tambahkan test untuk DataTable pagination
