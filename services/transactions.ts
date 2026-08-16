@@ -9,6 +9,6 @@ export const transactionsApi = {
     return http.post<ApiTransaction>("/transactions/borrow", { barcode });
   },
   returnBook(barcode: string) {
-    return http.post<{ success: boolean }>("/transactions/return", { barcode });
+    return http.patch<{ success: boolean }>(`/transactions/return/${barcode}`);
   },
 };

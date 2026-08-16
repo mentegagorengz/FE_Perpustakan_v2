@@ -1,7 +1,40 @@
 "use client";
 
-import { collectionSections } from "@/constants/CollectionSections";
 import { ExternalLink } from "lucide-react";
+
+const sections = [
+  {
+    title: "E-Journal Nasional",
+    collections: [
+      { title: "Garuda", link: "https://garuda.kemdikbud.go.id/" },
+      { title: "Neliti", link: "https://www.neliti.com/id/" },
+    ],
+  },
+  {
+    title: "E-Journal Internasional",
+    collections: [
+      { title: "IEEE Open", link: "https://open.ieee.org/" },
+      { title: "Science Direct", link: "https://www.sciencedirect.com/" },
+      { title: "DOAJ", link: "https://doaj.org/" },
+      { title: "OAJSE", link: "https://www.kkhsou.in/library/oajse/" },
+      { title: "OMICS", link: "https://www.omicsonline.org/" },
+      { title: "ArXiv", link: "https://arxiv.org/" },
+      { title: "BASE", link: "https://www.base-search.net/" },
+      { title: "CORE", link: "https://core.ac.uk/" },
+      { title: "Taylor & Francis", link: "https://www.tandfonline.com/" },
+    ],
+  },
+  {
+    title: "Buku Elektronik (E-Book)",
+    collections: [
+      { title: "Wiley Online Library", link: "https://olabout.wiley.com/WileyCDA/Section/id-829579.html" },
+      { title: "Oxford Books", link: "https://www.oxfordscholarship.com/" },
+      { title: "Springer Link", link: "https://link.springer.com/" },
+      { title: "OneSearch", link: "https://onesearch.id/" },
+      { title: "Perpusnas", link: "https://e-resources.perpusnas.go.id/" },
+    ],
+  },
+];
 
 export default function KoleksiDaringPage() {
   return (
@@ -13,7 +46,7 @@ export default function KoleksiDaringPage() {
               <p className="text-main-text/60 max-w-md mx-auto text-sm sm:text-base">Jelajahi database dan sumber literatur digital dari berbagai penyedia.</p>
             </div>
 
-            {collectionSections.map((section, index) => (
+            {sections.map((section, index) => (
               <div key={index} className="mb-16">
                 <h2 className="text-2xl text-main-text pb-2 mb-6 border-b border-main-border">{section.title}</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

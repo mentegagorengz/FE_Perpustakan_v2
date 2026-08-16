@@ -78,9 +78,25 @@ export async function apiClient<T>(endpoint: string, options: FetchOptions = {})
     throw new Error(errorData.message || `HTTP Error: ${response.status}`);
   }
 
-  const payload = (await response.json()) as { data?: T };
-  if (payload && typeof payload === "object" && "data" in payload) {
-    return payload.data as T;
+  const payload = (await response.json()) as (T & { data?: unknown; meta?: unknown }) | undefined;
+  if (payload && typeof payload === "object") {
+    // envelope backend: { success, message, data, meta? } — unwrap data,
+    // lalu gabung meta sibling kembali agar paginated shape { data, meta } konsisten.
+    if ("data" in payload) {
+      if (payload.meta !== undefined) {
+        // meta spec: { total_items, total_pages, has_next_page, has_prev_page } → normalisasi ke Paginated FE
+        const m = payload.meta as Record<string, unknown>;
+        const meta = {
+          total: m.total_items ?? m.total,
+          page: m.page,
+          limit: m.limit,
+          totalPages: m.total_pages ?? m.totalPages,
+        };
+        return { data: payload.data, meta } as T;
+      }
+      return payload.data as T;
+    }
+    return payload as T;
   }
   return payload as T;
 }

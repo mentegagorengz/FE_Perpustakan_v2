@@ -1,11 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { policyApi, type PolicyDto } from "@/services/policy";
+import { http } from "@/lib/api-client";
 import { queryKeys } from "@/lib/constants";
+import type { ApiPolicy } from "@/types/api";
+
+export type PolicyDto = Partial<Pick<ApiPolicy, "fine_per_day" | "loan_duration_days" | "max_books_per_user">>;
 
 export function usePolicy(enabled: boolean) {
   return useQuery({
     queryKey: queryKeys.policy(),
-    queryFn: policyApi.get,
+    queryFn: () => http.get<ApiPolicy>("/policies"),
     enabled,
   });
 }
@@ -13,7 +16,7 @@ export function usePolicy(enabled: boolean) {
 export function useUpdatePolicyMutation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (dto: PolicyDto) => policyApi.update(dto),
+    mutationFn: (dto: PolicyDto) => http.patch<ApiPolicy>("/policies", dto),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.policy() }),
   });
 }

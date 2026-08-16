@@ -125,14 +125,14 @@ describe("apiClient (mode real)", () => {
     expect(config.method).toBe("POST");
   });
 
-  it("membuka envelope { statusCode, message, data } dari response backend", async () => {
+  it("membuka envelope { success, message, data } dari response backend", async () => {
     const { http } = await loadApiClient();
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue(
         new Response(
           JSON.stringify({
-            statusCode: 200,
+            success: true,
             message: "Success",
             data: { user: { id: 1, email: "admin@unsrat.ac.id" }, refreshToken: "rt-1" },
           }),
@@ -146,24 +146,25 @@ describe("apiClient (mode real)", () => {
     expect(result).toEqual({ user: { id: 1, email: "admin@unsrat.ac.id" }, refreshToken: "rt-1" });
   });
 
-  it("membuka envelope paginated menjadi { data, meta }", async () => {
+  it("membuka envelope paginated: data array + meta sibling, meta dinormalisasi ke shape FE", async () => {
     const { http } = await loadApiClient();
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue(
         new Response(
           JSON.stringify({
-            statusCode: 200,
+            success: true,
             message: "Success",
-            data: { data: [{ id: 1 }], meta: { total: 1, page: 1, limit: 10, totalPages: 1 } },
+            data: [{ id: 1 }, { id: 2 }],
+            meta: { total_items: 2, page: 1, limit: 10, total_pages: 1, has_next_page: false },
           }),
           { status: 200, headers: { "Content-Type": "application/json" } },
         ),
       ),
     );
 
-    const result = await http.get<{ data: Array<{ id: number }>; meta: { total: number } }>("/books");
+    const result = await http.get<{ data: Array<{ id: number }>; meta: { total: number; page: number; limit: number; totalPages: number } }>("/books");
 
-    expect(result).toEqual({ data: [{ id: 1 }], meta: { total: 1, page: 1, limit: 10, totalPages: 1 } });
+    expect(result).toEqual({ data: [{ id: 1 }, { id: 2 }], meta: { total: 2, page: 1, limit: 10, totalPages: 1 } });
   });
 });

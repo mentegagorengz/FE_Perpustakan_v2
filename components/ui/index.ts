@@ -2,7 +2,6 @@ export * from "./button";
 export * from "./input";
 export * from "./select";
 export * from "./dialog";
-export * from "./dropdown-menu";
 export * from "./table";
 export * from "./data-table";
 export * from "./skeleton";
