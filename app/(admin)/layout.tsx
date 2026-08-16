@@ -1,28 +1,11 @@
 "use client";
 
-import { useAuth } from "@/context/auth-context";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Menu } from "lucide-react";
 import AdminSidebar from "@/components/layout/admin-sidebar";
-import { ADMIN_LOGIN_ROUTE } from "@/lib/constants";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const { user, isAuthenticated, isLoading } = useAuth();
-  const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const roleUpper = user?.role ? String(user.role).toUpperCase() : "";
-  const isAuthorized = Boolean(isAuthenticated && (roleUpper === "SUPER_ADMIN" || roleUpper === "STAFF" || roleUpper === "ADMIN"));
-
-  useEffect(() => {
-    if (!isLoading && !isAuthorized) {
-      router.replace(ADMIN_LOGIN_ROUTE);
-    }
-  }, [isAuthorized, isLoading, router]);
-
-  if (isLoading || !isAuthorized) {
-    return <div className="flex items-center justify-center min-h-screen bg-cream font-black text-secondary animate-pulse uppercase tracking-widest">Verifikasi Sesi...</div>;
-  }
 
   return (
     <div className="flex h-dvh overflow-hidden bg-cream font-sans">

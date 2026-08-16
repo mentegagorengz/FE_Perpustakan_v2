@@ -1,4 +1,4 @@
-import { ADMIN_LOGIN_ROUTE, isAdminRoute, LOGIN_ROUTE, REFRESH_TOKEN_STORAGE_KEY } from "@/lib/constants";
+import { REFRESH_TOKEN_STORAGE_KEY } from "@/lib/constants";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
 
@@ -20,14 +20,6 @@ function buildUrl(endpoint: string, params?: FetchOptions["params"]): string {
     if (queryString) url += `${url.includes("?") ? "&" : "?"}${queryString}`;
   }
   return url;
-}
-
-function redirectToLogin(pathname: string): void {
-  if (typeof window === "undefined") return;
-  const current = window.location.pathname;
-  if (current === LOGIN_ROUTE || current === ADMIN_LOGIN_ROUTE) return;
-  const login = isAdminRoute(pathname) ? ADMIN_LOGIN_ROUTE : LOGIN_ROUTE;
-  window.location.href = `${login}?redirect=${encodeURIComponent(pathname)}`;
 }
 
 export async function apiClient<T>(endpoint: string, options: FetchOptions = {}): Promise<T> {
@@ -71,11 +63,14 @@ export async function apiClient<T>(endpoint: string, options: FetchOptions = {})
         isRefreshing = false;
       }
     }
-    redirectToLogin(window.location.pathname);
+    // regenerasi gagal — token mati. Biarkan error beredar; jangan redirect.
+    const errorData = (await response.json().catch(() => ({}))) as { message?: string };
+    throw new Error(errorData.message || "Sesi berakhir. Silakan login kembali.");
   }
 
-  if (response.status === 401) {
-    redirectToLogin(window.location.pathname);
+  if (response.status === 401 && endpoint !== "/auth/login") {
+    const errorData = (await response.json().catch(() => ({}))) as { message?: string };
+    throw new Error(errorData.message || "Sesi berakhir. Silakan login kembali.");
   }
 
   if (!response.ok) {

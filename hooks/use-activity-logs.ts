@@ -1,7 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { http } from "@/lib/api-client";
+import { activityLogsApi } from "@/services/activity-logs";
 import { queryKeys } from "@/lib/constants";
-import type { ApiLog, Paginated } from "@/types/api";
 
 interface UseLogsParams {
   enabled: boolean;
@@ -17,7 +16,7 @@ export function useActivityLogs({ enabled, page, action }: UseLogsParams) {
 
   return useQuery({
     queryKey: queryKeys.logs({ page, action }),
-    queryFn: () => http.get<Paginated<ApiLog>>("/activity-logs", { params: queryParams }),
+    queryFn: () => activityLogsApi.list(queryParams),
     enabled,
     placeholderData: keepPreviousData,
   });

@@ -4,7 +4,7 @@ import { createContext, useCallback, useContext, useMemo, type ReactNode } from 
 import { usePathname, useRouter } from "next/navigation";
 import { useLoginMutation, useLogoutMutation, useSessionQuery } from "@/hooks/use-auth";
 import { ADMIN_LOGIN_ROUTE, isAdminRoute, LOGIN_ROUTE } from "@/lib/constants";
-import type { ApiUser, LoginResponse } from "@/types/api";
+import type { ApiSession, ApiUser, LoginResponse } from "@/types/api";
 
 interface AuthContextValue {
   user: ApiUser | null;

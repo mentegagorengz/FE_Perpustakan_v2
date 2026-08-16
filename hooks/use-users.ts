@@ -1,7 +1,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { http } from "@/lib/api-client";
+import { usersApi } from "@/services/users";
 import { queryKeys } from "@/lib/constants";
-import type { ApiUser, Paginated, SystemRole } from "@/types/api";
+import type { SystemRole } from "@/types/api";
 
 interface UseUsersParams {
   enabled: boolean;
@@ -12,7 +12,7 @@ interface UseUsersParams {
 export function useUsers({ enabled, page, search }: UseUsersParams) {
   return useQuery({
     queryKey: queryKeys.users({ page, search }),
-    queryFn: () => http.get<Paginated<ApiUser>>("/users", { params: { page, search } }),
+    queryFn: () => usersApi.list({ page, search }),
     enabled,
     placeholderData: keepPreviousData,
   });
@@ -21,7 +21,7 @@ export function useUsers({ enabled, page, search }: UseUsersParams) {
 export function useUpdateRoleMutation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, role }: { id: number; role: SystemRole }) => http.patch<ApiUser>(`/users/${id}/role`, { role }),
+    mutationFn: ({ id, role }: { id: number; role: SystemRole }) => usersApi.changeRole(id, role),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
   });
 }
@@ -29,7 +29,7 @@ export function useUpdateRoleMutation() {
 export function useDeleteUserMutation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) => http.delete<{ success: boolean }>(`/users/${id}`),
+    mutationFn: (id: number) => usersApi.remove(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
   });
 }

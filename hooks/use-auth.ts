@@ -1,9 +1,9 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { http } from "@/lib/api-client";
+import { authApi } from "@/services/auth";
 import { queryKeys, REFRESH_TOKEN_STORAGE_KEY } from "@/lib/constants";
-import type { ApiSession, LoginPayload, LoginResponse, RefreshTokenPayload } from "@/types/api";
+import type { LoginPayload } from "@/types/api";
 
 function getStoredRefreshToken(): string | null {
   if (typeof window === "undefined") return null;
@@ -23,7 +23,7 @@ function clearRefreshToken(): void {
 export function useSessionQuery() {
   return useQuery({
     queryKey: queryKeys.session(),
-    queryFn: () => http.get<ApiSession>("/auth/profile"),
+    queryFn: authApi.profile,
     retry: false,
     staleTime: 5 * 60 * 1000,
   });
@@ -32,7 +32,7 @@ export function useSessionQuery() {
 export function useLoginMutation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (payload: LoginPayload) => http.post<LoginResponse>("/auth/login", payload),
+    mutationFn: (payload: LoginPayload) => authApi.login(payload),
     onSuccess: (data) => {
       storeRefreshToken(data.refreshToken);
       queryClient.setQueryData(queryKeys.session(), { user: data.user });
@@ -43,11 +43,7 @@ export function useLoginMutation() {
 export function useLogoutMutation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: () => {
-      const refreshToken = getStoredRefreshToken();
-      const body: RefreshTokenPayload | undefined = refreshToken ? { refreshToken } : undefined;
-      return http.post<{ success: boolean }>("/auth/logout", body);
-    },
+    mutationFn: () => authApi.logout(getStoredRefreshToken() ?? undefined),
     onSuccess: () => {
       clearRefreshToken();
       queryClient.setQueryData(queryKeys.session(), { user: null });

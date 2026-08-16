@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 import { useBooks, useBookDetail } from "@/hooks/use-books";
 import { useBorrowMutation, useTransactionsList } from "@/hooks/use-transactions";
@@ -38,7 +37,6 @@ function mapBook(b: ApiBook): UiBook {
 
 export function useBorrow() {
   const { isAuthenticated } = useAuth();
-  const router = useRouter();
   const { data, isLoading, isError } = useBooks({ page: 1 });
   const borrowMutation = useBorrowMutation();
   const { data: transactions } = useTransactionsList({ enabled: isAuthenticated, page: 1 });
@@ -95,7 +93,9 @@ export function useBorrow() {
   const handleBorrow = async () => {
     setBorrowError(null);
     if (!isAuthenticated) {
-      router.push("/login");
+      setBorrowError("Silakan login terlebih dahulu untuk meminjam.");
+      setShowConfirmPopup(false);
+      setTimeout(() => setBorrowError(null), 4000);
       return;
     }
     if (!selectedBook || !detail) return;

@@ -1,31 +1,31 @@
 "use client";
 
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { http } from "@/lib/api-client";
+import { articlesApi } from "@/services/articles";
 import { queryKeys } from "@/lib/constants";
-import type { ApiArticle, ArticlePayload } from "@/types/api";
+import type { ArticlePayload } from "@/types/api";
 
 export function useArticles(enabled = true) {
   const queryClient = useQueryClient();
 
   const articlesQuery = useQuery({
     queryKey: queryKeys.articles(),
-    queryFn: () => http.get<ApiArticle[]>("/articles"),
+    queryFn: articlesApi.list,
     enabled,
   });
 
   const createMutation = useMutation({
-    mutationFn: (payload: ArticlePayload) => http.post<ApiArticle>("/articles", payload),
+    mutationFn: (payload: ArticlePayload) => articlesApi.create(payload),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.articles() }),
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, payload }: { id: number; payload: ArticlePayload }) => http.patch<ApiArticle>(`/articles/${id}`, payload),
+    mutationFn: ({ id, payload }: { id: number; payload: ArticlePayload }) => articlesApi.update(id, payload),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.articles() }),
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => http.delete<{ success: boolean }>(`/articles/${id}`),
+    mutationFn: (id: number) => articlesApi.remove(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.articles() }),
   });
 
@@ -43,7 +43,7 @@ export function useArticles(enabled = true) {
 export function useArticleDetail(id: string | null) {
   return useQuery({
     queryKey: queryKeys.articleDetail(id),
-    queryFn: () => http.get<ApiArticle>(`/articles/${id}`),
+    queryFn: () => articlesApi.detail(id as string),
     enabled: id != null,
     placeholderData: keepPreviousData,
   });
