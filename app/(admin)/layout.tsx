@@ -5,16 +5,18 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Menu } from "lucide-react";
 import AdminSidebar from "@/components/layout/admin-sidebar";
+import { ADMIN_LOGIN_ROUTE } from "@/lib/constants";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const isAuthorized = Boolean(isAuthenticated && (user?.role === "SUPER_ADMIN" || user?.role === "STAFF"));
+  const roleUpper = user?.role ? String(user.role).toUpperCase() : "";
+  const isAuthorized = Boolean(isAuthenticated && (roleUpper === "SUPER_ADMIN" || roleUpper === "STAFF" || roleUpper === "ADMIN"));
 
   useEffect(() => {
     if (!isLoading && !isAuthorized) {
-      router.replace("/login");
+      router.replace(ADMIN_LOGIN_ROUTE);
     }
   }, [isAuthorized, isLoading, router]);
 

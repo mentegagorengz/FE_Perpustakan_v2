@@ -1,8 +1,9 @@
 "use client";
 
 import { createContext, useCallback, useContext, useMemo, type ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useLoginMutation, useLogoutMutation, useSessionQuery } from "@/hooks/use-auth";
+import { ADMIN_LOGIN_ROUTE, isAdminRoute, LOGIN_ROUTE } from "@/lib/constants";
 import type { ApiUser, LoginResponse } from "@/types/api";
 
 interface AuthContextValue {
@@ -17,6 +18,7 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
   const sessionQuery = useSessionQuery();
   const loginMutation = useLoginMutation();
   const logoutMutation = useLogoutMutation();
@@ -30,18 +32,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(async () => {
     await logoutMutation.mutateAsync();
-    router.push("/login");
-  }, [logoutMutation, router]);
+    router.push(isAdminRoute(pathname) ? ADMIN_LOGIN_ROUTE : LOGIN_ROUTE);
+  }, [logoutMutation, router, pathname]);
+
+  const user = useMemo<ApiUser | null>(() => {
+    const data = sessionQuery.data as (ApiSession & ApiUser) | null | undefined;
+    if (!data) return null;
+    if (data.user && typeof data.user === "object") return data.user;
+    if ("id" in data || "email" in data || "role" in data) return data as ApiUser;
+    return null;
+  }, [sessionQuery.data]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
-      user: sessionQuery.data?.user ?? null,
-      isAuthenticated: Boolean(sessionQuery.data?.user),
+      user,
+      isAuthenticated: Boolean(user),
       isLoading: sessionQuery.isLoading,
       login,
       logout,
     }),
-    [sessionQuery.data, sessionQuery.isLoading, login, logout],
+    [user, sessionQuery.isLoading, login, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

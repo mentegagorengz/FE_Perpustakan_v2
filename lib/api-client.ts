@@ -1,10 +1,13 @@
-import { handleMockRequest, MockHttpError, MOCK_ENABLED } from "@/lib/mock-api";
+import { ADMIN_LOGIN_ROUTE, isAdminRoute, LOGIN_ROUTE, REFRESH_TOKEN_STORAGE_KEY } from "@/lib/constants";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
 
 export interface FetchOptions extends RequestInit {
   params?: Record<string, string | number | boolean | undefined>;
+  _isRetry?: boolean;
 }
+
+let isRefreshing = false;
 
 function buildUrl(endpoint: string, params?: FetchOptions["params"]): string {
   let url = endpoint.startsWith("http") ? endpoint : `${BASE_URL}${endpoint}`;
@@ -20,29 +23,15 @@ function buildUrl(endpoint: string, params?: FetchOptions["params"]): string {
 }
 
 function redirectToLogin(pathname: string): void {
-  if (typeof window !== "undefined" && !window.location.pathname.startsWith("/login")) {
-    window.location.href = `/login?redirect=${encodeURIComponent(pathname)}`;
-  }
+  if (typeof window === "undefined") return;
+  const current = window.location.pathname;
+  if (current === LOGIN_ROUTE || current === ADMIN_LOGIN_ROUTE) return;
+  const login = isAdminRoute(pathname) ? ADMIN_LOGIN_ROUTE : LOGIN_ROUTE;
+  window.location.href = `${login}?redirect=${encodeURIComponent(pathname)}`;
 }
 
 export async function apiClient<T>(endpoint: string, options: FetchOptions = {}): Promise<T> {
-  const { params, headers, body, ...restOptions } = options;
-
-  if (MOCK_ENABLED) {
-    const url = new URL(buildUrl(endpoint, params), "http://localhost");
-    let payload: unknown = undefined;
-    if (body) {
-      payload = typeof body === "string" ? JSON.parse(body) : body;
-    }
-    try {
-      return (await handleMockRequest(restOptions.method ?? "GET", url.pathname, url.searchParams, payload)) as T;
-    } catch (error) {
-      if (error instanceof MockHttpError && error.status === 401) {
-        redirectToLogin(url.pathname);
-      }
-      throw new Error(error instanceof Error ? error.message : "HTTP Error");
-    }
-  }
+  const { params, headers, body, _isRetry, ...restOptions } = options;
 
   const config: RequestInit = {
     headers: {
@@ -55,6 +44,35 @@ export async function apiClient<T>(endpoint: string, options: FetchOptions = {})
   if (body !== undefined) config.body = body;
 
   const response = await fetch(buildUrl(endpoint, params), config);
+
+  if (response.status === 401 && !_isRetry && endpoint !== "/auth/login" && endpoint !== "/auth/refresh") {
+    if (!isRefreshing) {
+      isRefreshing = true;
+      try {
+        const refreshRes = await fetch(buildUrl("/auth/refresh"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        });
+        isRefreshing = false;
+
+        if (refreshRes.ok) {
+          const payload = (await refreshRes.json().catch(() => ({}))) as {
+            data?: { refreshToken?: string };
+            refreshToken?: string;
+          };
+          const newRefreshToken = payload.data?.refreshToken || payload.refreshToken;
+          if (newRefreshToken && typeof window !== "undefined") {
+            window.localStorage.setItem(REFRESH_TOKEN_STORAGE_KEY, newRefreshToken);
+          }
+          return apiClient<T>(endpoint, { ...options, _isRetry: true });
+        }
+      } catch {
+        isRefreshing = false;
+      }
+    }
+    redirectToLogin(window.location.pathname);
+  }
 
   if (response.status === 401) {
     redirectToLogin(window.location.pathname);

@@ -74,17 +74,35 @@ describe("apiClient (mode real)", () => {
     await expect(http.get("/books")).rejects.toThrow(/HTTP Error: 500/);
   });
 
-  it("redirect ke login saat response 401", async () => {
+  it("redirect ke /admin/login saat response 401 dari area admin", async () => {
     const location = stubLocation("/dashboard");
     const { http } = await loadApiClient();
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({ message: "Sesi habis" }), { status: 401 })));
 
     await expect(http.get("/dashboard")).rejects.toThrow("Sesi habis");
-    expect(location.href).toBe("/login?redirect=%2Fdashboard");
+    expect(location.href).toBe("/admin/login?redirect=%2Fdashboard");
+  });
+
+  it("redirect ke /login saat response 401 dari area publik", async () => {
+    const location = stubLocation("/koleksi");
+    const { http } = await loadApiClient();
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({ message: "Sesi habis" }), { status: 401 })));
+
+    await expect(http.get("/koleksi")).rejects.toThrow("Sesi habis");
+    expect(location.href).toBe("/login?redirect=%2Fkoleksi");
   });
 
   it("tidak redirect ke login saat sudah berada di halaman login", async () => {
     const location = stubLocation("/login");
+    const { http } = await loadApiClient();
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({ message: "Sesi habis" }), { status: 401 })));
+
+    await expect(http.get("/auth/profile")).rejects.toThrow();
+    expect(location.href).toBe("");
+  });
+
+  it("tidak redirect ke login saat sudah berada di halaman admin login", async () => {
+    const location = stubLocation("/admin/login");
     const { http } = await loadApiClient();
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({ message: "Sesi habis" }), { status: 401 })));
 

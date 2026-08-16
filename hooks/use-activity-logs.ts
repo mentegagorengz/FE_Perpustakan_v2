@@ -10,9 +10,14 @@ interface UseLogsParams {
 }
 
 export function useActivityLogs({ enabled, page, action }: UseLogsParams) {
+  const queryParams: { page: number; action?: string } = { page };
+  if (action && action !== "all") {
+    queryParams.action = action;
+  }
+
   return useQuery({
     queryKey: queryKeys.logs({ page, action }),
-    queryFn: () => http.get<Paginated<ApiLog>>("/activity-logs", { params: { page, action } }),
+    queryFn: () => http.get<Paginated<ApiLog>>("/activity-logs", { params: queryParams }),
     enabled,
     placeholderData: keepPreviousData,
   });

@@ -30,8 +30,5 @@ yarn-error.log*
 next-env.d.ts
 
 # agent / supporting docs (not part of the project)
-.impeccable/
-docs/
-DESIGN.md
-PRODUCT.md
-PRD_Refactory_FE.md
+.docs/
+.superpowers/

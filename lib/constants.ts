@@ -2,15 +2,14 @@ export const AUTH_COOKIE = "auth_token";
 
 export const REFRESH_TOKEN_STORAGE_KEY = "unsrat-library-refresh-token";
 
-export const STORAGE_KEYS = {
-  mockState: "unsrat-library-dummy-data-v2",
-} as const;
-
 export const ROLES = {
   SUPER_ADMIN: "SUPER_ADMIN",
   STAFF: "STAFF",
   USER: "USER",
 } as const;
+
+export const LOGIN_ROUTE = "/login";
+export const ADMIN_LOGIN_ROUTE = "/admin/login";
 
 export const ADMIN_ROUTES = [
   "/dashboard",
@@ -21,11 +20,11 @@ export const ADMIN_ROUTES = [
   "/logs",
 ] as const;
 
-export const MOCK_USERS = [
-  "admin@unsrat.ac.id",
-  "staff@unsrat.ac.id",
-  "mahasiswa@unsrat.ac.id",
-] as const;
+export function isAdminRoute(pathname: string): boolean {
+  return pathname.startsWith("/admin") || ADMIN_ROUTES.some((path) => pathname.startsWith(path));
+}
+
+export const ADMIN_ROLES = ["SUPER_ADMIN", "STAFF"] as const;
 
 export const queryKeys = {
   books: (params: { page: number; search?: string; limit?: number }) => ["books", params] as const,
