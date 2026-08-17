@@ -26,17 +26,33 @@ Aplikasi manajemen perpustakaan berbasis web — frontend dummy untuk sistem inf
 ## Struktur Folder
 
 ```
-app/
-├── (admin)/           # Halaman admin (protected)
-├── (public)/          # Halaman publik (beranda, artikel, koleksi, profil)
-├── login/             # Halaman login
-components/            # Komponen reusable
-constants/             # Data statis & helper API
-context/               # React context (AuthContext)
-hooks/                 # Custom hooks (useAuth, useBorrow, useTransactions, dll.)
-providers/             # QueryProvider
-types/                 # TypeScript interfaces
-public/images/         # Asset gambar
+src/
+├── app/                    # Thin routing layer (Next.js App Router)
+│   ├── (admin)/            # Halaman admin (protected)
+│   ├── (public)/           # Halaman publik (beranda, artikel, koleksi, profil)
+│   ├── login/              # Login publik
+│   └── admin/login/        # Login panel manajemen
+├── features/               # Domain modules (Bulletproof Pattern)
+│   ├── books/              # Katalog buku & peminjaman (api/, components/, hooks/, types/)
+│   ├── auth/               # Auth & session (api/, context/, hooks/, schemas/, types/)
+│   ├── tracking/           # Tracking peminjaman admin (components/, hooks/)
+│   ├── articles/           # Warta & artikel (api/, components/, hooks/, schemas/, types/)
+│   ├── dashboard/          # Command center admin (api/, hooks/)
+│   ├── users/              # Manajemen role (api/, hooks/)
+│   ├── policies/           # Kebijakan & denda (api/, hooks/, schemas/)
+│   ├── logs/               # Audit log (api/, hooks/)
+│   ├── home/               # Landing statis (components/)
+│   └── profil/             # Profil statis (components/)
+│   └── <domain>/index.ts   # Public barrel export per domain
+├── components/             # Shared UI non-domain
+│   ├── ui/                 # Button, Dialog, DataTable, Input, dsb. (primitif)
+│   └── layout/             # Header, Footer, AdminSidebar, PageHeader
+├── lib/                    # Core instances & config
+│   ├── api-client.ts       # Fetch wrapper + refresh interceptor
+│   ├── query-client.ts     # TanStack QueryClient config
+│   ├── types.ts            # Shared type (Paginated, ApiError)
+│   └── utils.ts            # Helper umum
+└── testing/                # Setup & fixtures test
 ```
 
 ## Getting Started

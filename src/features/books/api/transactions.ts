@@ -1,0 +1,15 @@
+import { http } from "@/lib/api-client";
+import type { ApiTransaction } from "../types/api";
+import type { Paginated } from "@/lib/types";
+
+export const transactionsApi = {
+  list(params: { page: number; search?: string }) {
+    return http.get<Paginated<ApiTransaction>>("/transactions", { params });
+  },
+  borrow(barcode: string) {
+    return http.post<ApiTransaction>("/transactions/borrow", { barcode });
+  },
+  returnBook(barcode: string) {
+    return http.patch<{ success: boolean }>(`/transactions/return/${barcode}`);
+  },
+};
