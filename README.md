@@ -9,6 +9,7 @@ Aplikasi manajemen perpustakaan berbasis web — frontend dummy untuk sistem inf
 - [Tailwind CSS v4](https://tailwindcss.com/)
 - [Motion](https://motion.dev/) (Framer Motion)
 - [TanStack React Query](https://tanstack.com/query/latest)
+- [Vitest](https://vitest.dev/) (unit test)
 
 ## Fitur
 
@@ -35,12 +36,12 @@ src/
 ├── features/               # Domain modules (Bulletproof Pattern)
 │   ├── books/              # Katalog buku & peminjaman (api/, components/, hooks/, types/)
 │   ├── auth/               # Auth & session (api/, context/, hooks/, schemas/, types/)
-│   ├── tracking/           # Tracking peminjaman admin (components/, hooks/)
+│   ├── tracking/           # Tracking peminjaman admin (components/)
 │   ├── articles/           # Warta & artikel (api/, components/, hooks/, schemas/, types/)
-│   ├── dashboard/          # Command center admin (api/, hooks/)
-│   ├── users/              # Manajemen role (api/, hooks/)
-│   ├── policies/           # Kebijakan & denda (api/, hooks/, schemas/)
-│   ├── logs/               # Audit log (api/, hooks/)
+│   ├── dashboard/          # Command center admin (api/, hooks/, types/)
+│   ├── users/              # Manajemen role (api/, hooks/, types/)
+│   ├── policies/           # Kebijakan & denda (api/, hooks/, schemas/, types/)
+│   ├── logs/               # Audit log (api/, hooks/, types/)
 │   ├── home/               # Landing statis (components/)
 │   └── profil/             # Profil statis (components/)
 │   └── <domain>/index.ts   # Public barrel export per domain
@@ -50,6 +51,8 @@ src/
 ├── lib/                    # Core instances & config
 │   ├── api-client.ts       # Fetch wrapper + refresh interceptor
 │   ├── query-client.ts     # TanStack QueryClient config
+│   ├── query-provider.tsx  # React Query provider
+│   ├── constants.ts        # Route & query key constants
 │   ├── types.ts            # Shared type (Paginated, ApiError)
 │   └── utils.ts            # Helper umum
 └── testing/                # Setup & fixtures test
@@ -70,4 +73,10 @@ Buat `.env.local`:
 
 ```
 NEXT_PUBLIC_API_URL=http://localhost:3000/api/v1
+```
+
+## Test
+
+```bash
+npm run test
 ```
