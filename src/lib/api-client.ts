@@ -1,5 +1,3 @@
-import { REFRESH_TOKEN_STORAGE_KEY } from "@/lib/constants";
-
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
 
 export interface FetchOptions extends RequestInit {
@@ -49,14 +47,7 @@ export async function apiClient<T>(endpoint: string, options: FetchOptions = {})
         isRefreshing = false;
 
         if (refreshRes.ok) {
-          const payload = (await refreshRes.json().catch(() => ({}))) as {
-            data?: { refreshToken?: string };
-            refreshToken?: string;
-          };
-          const newRefreshToken = payload.data?.refreshToken || payload.refreshToken;
-          if (newRefreshToken && typeof window !== "undefined") {
-            window.localStorage.setItem(REFRESH_TOKEN_STORAGE_KEY, newRefreshToken);
-          }
+          // Refresh token dirotasi via cookie HttpOnly by backend — FE tak perlu simpan.
           return apiClient<T>(endpoint, { ...options, _isRetry: true });
         }
       } catch {

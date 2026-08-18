@@ -1,11 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Menu } from "lucide-react";
 import AdminSidebar from "@/components/layout/admin-sidebar";
+import { useAuth } from "@/features/auth";
+import { ADMIN_LOGIN_ROUTE, ADMIN_ROLES } from "@/lib/constants";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { isAuthenticated, isLoading, user } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isLoading) return;
+    const allowed = isAuthenticated && user?.role && ADMIN_ROLES.includes(user.role as (typeof ADMIN_ROLES)[number]);
+    if (!allowed) router.replace(ADMIN_LOGIN_ROUTE);
+  }, [isLoading, isAuthenticated, user, router]);
+
+  if (isLoading || !isAuthenticated || !user?.role || !ADMIN_ROLES.includes(user.role as (typeof ADMIN_ROLES)[number])) {
+    return (
+      <div className="flex h-dvh items-center justify-center bg-cream font-sans">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-secondary border-t-transparent" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-dvh overflow-hidden bg-cream font-sans">

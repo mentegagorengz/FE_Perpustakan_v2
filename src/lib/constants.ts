@@ -1,5 +1,3 @@
-export const REFRESH_TOKEN_STORAGE_KEY = "unsrat-library-refresh-token";
-
 export const LOGIN_ROUTE = "/login";
 export const ADMIN_LOGIN_ROUTE = "/admin/login";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { Download, Info, Layers, BookOpen } from "lucide-react";
 import {
@@ -46,10 +46,6 @@ export default function BookDetailModal({
   const [activeTab, setActiveTab] = useState<"detail" | "items">("detail");
   const [imgSrc, setImgSrc] = useState(book.imageUrl || "/placeholder_koleksi.svg");
   const isAvailable = availableCount > 0;
-
-  useEffect(() => {
-    setImgSrc(book.imageUrl || "/placeholder_koleksi.svg");
-  }, [book.imageUrl]);
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>

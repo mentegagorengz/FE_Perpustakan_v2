@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { Bookmark } from "lucide-react";
 import type { UiBook } from "../types/ui";
@@ -16,10 +16,6 @@ function BookCard({ book, onDetailClick, saved, onSave }: BookCardProps) {
   const availableCount = book.items.filter((item) => item.status === "AVAILABLE").length;
   const isAvailable = availableCount > 0;
   const [imgSrc, setImgSrc] = useState(book.imageUrl || "/placeholder_koleksi.svg");
-
-  useEffect(() => {
-    setImgSrc(book.imageUrl || "/placeholder_koleksi.svg");
-  }, [book.imageUrl]);
 
   return (
     <article

@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { useState } from "react";
 import { useBorrow } from "@/features/books/hooks/use-borrow";
 import KoleksiHeader from "@/features/books/components/koleksi-header";
 import KoleksiToolbar from "@/features/books/components/koleksi-toolbar";
@@ -26,21 +25,11 @@ export default function KoleksiFeature() {
     setShowConfirmPopup,
     handleBorrow,
     isBorrowing,
-    borrowSuccess,
-    borrowError,
     isAuthenticated,
     availableCount,
     returnEstimates,
   } = useBorrow();
   const [savedBooks, setSavedBooks] = useState<Set<number>>(new Set());
-
-  useEffect(() => {
-    if (borrowSuccess) toast.success("Buku berhasil dipinjam!");
-  }, [borrowSuccess]);
-
-  useEffect(() => {
-    if (borrowError) toast.error(borrowError);
-  }, [borrowError]);
 
   const toggleSavedBook = (bookId: number) => {
     setSavedBooks((current) => {

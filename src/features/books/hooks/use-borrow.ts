@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
 import { useAuth } from "@/features/auth";
 import { useBooks, useBookDetail } from "@/features/books/hooks/use-books";
 import { useBorrowMutation, useTransactionsList } from "@/features/books/hooks/use-transactions";
@@ -46,8 +47,6 @@ export function useBorrow() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedBook, setSelectedBook] = useState<UiBook | null>(null);
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
-  const [borrowSuccess, setBorrowSuccess] = useState(false);
-  const [borrowError, setBorrowError] = useState<string | null>(null);
 
   const allBooks = useMemo(() => (data?.data ?? []).map(mapBook), [data]);
 
@@ -91,33 +90,28 @@ export function useBorrow() {
   );
 
   const handleBorrow = async () => {
-    setBorrowError(null);
     if (!isAuthenticated) {
-      setBorrowError("Silakan login terlebih dahulu untuk meminjam.");
+      toast.error("Silakan login terlebih dahulu untuk meminjam.");
       setShowConfirmPopup(false);
-      setTimeout(() => setBorrowError(null), 4000);
       return;
     }
     if (!selectedBook || !detail) return;
 
     const availableItem = detail.items?.find((it) => it.status === "AVAILABLE");
     if (!availableItem) {
-      setBorrowError("Tidak ada eksemplar tersedia untuk buku ini.");
+      toast.error("Tidak ada eksemplar tersedia untuk buku ini.");
       setShowConfirmPopup(false);
-      setTimeout(() => setBorrowError(null), 4000);
       return;
     }
 
     try {
       await borrowMutation.mutateAsync(availableItem.barcode);
-      setBorrowSuccess(true);
       setShowConfirmPopup(false);
       setSelectedBook(null);
-      setTimeout(() => setBorrowSuccess(false), 3000);
+      toast.success("Buku berhasil dipinjam!");
     } catch (e) {
-      setBorrowError(e instanceof Error ? e.message : "Gagal meminjam.");
+      toast.error(e instanceof Error ? e.message : "Gagal meminjam.");
       setShowConfirmPopup(false);
-      setTimeout(() => setBorrowError(null), 4000);
     }
   };
 
@@ -137,8 +131,6 @@ export function useBorrow() {
     setShowConfirmPopup,
     handleBorrow,
     isBorrowing: borrowMutation.isPending,
-    borrowSuccess,
-    borrowError,
     isAuthenticated,
     isLoading,
     isError,
